@@ -1,10 +1,7 @@
 #pragma once
 
 #include <string>
-#include <glm/vec3.hpp>
-
 using namespace std;
-using namespace glm;
 
 struct RenderOptions {
 	int width;

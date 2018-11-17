@@ -1,4 +1,5 @@
 #pragma once
+#include "RayTracer.h"
 
 namespace Tmpl8 {
 
@@ -16,6 +17,7 @@ public:
 	void KeyDown( int key ) { /* implement if you want to handle keys */ }
 private:
 	Surface* screen;
+	RayTracer *pTracer;
 };
 
 }; // namespace Tmpl8
