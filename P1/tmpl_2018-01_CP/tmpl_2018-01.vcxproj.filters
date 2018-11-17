@@ -10,6 +10,8 @@
     </ClCompile>
     <ClCompile Include="RayTracer.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="RTLight.cpp" />
+    <ClCompile Include="RTGeometry.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -23,6 +25,9 @@
     <ClInclude Include="RenderOptions.h" />
     <ClInclude Include="RayTracer.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="RTLight.h" />
+    <ClInclude Include="RTGeometry.h" />
+    <ClInclude Include="RTCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">

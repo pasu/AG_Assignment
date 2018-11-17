@@ -1,6 +1,7 @@
 #include "precomp.h" // include (only) this in every .cpp file
 #include "RenderOptions.h"
 #include "Scene.h"
+#include "RTCamera.h"
 #include "RayTracer.h"
 // -----------------------------------------------------------
 // Initialize the application
@@ -8,7 +9,7 @@
 
 Scene scene( vec3( 0.1f ), vec3( 0, 191.0f / 255.0f, 1 ) );
 RenderOptions renderOptions;
-
+RTCamera camera;
 void Game::Init()
 {
 	
