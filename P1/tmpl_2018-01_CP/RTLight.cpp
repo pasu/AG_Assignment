@@ -18,7 +18,7 @@ class PointLight : public RTLight
 	PointLight( int _color, float _power, vec3 _pos ) : RTLight( _color, _power ), pos( _pos )
 	{
 	}
-	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const RTMaterial &material ) const override
+	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const RTMaterial &material )override
 	{
 		vec3 d = pos - pd.position;
 		float l2 = d.sqrLentgh();
@@ -30,7 +30,7 @@ class PointLight : public RTLight
 
 		if ( intersection.rayT < l )
 		{
-			return nd.dot( pd.normal ) / l2 * 
+			return nd.dot( pd.normal ) / l2 * material.getAlbedoAtPoint( pd.textureCoordinates.x, pd.textureCoordinates.y );
 		}
 	}
 };
@@ -44,7 +44,7 @@ class ParrallelLight : public RTLight
 	ParrallelLight( int _color, float _power, vec3 _direction ) : RTLight( _color, _power ), direction( _direction )
 	{
 	}
-	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const RTMaterial &material ) const override
+	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const RTMaterial &material ) override
 	{
 		return vec3( 1.0, 0, 0 );
 	}

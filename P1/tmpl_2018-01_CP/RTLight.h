@@ -1,8 +1,8 @@
 #pragma once
 #include "RTSurfacePointData.h"
 #include "template.h"
-class Scene;
-
+#include"RTMaterial.h"
+class RayTracer;
 class RTLight
 {
   private:
@@ -13,5 +13,5 @@ class RTLight
 	RTLight( int _color, float _power );
 	~RTLight();
 
-	virtual vec3 shade( const SurfacePointData &, const RayTracer &, const RTMaterial & ) const = 0; // shade a diffused surface
+	virtual vec3 shade( const SurfacePointData & pd, const RayTracer &rt, const RTMaterial & material) = 0; // shade a diffused surface
 };

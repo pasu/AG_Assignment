@@ -65,7 +65,7 @@ const unsigned int RayTracer::shade( const RTRay &castedRay, const RTMaterial &m
 	{
 		for ( RTLight *light : scene.getLights() )
 		{
-			color += light->shade( surfacePointData, *this );
+			color += light->shade( surfacePointData, *this,material );
 		}
 	}
 	else if ( material.shadingType == REFLECTIVE )
