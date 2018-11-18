@@ -2,12 +2,19 @@
 #include "RenderOptions.h"
 #include "Scene.h"
 #include "RayTracer.h"
+#include "RTPlane.h"
+#include "RTSphere.h"
 // -----------------------------------------------------------
 // Initialize the application
 // -----------------------------------------------------------
 
 Scene scene( vec3( 0.1f ), vec3( 0, 191.0f / 255.0f, 1 ) );
 RenderOptions renderOptions;
+
+RTMaterial whiteMaterial( vec3( 1, 1, 1 ), DIFFUSE );
+
+RTMaterial redMaterial( vec3( 1, 0, 0 ), DIFFUSE );
+
 void Game::Init()
 {
 	
@@ -18,6 +25,14 @@ void Game::Init()
 	renderOptions.shadowBias = 0.001f;
 
 	pTracer = new RayTracer( scene, renderOptions );
+
+	/////////////////////////////////////////////////////////////////////////
+	RTLight* pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 50.0f, vec3( 0.0f, 10.0f, 0.0f ) );
+	scene.addLight( pLight );
+
+	scene.addObject( new RTPlane( vec3( 0.1f, 0.0f, 0.0f ), vec3( 0.0f, -1.0f, 0.0f ), whiteMaterial ) );
+	//scene.addObject( new RTSphere( vec3( 0.0f, 0.0f, -50.0f ), 10.0f, redMaterial ) );
+	///////////////////////////////////////////////////////////////////////////////
 
 }
 

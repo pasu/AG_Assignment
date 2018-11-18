@@ -60,6 +60,7 @@ const unsigned int RayTracer::castRay( const RTRay &ray, const int depth ) const
 
 const unsigned int RayTracer::shade( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const
 {
+	return 0x00ff0000;
 	vec3 color=vec3(.0f,.0f,.0f);
 	if ( material.shadingType == DIFFUSE )
 	{

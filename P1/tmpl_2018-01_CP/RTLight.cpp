@@ -57,6 +57,7 @@ RTLight *RTLight::createPointLight( vec3 _color, float _power, vec3 _pos )
 {
 	return new PointLight( _color, _power, _pos );
 }
+
 RTLight *RTLight::createParralleLight(vec3 _color, float _power, vec3 _direction)
 {
 	return new ParrallelLight( _color, _power, _direction );
