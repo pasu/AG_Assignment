@@ -11,7 +11,7 @@ class RayTracer
 	~RayTracer();
 	void render( Surface *screen ) const;
 	
-	const RTRay generatePrimaryRay( const int x, const int y ) const;
+	const RTRay& generatePrimaryRay( const int x, const int y ) const;
 
 	const unsigned int castRay( const RTRay &ray, const int depth ) const; 
 	const unsigned int shade( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const;

@@ -13,5 +13,5 @@ public:
 	float rayT;
 
 	inline bool isIntersecting() const { return rayT >= 0; }
-	inline const vec3 getPos() const { return ray->orig + ray->dir * rayT; }
+	inline const vec3 getIntersectionPosition() const { return ray->orig + ray->dir * rayT; }
 };

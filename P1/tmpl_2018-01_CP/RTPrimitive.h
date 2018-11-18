@@ -13,7 +13,7 @@ class RTPrimitive
 
 	inline const RTMaterial &getMaterial() const { return material; }
 
-  private:
+  protected:
 	vec3 pos;
 	const RTMaterial& material;
 };

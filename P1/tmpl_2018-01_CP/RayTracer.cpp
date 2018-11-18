@@ -32,7 +32,7 @@ void RayTracer::render( Surface *screen ) const
 	memcpy( screen->GetBuffer(), pPixels, size*4 );
 }
 
-const RTRay RayTracer::generatePrimaryRay( const int x, const int y ) const
+const RTRay& RayTracer::generatePrimaryRay( const int x, const int y ) const
 {
 	vec3 origin = scene.getCamera()->getEye();
 	vec2 ndcPixelCentre( ( 2.0f * x - renderOptions.width ) / renderOptions.width, ( 2.0f * y - renderOptions.height ) / renderOptions.height );
