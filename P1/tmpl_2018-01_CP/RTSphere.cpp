@@ -18,34 +18,34 @@ const RTIntersection RTSphere::intersect( const RTRay &ray ) const
 	if ( p2 > radius * radius )
 		return intersection;
 
-	t -= sqrt( radius - p2 );
+	t -= sqrt( radius * radius - p2 );
 	if (t>0.0f)
 	{
 		intersection.rayT = t;
 	}
 
-	return intersection;
+	//return intersection;
 
 	// analytic solution
-// 	vec3 L = ray.orig - pos;
-// 	float a = dot( ray.dir, ray.dir );
-// 	float b = 2 * dot( ray.dir, L );
-// 	float c = dot( L, L ) - ( radius * radius );
-// 
-// 	float t0, t1;
-// 
-// 	if ( !Utils::solveQuadratic( a, b, c, t0, t1 ) )
-// 		return intersection;
-// 
-// 	if ( t0 < 0 )
-// 	{
-// 		t0 = t1;
-// 		if ( t0 < 0 )
-// 			return intersection;
-// 	}
-// 
-// 	intersection.rayT = t0;
-//	return intersection;
+	vec3 L = ray.orig - pos;
+	float a = dot( ray.dir, ray.dir );
+	float b = 2 * dot( ray.dir, L );
+	float c = dot( L, L ) - ( radius * radius );
+
+	float t0, t1;
+
+	if ( !Utils::solveQuadratic( a, b, c, t0, t1 ) )
+		return intersection;
+
+	if ( t0 < 0 )
+	{
+		t0 = t1;
+		if ( t0 < 0 )
+			return intersection;
+	}
+
+	intersection.rayT = t0;
+	return intersection;
 }
 
 const SurfacePointData RTSphere::getSurfacePointData( const RTIntersection &intersection ) const
