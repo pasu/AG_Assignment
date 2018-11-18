@@ -18,9 +18,20 @@ class PointLight : public RTLight
 	PointLight( int _color, float _power, vec3 _pos ) : RTLight( _color, _power ), pos( _pos )
 	{
 	}
-	vec3 shade( const SurfacePointData& pd, const Scene& scene )const override
+	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const RTMaterial &material ) const override
 	{
-		return false;
+		vec3 d = pos - pd.position;
+		float l2 = d.sqrLentgh();
+		float l = sqrt( l2 );
+		vec3 nd = -d * ( 1 / l );
+
+		RTRay ray = RTRay( pd.position, nd );
+		const RTIntersection &intersection = rt.findNearestObjectIntersection( ray );
+
+		if ( intersection.rayT < l )
+		{
+			return nd.dot( pd.normal ) / l2 * 
+		}
 	}
 };
 
@@ -33,8 +44,8 @@ class ParrallelLight : public RTLight
 	ParrallelLight( int _color, float _power, vec3 _direction ) : RTLight( _color, _power ), direction( _direction )
 	{
 	}
-	vec3 shade( const SurfacePointData &pd, const Scene &scene ) const override
+	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const RTMaterial &material ) const override
 	{
-		return false;
+		return vec3( 1.0, 0, 0 );
 	}
 };

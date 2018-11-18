@@ -13,5 +13,5 @@ class RTLight
 	RTLight( int _color, float _power );
 	~RTLight();
 
-	virtual vec3 shade(const SurfacePointData &, const Scene & )const = 0; // shade a diffused surface
+	virtual vec3 shade( const SurfacePointData &, const RayTracer &, const RTMaterial & ) const = 0; // shade a diffused surface
 };

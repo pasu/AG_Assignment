@@ -65,7 +65,7 @@ const unsigned int RayTracer::shade( const RTRay &castedRay, const RTMaterial &m
 	{
 		for ( RTLight *light : scene.getLights() )
 		{
-			color += light->shade( surfacePointData, scene );
+			color += light->shade( surfacePointData, *this );
 		}
 	}
 	else if ( material.shadingType == REFLECTIVE )
@@ -77,8 +77,7 @@ const unsigned int RayTracer::shade( const RTRay &castedRay, const RTMaterial &m
 	else if ( material.shadingType == DIFFUSE_AND_REFLECTIVE )
 	{
 	}
-
-	return 0xff0000ff;
+	return 0xff000000 | (unsigned int)(color.x*255) | (unsigned int)(color.y*255) << 2 | (unsigned int )(color.z*255) << 4;
 }
 
 const RTIntersection RayTracer::findNearestObjectIntersection( const RTRay &ray ) const
