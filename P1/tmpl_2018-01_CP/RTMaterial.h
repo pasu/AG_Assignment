@@ -15,6 +15,8 @@ public:
   
   const ShadingType shadingType;
 
+  const vec3 getAlbedoAtPoint( const float s, const float t ) const;
+
 private:
   const vec3 color;
 };
