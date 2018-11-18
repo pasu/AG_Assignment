@@ -4,7 +4,7 @@
 RayTracer::RayTracer( const Scene &scene, const RenderOptions &renderOptions ) : renderOptions( renderOptions ), scene( scene )
 {
 	size = renderOptions.width * renderOptions.height;
-	pPixels = new int[size];
+	pPixels = new unsigned int[size];
 }
 
 RayTracer::~RayTracer()
@@ -29,7 +29,7 @@ void RayTracer::render( Surface *screen ) const
 		}
 	}
 
-	memcpy( screen->GetBuffer(), pPixels, size );
+	memcpy( screen->GetBuffer(), pPixels, size*4 );
 }
 
 const RTRay RayTracer::generatePrimaryRay( const int x, const int y ) const
