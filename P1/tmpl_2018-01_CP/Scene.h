@@ -14,7 +14,7 @@ public:
 
 	void addObject( RTPrimitive *object );
 	void addLight( RTLight *light );
-	RTCamera* getCamera();
+	RTCamera* getCamera()const;
 
 	vec3 ambientLight;
 	vec3 backgroundColor;

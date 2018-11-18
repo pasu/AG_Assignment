@@ -16,7 +16,6 @@ void Game::Init()
 	renderOptions.height = 800;
 	renderOptions.maxRecursionDepth = 8;
 	renderOptions.shadowBias = 0.001f;
-	renderOptions.outputName = "render.bmp";
 
 	pTracer = new RayTracer( scene, renderOptions );
 

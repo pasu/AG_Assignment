@@ -8,6 +8,5 @@ struct RenderOptions {
 	int height;
 	float fov;
 	int maxRecursionDepth;
-	string outputName;
 	float shadowBias;
 };

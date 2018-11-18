@@ -19,10 +19,10 @@ void Scene::addObject( RTPrimitive *object )
 
 void Scene::addLight( RTLight *light )
 {
-	lights.push_back( light );
+	lightcollection.push_back( light );
 }
 
-RTCamera *Scene::getCamera()
+RTCamera *Scene::getCamera()const
 {
 	return camera;
 }

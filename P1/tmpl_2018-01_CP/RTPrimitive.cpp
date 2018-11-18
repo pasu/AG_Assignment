@@ -1,11 +1,7 @@
 #include "precomp.h"
 #include "RTPrimitive.h"
 
-
-RTPrimitive::RTPrimitive()
+RTPrimitive::RTPrimitive( vec3 center )
 {
-}
-
-RTPrimitive::~RTPrimitive()
-{
+	pos = center;
 }

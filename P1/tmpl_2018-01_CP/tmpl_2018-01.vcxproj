@@ -138,8 +138,10 @@
   <ItemGroup>
     <ClCompile Include="game.cpp" />
     <ClCompile Include="RayTracer.cpp" />
-    <ClCompile Include="RTGeometry.cpp" />
+    <ClCompile Include="RTIntersection.cpp" />
     <ClCompile Include="RTLight.cpp" />
+    <ClCompile Include="RTPrimitive.cpp" />
+    <ClCompile Include="RTRay.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="template.cpp">
@@ -152,8 +154,10 @@
     <ClInclude Include="RayTracer.h" />
     <ClInclude Include="RenderOptions.h" />
     <ClInclude Include="RTCamera.h" />
-    <ClInclude Include="RTGeometry.h" />
+    <ClInclude Include="RTIntersection.h" />
     <ClInclude Include="RTLight.h" />
+    <ClInclude Include="RTPrimitive.h" />
+    <ClInclude Include="RTRay.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="template.h" />
