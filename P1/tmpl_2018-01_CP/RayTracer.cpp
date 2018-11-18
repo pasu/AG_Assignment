@@ -3,8 +3,8 @@
 
 RayTracer::RayTracer( const Scene &scene, const RenderOptions &renderOptions ) : renderOptions( renderOptions ), scene( scene )
 {
-	size = renderOptions.width * renderOptions.height * 4;
-	pPixels = new char[size];
+	size = renderOptions.width * renderOptions.height;
+	pPixels = new int[size];
 }
 
 RayTracer::~RayTracer()

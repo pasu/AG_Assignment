@@ -22,5 +22,5 @@ class RayTracer
 	const RenderOptions &renderOptions;
 	const Scene &scene;
 	int size;
-	char *pPixels;
+	int *pPixels;
 };
