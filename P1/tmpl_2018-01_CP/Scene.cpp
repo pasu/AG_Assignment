@@ -12,9 +12,9 @@ Scene::~Scene()
 	delete camera;
 }
 
-void Scene::addObject( RTGeometry *object )
+void Scene::addObject( RTPrimitive *object )
 {
-	geos.push_back( object );
+	primitivecollection.push_back( object );
 }
 
 void Scene::addLight( RTLight *light )
