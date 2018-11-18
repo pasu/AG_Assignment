@@ -35,7 +35,7 @@ void RayTracer::render( Surface *screen ) const
 const RTRay &RayTracer::generatePrimaryRay( const int x, const int y ) const
 {
 	vec3 origin = scene.getCamera()->getEye();
-	vec2 ndcPixelCentre( ( 2.0f * x - renderOptions.width ) / renderOptions.width, ( 2.0f * y - renderOptions.height ) / renderOptions.height );
+	vec2 ndcPixelCentre( ( 2.0f * x - renderOptions.width ) / renderOptions.width, ( renderOptions.height - 2.0f * y ) / renderOptions.height );
 	vec3 dir = scene.getCamera()->rayDirFromNdc( ndcPixelCentre );
 	return RTRay( origin, dir );
 }
@@ -60,6 +60,7 @@ const unsigned int RayTracer::castRay( const RTRay &ray, const int depth ) const
 
 const unsigned int RayTracer::shade( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const
 {
+	//return 0x00ff0000;
 	vec3 color=vec3(.0f,.0f,.0f);
 	if ( material.shadingType == DIFFUSE )
 	{

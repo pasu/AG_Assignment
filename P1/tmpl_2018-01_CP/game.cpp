@@ -27,11 +27,11 @@ void Game::Init()
 	pTracer = new RayTracer( scene, renderOptions );
 
 	/////////////////////////////////////////////////////////////////////////
-	RTLight* pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, vec3( 20.0f, -20.0f, -50.0f ) );
+	RTLight* pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 2700.0f, vec3( 0.0f, 10.0f, 0.0f ) );
 	scene.addLight( pLight );
 
-	scene.addObject( new RTPlane( vec3( 0.1f, 3.0f, 0.0f ), vec3( 0.0f, -1.0f, 0.0f ), whiteMaterial ) );
-	scene.addObject( new RTSphere( vec3( 0.0f, 0.0f, -50.0f ), 10.0f, redMaterial ) );
+	scene.addObject( new RTSphere( vec3( 0.0f, 10.0f, -10.0f ), 2.0f, redMaterial ) );
+	scene.addObject( new RTPlane( vec3( 0.1f, -1.0f, -10.0f ), vec3( 0.0f, 1.0f, 0.0f ), whiteMaterial ) );
 	///////////////////////////////////////////////////////////////////////////////
 
 }
