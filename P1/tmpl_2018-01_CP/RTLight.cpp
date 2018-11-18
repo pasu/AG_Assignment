@@ -18,7 +18,7 @@ class PointLight : public RTLight
 	PointLight( int _color, float _power, vec3 _pos ) : RTLight( _color, _power ), pos( _pos )
 	{
 	}
-	vec3 shade( const SurfacePointData& pd, Scene& scene )const override
+	vec3 shade( const SurfacePointData& pd, const Scene& scene )const override
 	{
 		return false;
 	}
@@ -33,7 +33,7 @@ class ParrallelLight : public RTLight
 	ParrallelLight( int _color, float _power, vec3 _direction ) : RTLight( _color, _power ), direction( _direction )
 	{
 	}
-	vec3 shade( const SurfacePointData &pd, Scene &scene ) const override
+	vec3 shade( const SurfacePointData &pd, const Scene &scene ) const override
 	{
 		return false;
 	}
