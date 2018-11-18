@@ -29,10 +29,10 @@ void RayTracer::render( Surface *screen ) const
 		}
 	}
 
-	memcpy( screen->GetBuffer(), pPixels, size*4 );
+	memcpy( screen->GetBuffer(), pPixels, size * 4 );
 }
 
-const RTRay& RayTracer::generatePrimaryRay( const int x, const int y ) const
+const RTRay &RayTracer::generatePrimaryRay( const int x, const int y ) const
 {
 	vec3 origin = scene.getCamera()->getEye();
 	vec2 ndcPixelCentre( ( 2.0f * x - renderOptions.width ) / renderOptions.width, ( 2.0f * y - renderOptions.height ) / renderOptions.height );
@@ -60,8 +60,13 @@ const unsigned int RayTracer::castRay( const RTRay &ray, const int depth ) const
 
 const unsigned int RayTracer::shade( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const
 {
+	vec3 color=vec3(.0f,.0f,.0f);
 	if ( material.shadingType == DIFFUSE )
 	{
+		for ( RTLight *light : scene.getLights() )
+		{
+			color += light->shade( surfacePointData, scene );
+		}
 	}
 	else if ( material.shadingType == REFLECTIVE )
 	{
@@ -72,7 +77,7 @@ const unsigned int RayTracer::shade( const RTRay &castedRay, const RTMaterial &m
 	else if ( material.shadingType == DIFFUSE_AND_REFLECTIVE )
 	{
 	}
-	
+
 	return 0xff0000ff;
 }
 
