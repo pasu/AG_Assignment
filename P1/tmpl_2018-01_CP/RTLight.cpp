@@ -25,14 +25,16 @@ class PointLight : public RTLight
 		vec3 d = pos - pd.position;
 		float l2 = d.sqrLentgh();
 		float l = sqrt( l2 );
-		vec3 nd = -d * ( 1 / l );
+		vec3 nd = d * ( 1 / l );
 
 		RTRay ray = RTRay( pd.position, nd );
 		const RTIntersection &intersection = rt.findNearestObjectIntersection( ray );
 
 		if ( intersection.rayT < l )
 		{
-			return nd.dot( pd.normal ) / l2 * material.getAlbedoAtPoint( pd.textureCoordinates.x, pd.textureCoordinates.y );
+			float cosine = pd.normal.dot( nd );
+			cosine = (cosine > 0 ? cosine : 0)/l2*power;
+			return cosine* material.getAlbedoAtPoint( pd.textureCoordinates.x, pd.textureCoordinates.y );
 		}
 	}
 };

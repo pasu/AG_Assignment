@@ -60,7 +60,6 @@ const unsigned int RayTracer::castRay( const RTRay &ray, const int depth ) const
 
 const unsigned int RayTracer::shade( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const
 {
-	return 0x00ff0000;
 	vec3 color=vec3(.0f,.0f,.0f);
 	if ( material.shadingType == DIFFUSE )
 	{
@@ -78,7 +77,9 @@ const unsigned int RayTracer::shade( const RTRay &castedRay, const RTMaterial &m
 	else if ( material.shadingType == DIFFUSE_AND_REFLECTIVE )
 	{
 	}
-	return 0xff000000 | (unsigned int)(color.x*255) | (unsigned int)(color.y*255) << 2 | (unsigned int )(color.z*255) << 4;
+#define lmt( x )  (( x ) < 255 ?  (x) : 255)
+	return 0xff000000 | lmt((unsigned int)(color.z*255)) | lmt((unsigned int)(color.y*255)) << 8 | lmt((unsigned int )(color.x*255)) << 16;
+#undef lmt
 }
 
 const RTIntersection RayTracer::findNearestObjectIntersection( const RTRay &ray ) const

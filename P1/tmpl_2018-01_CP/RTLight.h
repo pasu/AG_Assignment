@@ -5,7 +5,7 @@
 class RayTracer;
 class RTLight
 {
-  private:
+  protected:
 	vec3 color;
 	float power;
 
