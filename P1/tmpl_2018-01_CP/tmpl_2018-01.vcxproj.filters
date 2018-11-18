@@ -14,6 +14,7 @@
     <ClCompile Include="RTPrimitive.cpp" />
     <ClCompile Include="RTIntersection.cpp" />
     <ClCompile Include="RTRay.cpp" />
+    <ClCompile Include="RTMaterial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -32,6 +33,8 @@
     <ClInclude Include="RTPrimitive.h" />
     <ClInclude Include="RTIntersection.h" />
     <ClInclude Include="RTRay.h" />
+    <ClInclude Include="RTMaterial.h" />
+    <ClInclude Include="RTSurfacePointData.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">

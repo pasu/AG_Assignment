@@ -16,8 +16,12 @@ public:
 	void addLight( RTLight *light );
 	RTCamera* getCamera()const;
 
+	inline const vector<RTPrimitive *> &getObjects() const { return primitivecollection; }
+	inline const vector<RTLight *> &getLights() const { return lightcollection; }
+
 	vec3 ambientLight;
 	vec3 backgroundColor;
+	int backgroundColorPixel;
 
   private:
 	vector<RTPrimitive *> primitivecollection;

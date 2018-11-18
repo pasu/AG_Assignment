@@ -1,5 +1,5 @@
-#include "precomp.h"
 #include "RayTracer.h"
+#include "precomp.h"
 
 RayTracer::RayTracer( const Scene &scene, const RenderOptions &renderOptions ) : renderOptions( renderOptions ), scene( scene )
 {
@@ -7,13 +7,13 @@ RayTracer::RayTracer( const Scene &scene, const RenderOptions &renderOptions ) :
 	pPixels = new char[size];
 }
 
- RayTracer::~RayTracer()
+RayTracer::~RayTracer()
 {
-	 if (pPixels)
-	 {
-		 delete[] pPixels;
-		 pPixels = NULL;
-	 }
+	if ( pPixels )
+	{
+		delete[] pPixels;
+		pPixels = NULL;
+	}
 }
 
 void RayTracer::render( Surface *screen ) const
@@ -42,6 +42,55 @@ const RTRay RayTracer::generatePrimaryRay( const int x, const int y ) const
 
 const int RayTracer::castRay( const RTRay &ray, const int depth ) const
 {
+	if ( depth > renderOptions.maxRecursionDepth )
+		return 0; // black
 
-	return 0xffffffff;
+	const RTIntersection &intersection = findNearestObjectIntersection( ray );
+
+	if ( intersection.isIntersecting() )
+	{
+		const SurfacePointData &surfacePointData = intersection.object->getSurfacePointData( intersection );
+		const RTMaterial &material = intersection.object->getMaterial();
+
+		return shade( ray, material, surfacePointData, depth );
+	}
+	else
+		return scene.backgroundColorPixel;
+}
+
+const int RayTracer::shade( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const
+{
+	if ( material.shadingType == DIFFUSE )
+	{
+	}
+	else if ( material.shadingType == REFLECTIVE )
+	{
+	}
+	else if ( material.shadingType == TRANSMISSIVE_AND_REFLECTIVE )
+	{
+	}
+	else if ( material.shadingType == DIFFUSE_AND_REFLECTIVE )
+	{
+	}
+	
+	return 0;
+}
+
+const RTIntersection RayTracer::findNearestObjectIntersection( const RTRay &ray ) const
+{
+	auto objects = scene.getObjects();
+
+	RTIntersection nearestIntersection;
+
+	for ( auto it = objects.begin(); it != objects.end(); ++it )
+	{
+		const RTIntersection &intersection = ( *it )->intersect( ray );
+
+		if ( intersection.isIntersecting() &&
+			 ( !nearestIntersection.isIntersecting() || intersection.rayT < nearestIntersection.rayT ) )
+		{
+			nearestIntersection = intersection;
+		}
+	}
+	return nearestIntersection;
 }

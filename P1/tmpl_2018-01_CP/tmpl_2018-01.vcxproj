@@ -140,6 +140,7 @@
     <ClCompile Include="RayTracer.cpp" />
     <ClCompile Include="RTIntersection.cpp" />
     <ClCompile Include="RTLight.cpp" />
+    <ClCompile Include="RTMaterial.cpp" />
     <ClCompile Include="RTPrimitive.cpp" />
     <ClCompile Include="RTRay.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -156,8 +157,10 @@
     <ClInclude Include="RTCamera.h" />
     <ClInclude Include="RTIntersection.h" />
     <ClInclude Include="RTLight.h" />
+    <ClInclude Include="RTMaterial.h" />
     <ClInclude Include="RTPrimitive.h" />
     <ClInclude Include="RTRay.h" />
+    <ClInclude Include="RTSurfacePointData.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="template.h" />
