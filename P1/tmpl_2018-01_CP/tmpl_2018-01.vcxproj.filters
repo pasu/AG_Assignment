@@ -17,6 +17,7 @@
     <ClCompile Include="RTMaterial.cpp" />
     <ClCompile Include="RTSphere.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="RTPlane.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -39,6 +40,7 @@
     <ClInclude Include="RTSurfacePointData.h" />
     <ClInclude Include="RTSphere.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="RTPlane.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">

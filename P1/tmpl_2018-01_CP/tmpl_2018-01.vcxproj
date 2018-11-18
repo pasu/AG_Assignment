@@ -141,6 +141,7 @@
     <ClCompile Include="RTIntersection.cpp" />
     <ClCompile Include="RTLight.cpp" />
     <ClCompile Include="RTMaterial.cpp" />
+    <ClCompile Include="RTPlane.cpp" />
     <ClCompile Include="RTPrimitive.cpp" />
     <ClCompile Include="RTRay.cpp" />
     <ClCompile Include="RTSphere.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="RTIntersection.h" />
     <ClInclude Include="RTLight.h" />
     <ClInclude Include="RTMaterial.h" />
+    <ClInclude Include="RTPlane.h" />
     <ClInclude Include="RTPrimitive.h" />
     <ClInclude Include="RTRay.h" />
     <ClInclude Include="RTSphere.h" />
