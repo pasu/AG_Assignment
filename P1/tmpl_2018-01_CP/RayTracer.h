@@ -13,8 +13,8 @@ class RayTracer
 	
 	const RTRay generatePrimaryRay( const int x, const int y ) const;
 
-	const int castRay( const RTRay &ray, const int depth ) const; 
-	const int shade( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const;
+	const unsigned int castRay( const RTRay &ray, const int depth ) const; 
+	const unsigned int shade( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const;
 
 	const RTIntersection findNearestObjectIntersection( const RTRay &ray ) const;
 
@@ -22,5 +22,5 @@ class RayTracer
 	const RenderOptions &renderOptions;
 	const Scene &scene;
 	int size;
-	int *pPixels;
+	unsigned  int *pPixels;
 };

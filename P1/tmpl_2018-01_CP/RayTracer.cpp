@@ -23,7 +23,7 @@ void RayTracer::render( Surface *screen ) const
 		for ( int x = 0; x < renderOptions.width; ++x )
 		{
 			RTRay r = generatePrimaryRay( x, y );
-			int color = castRay( r, 0 );
+			unsigned int color = castRay( r, 0 );
 
 			pPixels[y * renderOptions.width + x] = color;
 		}
@@ -40,7 +40,7 @@ const RTRay RayTracer::generatePrimaryRay( const int x, const int y ) const
 	return RTRay( origin, dir );
 }
 
-const int RayTracer::castRay( const RTRay &ray, const int depth ) const
+const unsigned int RayTracer::castRay( const RTRay &ray, const int depth ) const
 {
 	if ( depth > renderOptions.maxRecursionDepth )
 		return 0; // black
@@ -58,7 +58,7 @@ const int RayTracer::castRay( const RTRay &ray, const int depth ) const
 		return scene.backgroundColorPixel;
 }
 
-const int RayTracer::shade( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const
+const unsigned int RayTracer::shade( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const
 {
 	if ( material.shadingType == DIFFUSE )
 	{
@@ -73,7 +73,7 @@ const int RayTracer::shade( const RTRay &castedRay, const RTMaterial &material, 
 	{
 	}
 	
-	return 0;
+	return 0xff0000ff;
 }
 
 const RTIntersection RayTracer::findNearestObjectIntersection( const RTRay &ray ) const

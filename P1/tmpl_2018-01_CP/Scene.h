@@ -21,7 +21,7 @@ public:
 
 	vec3 ambientLight;
 	vec3 backgroundColor;
-	int backgroundColorPixel;
+	unsigned int backgroundColorPixel;
 
   private:
 	vector<RTPrimitive *> primitivecollection;
