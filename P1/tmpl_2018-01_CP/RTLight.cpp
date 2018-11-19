@@ -27,15 +27,16 @@ class PointLight : public RTLight
 		float l = sqrt( l2 );
 		vec3 nd = d * ( 1 / l );
 
-		RTRay ray = RTRay( pd.position, nd );
+		RTRay ray = RTRay( pd.position+0.0001*nd, nd );
 		const RTIntersection &intersection = rt.findNearestObjectIntersection( ray );
 
-		if ( intersection.rayT < l )
+		if ( intersection.rayT < l && intersection.isIntersecting() )
 		{
-			float cosine = pd.normal.dot( nd );
-			cosine = (cosine > 0 ? cosine : 0)/l2*power;
-			return cosine* material.getAlbedoAtPoint( pd.textureCoordinates.x, pd.textureCoordinates.y );
+			return vec3(.0f,.0f,.0f);
 		}
+		float cosine = pd.normal.dot( nd );
+		cosine = ( cosine > 0 ? cosine : 0 ) / l2 * power;
+		return cosine * material.getAlbedoAtPoint( pd.textureCoordinates.x, pd.textureCoordinates.y );
 	}
 };
 
@@ -47,10 +48,19 @@ class ParrallelLight : public RTLight
   public:
 	ParrallelLight( vec3 _color, float _power, vec3 _direction ) : RTLight( _color, _power ), direction( _direction )
 	{
+
 	}
 	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const RTMaterial &material ) override
 	{
-		return vec3( 1.0, 0, 0 );
+		const RTRay ray = RTRay( pd.position - 0.0001 * direction, -direction );
+		const RTIntersection intersection = rt.findNearestObjectIntersection( ray );
+		if ( intersection.isIntersecting() )
+		{
+			return vec3( .0f, .0f, .0f );
+		}
+		float cosine = pd.normal.dot( -direction );
+		cosine = ( cosine > 0 ? cosine : 0 ) * power;
+		return cosine * material.getAlbedoAtPoint( pd.textureCoordinates.x, pd.textureCoordinates.y );
 	}
 };
 

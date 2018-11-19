@@ -29,6 +29,7 @@ void Game::Init()
 	/////////////////////////////////////////////////////////////////////////
 	RTLight* pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, vec3( 00.0f, 15.0f, -40.0f ) );
 	scene.addLight( pLight );
+	scene.addLight(RTLight::createParralleLight(vec3(1.0f,1.0f,1.0f),0.5f,vec3(0.707,-0.707,0)));
 
 	scene.addObject( new RTSphere( vec3( 0.0f, 0.0f, -40.0f ), 10.0f, redMaterial ) );
 	scene.addObject( new RTPlane( vec3( 0.1f, -9.0f, -10.0f ), vec3( 0.0f, 1.0f, 0.0f ), whiteMaterial ) );
