@@ -15,6 +15,8 @@ RTMaterial whiteMaterial( vec3( 1, 1, 1 ), DIFFUSE );
 
 RTMaterial redMaterial( vec3( 1, 0, 0 ), DIFFUSE );
 
+RTMaterial whiteReflectiveMaterial( vec3( 1, 1, 1 ), REFLECTIVE );
+
 void Game::Init()
 {
 	
@@ -32,7 +34,8 @@ void Game::Init()
 	scene.addLight(RTLight::createParralleLight(vec3(1.0f,1.0f,1.0f),0.5f,vec3(0.707,-0.707,0)));
 
 	scene.addObject( new RTSphere( vec3( 0.0f, 0.0f, -40.0f ), 10.0f, redMaterial ) );
-	scene.addObject( new RTPlane( vec3( 0.1f, -9.0f, -10.0f ), vec3( 0.0f, 1.0f, 0.0f ), whiteMaterial ) );
+	scene.addObject( new RTPlane( vec3( 0.1f, -9.0f, -10.0f ), vec3( 0.0f, 1.0f, 0.0f ), whiteReflectiveMaterial ));
+	auto s = scene.getObjects()[1]->getMaterial().shadingType;
 	///////////////////////////////////////////////////////////////////////////////
 
 }
