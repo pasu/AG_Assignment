@@ -68,3 +68,29 @@ void Game::Tick( float deltaTime )
 // 	rotatingGun.Draw( screen, 100, 100 );
 	if ( ++frame == 36 ) frame = 0;
 }
+
+void Tmpl8::Game::KeyDown( int key )
+{
+	switch ( key )
+	{
+	case 4://A
+		scene.getCamera()->translateX( -1.0f );
+		break;
+	case 7: //D
+		scene.getCamera()->translateX( 1.0f );
+		break;
+	case 22: //S
+		scene.getCamera()->translateY( -1.0f );
+		break;
+	case 26: //W
+		scene.getCamera()->translateY( 1.0f );
+		break;
+	default:
+		break;
+	}
+}
+
+void Tmpl8::Game::MouseWheel( int y )
+{
+	scene.getCamera()->translateZ( y );
+}

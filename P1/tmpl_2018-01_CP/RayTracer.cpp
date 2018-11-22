@@ -18,6 +18,7 @@ RayTracer::~RayTracer()
 
 void RayTracer::render( Surface *screen ) const
 {
+	scene.getCamera()->Update();
 	for ( int y = 0; y < renderOptions.height; ++y )
 	{
 		for ( int x = 0; x < renderOptions.width; ++x )
