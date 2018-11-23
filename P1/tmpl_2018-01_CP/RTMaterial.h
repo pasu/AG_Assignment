@@ -17,6 +17,8 @@ public:
 
   const vec3 getAlbedoAtPoint( const float s, const float t ) const;
 
+  float reflectionFactor;
+
 private:
   const vec3 color;
 };
