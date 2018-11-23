@@ -1,7 +1,7 @@
 #include "precomp.h"
 #include "RTMaterial.h"
 
- RTMaterial::RTMaterial( const vec3 &color, const ShadingType shadingType ) : color( color ), shadingType( shadingType ), reflectionFactor(0.8f)
+ RTMaterial::RTMaterial( const vec3 &color, const ShadingType shadingType ) : color( color ), shadingType( shadingType ), reflectionFactor( 0.8f ), indexOfRefraction(1.0f)
 {
 }
 

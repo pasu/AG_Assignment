@@ -6,10 +6,13 @@ Scene::Scene( const vec3 &ambientLight, const vec3 &backgroundColor ) : ambientL
 {
 	camera = new RTCamera;
 
-	int r = backgroundColor.x * 255;
-	int g = backgroundColor.x * 255;
-	int b = backgroundColor.x * 255;
-	backgroundColorPixel = r << 16 + g << 8 + b;
+	unsigned int r = backgroundColor.x * 255;
+	unsigned int g = backgroundColor.y * 255;
+	unsigned int b = backgroundColor.z * 255;
+	int ro = r << 16;
+	int go = g << 8;
+	int bo = b;
+	backgroundColorPixel = ro+go+bo;
 }
 
 Scene::~Scene()
