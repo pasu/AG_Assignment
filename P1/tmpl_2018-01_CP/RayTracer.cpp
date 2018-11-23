@@ -64,20 +64,13 @@ const vec3 RayTracer::castRay( const RTRay &ray, const int depth ) const
 const vec3 RayTracer::shade( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const
 {
 	//return 0x00ff0000;
-	vec3 color = vec3( .0f, .0f, .0f );
 	if ( material.shadingType == DIFFUSE )
 	{
-		
-		for ( RTLight *light : scene.getLights() )
-		{
-			color += light->shade( surfacePointData, *this, material );
-		}
+		return shade_diffuse( castedRay, material, surfacePointData, depth );
 	}
 	else if ( material.shadingType == REFLECTIVE )
 	{
-		vec3 nd = castedRay.dir - ( ( 2 * castedRay.dir.dot( surfacePointData.normal ) ) * surfacePointData.normal );
-		RTRay refRay = RTRay( surfacePointData.position + 0.0001 * nd, nd );
-		color = castRay( refRay, depth + 1 );
+		return material.reflectionFactor * shade_reflective( castedRay, material, surfacePointData, depth );
 	}
 	else if ( material.shadingType == TRANSMISSIVE_AND_REFLECTIVE )
 	{
@@ -85,7 +78,6 @@ const vec3 RayTracer::shade( const RTRay &castedRay, const RTMaterial &material,
 	else if ( material.shadingType == DIFFUSE_AND_REFLECTIVE )
 	{
 	}
-	return color;
 
 }
 
@@ -106,4 +98,26 @@ const RTIntersection RayTracer::findNearestObjectIntersection( const RTRay &ray 
 		}
 	}
 	return nearestIntersection;
+}
+
+const Tmpl8::vec3 RayTracer::shade_diffuse( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const
+{
+	vec3 color( 0.0f );
+
+	const vec3 &albedo = material.getAlbedoAtPoint( surfacePointData.textureCoordinates.x, surfacePointData.textureCoordinates.y );
+	//color = scene.ambientLight * albedo;
+
+	for ( RTLight *light : scene.getLights() )
+	{
+		color += light->shade( surfacePointData, *this, material );
+	}
+
+	return color;
+}
+
+const Tmpl8::vec3 RayTracer::shade_reflective( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const
+{
+	vec3 nd = castedRay.dir - ( ( 2 * castedRay.dir.dot( surfacePointData.normal ) ) * surfacePointData.normal );
+	RTRay refRay = RTRay( surfacePointData.position + 0.0001 * nd, nd );
+	return castRay( refRay, depth + 1 );
 }

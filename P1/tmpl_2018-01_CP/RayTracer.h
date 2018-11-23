@@ -19,6 +19,11 @@ class RayTracer
 	const RTIntersection findNearestObjectIntersection( const RTRay &ray ) const;
 
   private:
+	const vec3 shade_diffuse( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const;
+	const vec3 shade_reflective( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const;
+
+
+  private:
 	const RenderOptions &renderOptions;
 	const Scene &scene;
 	int size;

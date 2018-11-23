@@ -25,9 +25,9 @@ class PointLight : public RTLight
 		vec3 d = pos - pd.position;
 		float l2 = d.sqrLentgh();
 		float l = sqrt( l2 );
-		vec3 nd = d * ( 1 / l );
+		vec3 nd = d * ( 1.0f / l );
 
-		RTRay ray = RTRay( pd.position+0.0001*nd, nd );
+		RTRay ray = RTRay( pd.position+0.0001f*nd, nd );
 		const RTIntersection &intersection = rt.findNearestObjectIntersection( ray );
 
 		if ( intersection.rayT < l && intersection.isIntersecting() )
