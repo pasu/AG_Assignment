@@ -58,7 +58,7 @@ const vec3 RayTracer::castRay( const RTRay &ray, const int depth ) const
 		return shade( ray, material, surfacePointData, depth );
 	}
 	else
-		return scene.backgroundColorPixel;
+		return scene.backgroundColor;
 }
 
 const vec3 RayTracer::shade( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const

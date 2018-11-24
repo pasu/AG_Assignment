@@ -8,7 +8,7 @@
 // Initialize the application
 // -----------------------------------------------------------
 
-Scene scene( vec3( 0.1f ), vec3( 0, 191.0f / 255.0f, 1 ) );
+Scene scene( vec3( 0.1f ), vec3( 43.0f/255.0f, 203.0f / 255.0f, 246.0f/255.0f ) );
 RenderOptions renderOptions;
 
 RTMaterial whiteMaterial( vec3( 1, 1, 1 ), DIFFUSE );
@@ -34,7 +34,7 @@ void Game::Init()
 	scene.addLight(RTLight::createParralleLight(vec3(1.0f,1.0f,1.0f),0.5f,vec3(0.707,-0.707,0)));
 
 	scene.addObject( new RTSphere( vec3( 0.0f, 0.0f, -40.0f ), 10.0f, redMaterial ) );
-	scene.addObject( new RTPlane( vec3( 0.1f, -9.0f, -10.0f ), vec3( 0.0f, 1.0f, 0.0f ), whiteReflectiveMaterial ));
+	scene.addObject( new RTPlane( vec3( 0.1f, -9.0f, -10.0f ), vec3( 0.0f, 1.0f, 0.0f ), whiteMaterial ));
 	auto s = scene.getObjects()[1]->getMaterial().shadingType;
 	///////////////////////////////////////////////////////////////////////////////
 

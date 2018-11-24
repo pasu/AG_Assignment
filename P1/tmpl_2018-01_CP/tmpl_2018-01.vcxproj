@@ -145,6 +145,7 @@
     <ClCompile Include="RTPrimitive.cpp" />
     <ClCompile Include="RTRay.cpp" />
     <ClCompile Include="RTSphere.cpp" />
+    <ClCompile Include="RTTexture.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="template.cpp">
@@ -166,6 +167,7 @@
     <ClInclude Include="RTRay.h" />
     <ClInclude Include="RTSphere.h" />
     <ClInclude Include="RTSurfacePointData.h" />
+    <ClInclude Include="RTTexture.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="template.h" />
