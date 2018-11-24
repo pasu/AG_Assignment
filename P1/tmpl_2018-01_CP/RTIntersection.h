@@ -12,6 +12,10 @@ public:
 	const RTPrimitive *object;
 	float rayT;
 
+	//Triangle Only
+	int triangleIndex;
+	float u, v; //barycentric coords
+
 	inline bool isIntersecting() const { return rayT >= 0; }
 	inline const vec3 getIntersectionPosition() const { return ray->orig + ray->dir * rayT; }
 };

@@ -62,7 +62,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glm_static64.lib;winmm.lib;advapi32.lib;user32.lib;sdl2.lib;sdl2main.lib;glew32.lib;FreeImage.lib</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc140-mt.lib;glm_static64.lib;winmm.lib;advapi32.lib;user32.lib;sdl2.lib;sdl2main.lib;glew32.lib;FreeImage.lib</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <OutputFile>$(TargetPath)</OutputFile>
@@ -72,13 +72,13 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
     <Link>
-      <AdditionalLibraryDirectories>./lib;lib\SDL2-2.0.9\lib\x86;lib\glew-2.1.0\lib\Win32;lib\FreeImage\lib32</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./lib/x32;./lib;lib\SDL2-2.0.9\lib\x86;lib\glew-2.1.0\lib\Win32;lib\FreeImage\lib32</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='x64'">
     <Link>
-      <AdditionalLibraryDirectories>./lib;lib\SDL2-2.0.9\lib\x64;lib\glew-2.1.0\lib\x64;lib\FreeImage\lib64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./lib/x64;./lib;lib\SDL2-2.0.9\lib\x64;lib\glew-2.1.0\lib\x64;lib\FreeImage\lib64</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -142,6 +142,7 @@
     <ClCompile Include="RTIntersection.cpp" />
     <ClCompile Include="RTLight.cpp" />
     <ClCompile Include="RTMaterial.cpp" />
+    <ClCompile Include="RTObjMesh.cpp" />
     <ClCompile Include="RTPlane.cpp" />
     <ClCompile Include="RTPrimitive.cpp" />
     <ClCompile Include="RTRay.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="RTIntersection.h" />
     <ClInclude Include="RTLight.h" />
     <ClInclude Include="RTMaterial.h" />
+    <ClInclude Include="RTObjMesh.h" />
     <ClInclude Include="RTPlane.h" />
     <ClInclude Include="RTPrimitive.h" />
     <ClInclude Include="RTRay.h" />

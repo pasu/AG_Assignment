@@ -8,6 +8,7 @@ class RTPrimitive
 {
   public:
 	RTPrimitive( const vec3 center, const RTMaterial& material);
+	RTPrimitive( const RTMaterial &material );
 	virtual const RTIntersection intersect( const RTRay &ray ) const = 0;
 	virtual const SurfacePointData getSurfacePointData( const RTIntersection &intersection ) const = 0;
 

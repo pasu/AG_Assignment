@@ -5,6 +5,7 @@
 #include "RTPlane.h"
 #include "RTSphere.h"
 #include "RTBox.h"
+#include "RTObjMesh.h"
 // -----------------------------------------------------------
 // Initialize the application
 // -----------------------------------------------------------
@@ -21,6 +22,8 @@ RTTexture *droplet = new RTTexture();
 
 RTMaterial whiteMaterial( vec3( 1, 1, 1 ), floorTexture, DIFFUSE );
 RTMaterial transmissiveMaterial( droplet, DIFFUSE_AND_REFLECTIVE );
+
+RTMaterial bmwMaterial( vec3( 1, 1, 1 ), TRANSMISSIVE_AND_REFLECTIVE );
 
 void Game::Init()
 {
@@ -44,16 +47,25 @@ void Game::Init()
 	transmissiveMaterial.reflectionFactor = 0.3f;
 
 	whiteReflectiveMaterial.reflectionFactor = 0.4f;
+	bmwMaterial.indexOfRefraction = 0.8;
 	/////////////////////////////////////////////////////////////////////////
 	RTLight* pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, vec3( 00.0f, 15.0f, -40.0f ) );
-	RTLight *pLight2 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, vec3( 00.0f, 0.0f, 0.0f ) );
+	RTLight *pLight2 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, vec3( 10.0f, 0.0f, 0.0f ) );
 	scene.addLight( pLight );
 	scene.addLight( pLight2 );
 	scene.addLight(RTLight::createParralleLight(vec3(1.0f,1.0f,1.0f),0.5f,vec3(0.707,-0.707,0)));
 
+	RTObjMesh *mesh = new RTObjMesh( "./assets/Cup_Made_By_Tyro_Smith.obj", bmwMaterial );
+	mesh->setPosition( -7.0f, 0.0f, -5.0f );
+	mesh->setRotation( 0.0f, 0.0f, 0.0f );
+	mesh->setScale( 0.5f, 0.5, 0.5f );
+	mesh->applyTransforms();
+	scene.addObject( mesh );
+
 	scene.addObject( new RTSphere( vec3( 15.0f, 0.0f, -20.0f ), 5, redMaterial ) );
 	scene.addObject( new RTSphere( vec3( -5.0f, 5.0f, -20.0f ), 5.0f, transmissiveMaterial ) );
-	scene.addObject( new RTBox( vec3( 5.0f, 0.0f, -35.0f ), vec3( 10.0f, 10.0f, 10.0f ), whiteReflectiveMaterial ) );
+
+	scene.addObject( new RTBox( vec3( 5.0f, 0.0f, -55.0f ), vec3( 20.0f, 20.0f, 10.0f ), whiteReflectiveMaterial ) );
 
 	scene.addObject( new RTPlane( vec3( 0.1f, -9.0f, -10.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), whiteMaterial ));
 	//auto s = scene.getObjects()[1]->getMaterial().shadingType;
