@@ -138,6 +138,7 @@
   <ItemGroup>
     <ClCompile Include="game.cpp" />
     <ClCompile Include="RayTracer.cpp" />
+    <ClCompile Include="RTBox.cpp" />
     <ClCompile Include="RTIntersection.cpp" />
     <ClCompile Include="RTLight.cpp" />
     <ClCompile Include="RTMaterial.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="precomp.h" />
     <ClInclude Include="RayTracer.h" />
     <ClInclude Include="RenderOptions.h" />
+    <ClInclude Include="RTBox.h" />
     <ClInclude Include="RTCamera.h" />
     <ClInclude Include="RTIntersection.h" />
     <ClInclude Include="RTLight.h" />

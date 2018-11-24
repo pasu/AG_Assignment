@@ -19,6 +19,7 @@
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="RTPlane.cpp" />
     <ClCompile Include="RTTexture.cpp" />
+    <ClCompile Include="RTBox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -43,6 +44,7 @@
     <ClInclude Include="Utils.h" />
     <ClInclude Include="RTPlane.h" />
     <ClInclude Include="RTTexture.h" />
+    <ClInclude Include="RTBox.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">

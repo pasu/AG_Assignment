@@ -4,6 +4,7 @@
 #include "RayTracer.h"
 #include "RTPlane.h"
 #include "RTSphere.h"
+#include "RTBox.h"
 // -----------------------------------------------------------
 // Initialize the application
 // -----------------------------------------------------------
@@ -13,11 +14,13 @@ RenderOptions renderOptions;
 
 RTMaterial redMaterial( vec3( 1, 0, 0 ), DIFFUSE );
 
-RTMaterial whiteReflectiveMaterial( vec3( 1, 1, 1 ), REFLECTIVE );
+RTMaterial whiteReflectiveMaterial( vec3( 0, 1, 1 ), REFLECTIVE );
 
 RTTexture *floorTexture = new RTTexture();
+RTTexture *droplet = new RTTexture();
 
 RTMaterial whiteMaterial( vec3( 1, 1, 1 ), floorTexture, DIFFUSE );
+RTMaterial transmissiveMaterial( droplet, DIFFUSE_AND_REFLECTIVE );
 
 void Game::Init()
 {
@@ -31,16 +34,29 @@ void Game::Init()
 	pTracer = new RayTracer( scene, renderOptions );
 	//////////////////////////////////////////////////////////////////////////
 	floorTexture->LoadImage("./assets/floor_diffuse.PNG");
+	droplet->LoadImage( "./assets/BeachStones.jpg" );
+
 	whiteMaterial.textureScale.x = 0.1f;
 	whiteMaterial.textureScale.y = 0.1f;
+
+	transmissiveMaterial.textureScale.x = 1.010f;
+	transmissiveMaterial.textureScale.y = 1.010f;
+	transmissiveMaterial.reflectionFactor = 0.3f;
+
+	whiteReflectiveMaterial.reflectionFactor = 0.4f;
 	/////////////////////////////////////////////////////////////////////////
 	RTLight* pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, vec3( 00.0f, 15.0f, -40.0f ) );
+	RTLight *pLight2 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, vec3( 00.0f, 0.0f, 0.0f ) );
 	scene.addLight( pLight );
+	scene.addLight( pLight2 );
 	scene.addLight(RTLight::createParralleLight(vec3(1.0f,1.0f,1.0f),0.5f,vec3(0.707,-0.707,0)));
 
-	scene.addObject( new RTSphere( vec3( 0.0f, 0.0f, -40.0f ), 10.0f, redMaterial ) );
-	scene.addObject( new RTPlane( vec3( 0.1f, -9.0f, -10.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), whiteMaterial ) );
-	auto s = scene.getObjects()[1]->getMaterial().shadingType;
+	scene.addObject( new RTSphere( vec3( 15.0f, 0.0f, -20.0f ), 5, redMaterial ) );
+	scene.addObject( new RTSphere( vec3( -5.0f, 5.0f, -20.0f ), 5.0f, transmissiveMaterial ) );
+	scene.addObject( new RTBox( vec3( 5.0f, 0.0f, -35.0f ), vec3( 10.0f, 10.0f, 10.0f ), whiteReflectiveMaterial ) );
+
+	scene.addObject( new RTPlane( vec3( 0.1f, -9.0f, -10.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), whiteMaterial ));
+	//auto s = scene.getObjects()[1]->getMaterial().shadingType;
 	///////////////////////////////////////////////////////////////////////////////
 
 }
