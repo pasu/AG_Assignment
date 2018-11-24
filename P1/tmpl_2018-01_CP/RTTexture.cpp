@@ -54,7 +54,7 @@ const Tmpl8::vec3 RTTexture::bilinearInterpolation( float u, float v ) const
 
 const Tmpl8::vec3 RTTexture::getTexelFromFile( const int x, const int y ) const
 {
-	int basePixel = ( x + ( ( ( m_Height - 1 ) - y ) * m_Width ) ) * m_Pitch;
+	int basePixel = ( x + ( ( ( m_Height - 1 ) - y ) * m_Width ) ) * 4;
 	byte *data = (byte *)m_Buffer;
 	return {data[basePixel] / 255.0f, data[basePixel + 1] / 255.0f, data[basePixel + 2] / 255.0f};
 }

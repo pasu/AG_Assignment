@@ -7,7 +7,7 @@ class RTTexture
 
 	const vec3 getTexel( float s, float t, const vec2 &scale = vec2( 1, 1 ) ) const;
 
-	void RTTexture::LoadImage( char *a_File );
+	void LoadImage( char *a_File );
 
 	Pixel *GetBuffer() { return m_Buffer; }
 	void SetBuffer( Pixel *a_Buffer ) { m_Buffer = a_Buffer; }

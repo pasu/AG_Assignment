@@ -23,7 +23,7 @@
 
  RTMaterial::RTMaterial( const vec3 &color, const RTTexture *albedo, const vec2 &textureScale, const ShadingType shadingType, const float reflectionFactor, const float indexOfRefraction )
 	:color( color ),
-	albedoTexture( albedoTexture ), shadingType( shadingType ),
+	  albedoTexture( albedo ), shadingType( shadingType ),
 	reflectionFactor( reflectionFactor ), indexOfRefraction( indexOfRefraction ), textureScale( textureScale )
 {
 }

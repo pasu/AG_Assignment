@@ -3,8 +3,8 @@
 #include "RTPlane.h"
 #include "Utils.h"
 
-RTPlane::RTPlane(const vec3 &position, const vec3 &normal, const RTMaterial &material)
-	: RTPrimitive( position, material ), normal( normalize( normal ) )
+RTPlane::RTPlane( const vec3 &position, const vec3 &normal, const vec3 &tangent, const RTMaterial &material )
+	: RTPrimitive( position, material ), normal( normalize( normal ) ), tangent( normalize( tangent ) ), binormal( cross( normal, tangent ) )
 {
 }
 
