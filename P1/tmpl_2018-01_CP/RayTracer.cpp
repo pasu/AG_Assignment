@@ -97,7 +97,7 @@ const vec3 RayTracer::shade( const RTRay &castedRay, const RTMaterial &material,
 
 const RTIntersection RayTracer::findNearestObjectIntersection( const RTRay &ray ) const
 {
-	auto objects = scene.getObjects();
+	static auto& objects = scene.getObjects();
 
 	RTIntersection nearestIntersection;
 
@@ -120,8 +120,8 @@ const Tmpl8::vec3 RayTracer::shade_diffuse( const RTRay &castedRay, const RTMate
 
 	const vec3 &albedo = material.getAlbedoAtPoint( surfacePointData.textureCoordinates.x, surfacePointData.textureCoordinates.y );
 	//color = scene.ambientLight * albedo;
-
-	for ( RTLight *light : scene.getLights() )
+	static auto &light_list = scene.getLights();
+	for ( RTLight *light : light_list )
 	{
 		color += light->shade( surfacePointData, *this, material );
 	}
