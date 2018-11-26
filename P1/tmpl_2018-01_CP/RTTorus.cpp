@@ -1,8 +1,6 @@
 #include "precomp.h"
 #include "RTTorus.h"
 #include "quarticsolver.h"
-#define FLOAT_ZERO 0.000001f
-#define MAX_DISTANCE_TO_INTERSECTON FLT_MAX
 
 RTTorus::RTTorus( const vec3 &center, const vec3 &axis, float innerRadius, float outerRadius, const RTMaterial &material )
 	: RTPrimitive( center, material ), mAxis( normalize( axis ) ), mInnerRadius( innerRadius ), mOuterRadius( outerRadius )
@@ -74,13 +72,19 @@ const RTIntersection RTTorus::intersect( const RTRay &ray )const
 
 const SurfacePointData RTTorus::getSurfacePointData( const RTIntersection &intersection )const
 {
+// 	const vec3 &point = intersection.getIntersectionPosition();
+// 	vec3 centerToPoint = point - pos;
+// 	float centerToPointDotAxis = centerToPoint.dot( mAxis );
+// 	vec3 direction = centerToPoint - mAxis * centerToPointDotAxis;
+// 	direction.normalize();
+// 	vec3 normal = point - pos + direction * mOuterRadius;
+
 	const vec3 &point = intersection.getIntersectionPosition();
 	vec3 centerToPoint = point - pos;
-	float centerToPointDotAxis = centerToPoint.dot( mAxis );
-	vec3 direction = centerToPoint - mAxis * centerToPointDotAxis;
-	direction.normalize();
-	vec3 normal = point - pos + direction * mOuterRadius;
+	float k = centerToPoint.dot( mAxis );
+	vec3 A = point - mAxis * k;
+	float m = sqrtf( mInnerRadius * mInnerRadius - k * k );
+	vec3 N = point - A - ( pos - A ) * ( m / ( mOuterRadius + m ) );
 
-	return {normalize( normal ), {0, 0}, vec3( 0 )};
-	;
+	return {normalize( N ), {0, 0}, point};
 }

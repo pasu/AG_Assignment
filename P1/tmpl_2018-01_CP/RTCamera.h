@@ -46,7 +46,8 @@ public:
 		tanFovHalf = vec2( 1, 1 );
 		//rotationM = mat4::rotatex( Utils::RT_PI );
 		//mat4 translateM;
-		rotationM.cell[11] = -5;
+		rotationM.cell[7] = 5;
+		rotationM.cell[11] = -10;
 		//rotationM = translateM * rotationM;
 
 		Update();

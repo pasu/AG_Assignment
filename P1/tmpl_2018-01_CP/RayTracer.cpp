@@ -46,7 +46,7 @@ const RTRay &RayTracer::generatePrimaryRay( const int x, const int y ) const
 const vec3 RayTracer::castRay( const RTRay &ray, const int depth ) const
 {
 	if ( depth > renderOptions.maxRecursionDepth )
-		return 0; // black
+		return vec3( 0, 1, 0 );
 
 	const RTIntersection &intersection = findNearestObjectIntersection( ray );
 
@@ -63,6 +63,8 @@ const vec3 RayTracer::castRay( const RTRay &ray, const int depth ) const
 
 const vec3 RayTracer::shade( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const
 {
+	const vec3 &albedo = material.getAlbedoAtPoint( surfacePointData.textureCoordinates.x, surfacePointData.textureCoordinates.y );
+
 	//return 0x00ff0000;
 	if ( material.shadingType == DIFFUSE )
 	{
@@ -82,8 +84,16 @@ const vec3 RayTracer::shade( const RTRay &castedRay, const RTMaterial &material,
 		float reflectionFactor;
 		reflectionFactor = fresnel( castedRay.dir, normal, material.indexOfRefraction );
 		// compute refraction if it is not a case of total internal reflection
-		if ( reflectionFactor < 1.0f )
+		if (reflectionFactor < 1.0f)
+		{
 			refractionColor = shade_transmissive( castedRay, material, surfacePointData, depth );
+
+			// Burger-Lambert-Beer law
+			vec3 dis = castedRay.orig - surfacePointData.position;
+			vec3 absorbance = albedo * 0.05f * ( -dis.length());
+			vec3 transparency = vec3( expf( absorbance.x ), expf( absorbance.y ), expf( absorbance.z ) );
+			refractionColor = refractionColor *transparency;
+		}
 		reflectionColor = shade_reflective( castedRay, material, surfacePointData, depth );
 		return reflectionColor * reflectionFactor + refractionColor * ( 1.0f - reflectionFactor );
 	}

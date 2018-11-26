@@ -118,6 +118,8 @@ const RTIntersection RTObjMesh::intersect( const RTRay &ray ) const
 
 const SurfacePointData RTObjMesh::getSurfacePointData( const RTIntersection &intersection ) const
 {
+	const vec3 &point = intersection.getIntersectionPosition();
+
 	const aiScene *scene = importer->GetScene();
 	aiMesh *mesh = scene->mMeshes[0]; //TODO: mesh 0 :(
 	aiFace *faces = mesh->mFaces;
@@ -129,15 +131,15 @@ const SurfacePointData RTObjMesh::getSurfacePointData( const RTIntersection &int
 				 na.y + intersection.u * ( nb.y - na.y ) + intersection.v * ( nc.y - na.y ),
 				 na.z + intersection.u * ( nb.z - na.z ) + intersection.v * ( nc.z - na.z ) );
 
-	/*aiVector3D &a = mesh->mVertices[faces[intersection.triangleIndex].mIndices[0]];
-	aiVector3D &b = mesh->mVertices[faces[intersection.triangleIndex].mIndices[1]];
-	aiVector3D &c = mesh->mVertices[faces[intersection.triangleIndex].mIndices[2]];
+// 	aiVector3D &a = mesh->mVertices[faces[intersection.triangleIndex].mIndices[0]];
+// 	aiVector3D &b = mesh->mVertices[faces[intersection.triangleIndex].mIndices[1]];
+// 	aiVector3D &c = mesh->mVertices[faces[intersection.triangleIndex].mIndices[2]];
+// 
+// 	vec3 position(a.x + intersection.u * (b.x - a.x) + intersection.v * (c.x - a.x),
+// 		a.y + intersection.u * (b.y - a.y) + intersection.v * (c.y - a.y),
+// 		a.z + intersection.u * (b.z - a.z) + intersection.v * (c.z - a.z));
 
-	vec3 position(a.x + intersection.u * (b.x - a.x) + intersection.v * (c.x - a.x),
-		a.y + intersection.u * (b.y - a.y) + intersection.v * (c.y - a.y),
-		a.z + intersection.u * (b.z - a.z) + intersection.v * (c.z - a.z));*/
-
-	return {normalize( normal ), {0, 0}, vec3( 0 )};
+	return {normalize( normal ), {0, 0}, point};
 }
 
 const RTIntersection RTObjMesh::intersectTriangle( const RTRay &ray, const vec3 &a, const vec3 &b, const vec3 &c ) const

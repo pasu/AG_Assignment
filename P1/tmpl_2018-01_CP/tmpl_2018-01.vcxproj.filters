@@ -23,6 +23,7 @@
     <ClCompile Include="RTObjMesh.cpp" />
     <ClCompile Include="RTTorus.cpp" />
     <ClCompile Include="quarticsolver.cpp" />
+    <ClCompile Include="RTCone.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -51,6 +52,7 @@
     <ClInclude Include="RTObjMesh.h" />
     <ClInclude Include="RTTorus.h" />
     <ClInclude Include="quarticsolver.h" />
+    <ClInclude Include="RTCone.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">

@@ -2,6 +2,10 @@
 #include "RTMaterial.h"
 #include "RTRay.h"
 #include "RTSurfacePointData.h"
+
+#define FLOAT_ZERO 0.000001f
+#define MAX_DISTANCE_TO_INTERSECTON FLT_MAX
+
 class RTIntersection;
 
 class RTPrimitive
