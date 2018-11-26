@@ -60,7 +60,7 @@ void Game::Init()
 	mesh->setRotation( 0.0f, 0.0f, 0.0f );
 	mesh->setScale( 0.5f, 0.5, 0.5f );
 	mesh->applyTransforms();
-	scene.addObject( mesh );
+	//scene.addObject( mesh );
 
 	scene.addObject( new RTSphere( vec3( 15.0f, 0.0f, -20.0f ), 5, redMaterial ) );
 	scene.addObject( new RTSphere( vec3( -5.0f, 5.0f, -20.0f ), 5.0f, transmissiveMaterial ) );
