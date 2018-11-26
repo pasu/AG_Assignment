@@ -18,6 +18,8 @@ class RayTracer
 
 	const RTIntersection findNearestObjectIntersection( const RTRay &ray ) const;
 
+	const RenderOptions &getRenderOptions() const { return renderOptions; }
+
   private:
 	const vec3 shade_diffuse( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const;
 	const vec3 shade_reflective( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const;
@@ -25,6 +27,8 @@ class RayTracer
 
 	float fresnel( const vec3 &I, const vec3 &N, const float refractionIndex ) const; //return ratio of reflected light
 	const vec3 refract( const vec3 &I, const vec3 &N, const float refractionIndex ) const;
+
+
 
   private:
 	const RenderOptions &renderOptions;

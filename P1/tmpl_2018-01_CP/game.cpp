@@ -82,7 +82,7 @@ void Game::Shutdown()
 
 static Sprite rotatingGun( new Surface( "assets/aagun.tga" ), 36 );
 static int frame = 0;
-
+static DWORD tt = 0;
 // -----------------------------------------------------------
 // Main application tick function
 // -----------------------------------------------------------
@@ -99,7 +99,12 @@ void Game::Tick( float deltaTime )
 // 	// draw a sprite
 // 	rotatingGun.SetFrame( frame );
 // 	rotatingGun.Draw( screen, 100, 100 );
-	if ( ++frame == 36 ) frame = 0;
+	if (++frame == 10) {
+		DWORD nt = GetTickCount();
+		printf( "%.2f\n", 10000.0f / ( nt - tt ) );
+		tt = nt;
+		frame = 0;
+	}
 }
 
 void Tmpl8::Game::KeyDown( int key )

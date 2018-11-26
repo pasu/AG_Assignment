@@ -1,5 +1,6 @@
 #include "RTLight.h"
 #include "precomp.h"
+#include"RenderOptions.h"
 
 RTLight::RTLight( vec3 _color, float _power ) : color( _color ), power( _power )
 {
@@ -27,7 +28,7 @@ class PointLight : public RTLight
 		float l = sqrt( l2 );
 		vec3 nd = d * ( 1.0f / l );
 
-		RTRay ray = RTRay( pd.position+0.0001f*nd, nd );
+		RTRay ray = RTRay( pd.position + rt.getRenderOptions().shadowBias * nd, nd );
 		const RTIntersection &intersection = rt.findNearestObjectIntersection( ray );
 
 		if ( intersection.rayT < l && intersection.isIntersecting() )
