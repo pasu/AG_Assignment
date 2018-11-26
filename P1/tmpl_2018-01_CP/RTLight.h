@@ -8,7 +8,7 @@ class RTLight
   protected:
 	vec3 color;
 	float power;
-
+	float currentIndexOfRefraction;
   public:
 	RTLight( vec3 _color, float _power );
 	~RTLight();

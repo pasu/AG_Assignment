@@ -53,7 +53,7 @@ class ParrallelLight : public RTLight
 	}
 	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const RTMaterial &material ) override
 	{
-		const RTRay ray = RTRay( pd.position - 0.0001 * direction, -direction );
+		const RTRay ray = RTRay( pd.position - rt.getRenderOptions().shadowBias * direction, -direction );
 		const RTIntersection intersection = rt.findNearestObjectIntersection( ray );
 		if ( intersection.isIntersecting() )
 		{
