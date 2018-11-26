@@ -47,7 +47,8 @@ void Game::Init()
 	transmissiveMaterial.reflectionFactor = 0.3f;
 
 	whiteReflectiveMaterial.reflectionFactor = 0.4f;
-	bmwMaterial.indexOfRefraction = 0.8;
+	bmwMaterial.indexOfRefraction = 1.2;
+	
 	/////////////////////////////////////////////////////////////////////////
 	RTLight* pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, vec3( 00.0f, 15.0f, -40.0f ) );
 	RTLight *pLight2 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, vec3( 10.0f, 0.0f, 0.0f ) );
@@ -63,7 +64,7 @@ void Game::Init()
 	//scene.addObject( mesh );
 
 	scene.addObject( new RTSphere( vec3( 15.0f, 0.0f, -20.0f ), 5, redMaterial ) );
-	scene.addObject( new RTSphere( vec3( -5.0f, 5.0f, -20.0f ), 5.0f, transmissiveMaterial ) );
+	scene.addObject( new RTSphere( vec3( -5.0f, 5.0f, -20.0f ), 5.0f, bmwMaterial ) );
 
 	scene.addObject( new RTBox( vec3( 5.0f, 0.0f, -55.0f ), vec3( 20.0f, 20.0f, 10.0f ), whiteReflectiveMaterial ) );
 
