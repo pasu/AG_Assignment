@@ -18,6 +18,20 @@ Scene::Scene( const vec3 &ambientLight, const vec3 &backgroundColor ) : ambientL
 Scene::~Scene()
 {
 	delete camera;
+
+	for ( RTPrimitive* obj : primitivecollection )
+	{
+		delete obj;
+		obj = NULL;
+	}
+	primitivecollection.clear();
+
+	for ( RTLight *light : lightcollection )
+	{
+		delete light;
+		light = NULL;
+	}
+	lightcollection.clear();
 }
 
 void Scene::addObject( RTPrimitive *object )

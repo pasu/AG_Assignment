@@ -23,7 +23,7 @@
     <ProjectGuid>{D8FE2186-4BF0-4B89-913F-6C26818E5AC5}</ProjectGuid>
     <RootNamespace>Tmpl8</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
@@ -137,6 +137,7 @@
   <!-- END Custom section -->
   <ItemGroup>
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="quarticsolver.cpp" />
     <ClCompile Include="RayTracer.cpp" />
     <ClCompile Include="RTBox.cpp" />
     <ClCompile Include="RTIntersection.cpp" />
@@ -148,6 +149,7 @@
     <ClCompile Include="RTRay.cpp" />
     <ClCompile Include="RTSphere.cpp" />
     <ClCompile Include="RTTexture.cpp" />
+    <ClCompile Include="RTTorus.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="template.cpp">
@@ -158,6 +160,7 @@
   <ItemGroup>
     <ClInclude Include="game.h" />
     <ClInclude Include="precomp.h" />
+    <ClInclude Include="quarticsolver.h" />
     <ClInclude Include="RayTracer.h" />
     <ClInclude Include="RenderOptions.h" />
     <ClInclude Include="RTBox.h" />
@@ -172,6 +175,7 @@
     <ClInclude Include="RTSphere.h" />
     <ClInclude Include="RTSurfacePointData.h" />
     <ClInclude Include="RTTexture.h" />
+    <ClInclude Include="RTTorus.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="template.h" />

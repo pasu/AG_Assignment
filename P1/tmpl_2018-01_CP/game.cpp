@@ -6,6 +6,7 @@
 #include "RTSphere.h"
 #include "RTBox.h"
 #include "RTObjMesh.h"
+#include "RTTorus.h"
 // -----------------------------------------------------------
 // Initialize the application
 // -----------------------------------------------------------
@@ -56,8 +57,11 @@ void Game::Init()
 	scene.addLight( pLight2 );
 	scene.addLight(RTLight::createParralleLight(vec3(1.0f,1.0f,1.0f),0.5f,vec3(0.707,-0.707,0)));
 
+	RTTorus *pTorus = new RTTorus( vec3( 1.0f, 2.0f, -10.0f ), vec3( 0.0f, 1.0f, 1.0f ), 2.0f, 4.0f, redMaterial );
+	scene.addObject( pTorus );
+
 	RTObjMesh *mesh = new RTObjMesh( "./assets/Cup_Made_By_Tyro_Smith.obj", bmwMaterial );
-	mesh->setPosition( -7.0f, 0.0f, -5.0f );
+	mesh->setPosition( -7.0f, -5.0f, -5.0f );
 	mesh->setRotation( 0.0f, 0.0f, 0.0f );
 	mesh->setScale( 0.5f, 0.5, 0.5f );
 	mesh->applyTransforms();
