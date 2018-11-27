@@ -4,6 +4,24 @@
  RTCone::RTCone( const vec3 &top, const vec3 &bottomCenter, const float &radius, const RTMaterial &material )
 	: RTPrimitive( bottomCenter, material ), top( top ), radius(radius)
 {
+	dir = pos - top;
+
+	binormal = 1.0f;
+	if ( fabs( dir.x ) > FLOAT_ZERO )
+	{
+		binormal.x = 0;
+	}
+	else if ( fabs( dir.y ) > FLOAT_ZERO )
+	{
+		binormal.y = 0;
+	}
+	else if ( fabs( dir.z ) > FLOAT_ZERO )
+	{
+		binormal.z = 0;
+	}
+
+	tangent = normalize( cross( dir, binormal ) );
+	binormal = normalize( cross( dir, tangent ) );
 }
 
 RTCone::~RTCone()
@@ -157,7 +175,9 @@ const SurfacePointData RTCone::getSurfacePointData( const RTIntersection &inters
 	if ( fabs( coneAxis.dot( pointPositionRelativelyToBottom ) ) < FLOAT_ZERO &&
 		 pointPositionRelativelyToBottom.dot( pointPositionRelativelyToBottom ) < radius * radius )
 	{
-		return {coneAxis, {0, 0}, point};
+		vec2 texCoords = {dot( pointPositionRelativelyToBottom, tangent ), dot( pointPositionRelativelyToBottom, binormal )};
+
+		return {coneAxis, texCoords, point};
 	}
 
 	// Otherwise, if point is lying at side surface
@@ -165,6 +185,13 @@ const SurfacePointData RTCone::getSurfacePointData( const RTIntersection &inters
 	float radiansPerHeight = radius / ( pos - top ).length();
 	vec3 normal = approximatedNormal + coneAxis * ( -radiansPerHeight * approximatedNormal.length() );
 	normal.normalize();
-	return {normal, {0, 0}, point};
+
+	float v = pointPositionRelativelyToBottom.dot( coneAxis );
+	vec3 A = normalize( pointPositionRelativelyToBottom - v * coneAxis );
+	float phi = acos( dot( A, tangent ) );
+
+	vec2 texCoords = {phi * 2 * Utils::RT_PI, v};
+
+	return {normal, texCoords, point};
 	;
 }

@@ -15,20 +15,23 @@
 Scene scene( vec3( 0.1f ), vec3( 43.0f/255.0f, 203.0f / 255.0f, 246.0f/255.0f ) );
 RenderOptions renderOptions;
 
+RTTexture *floorTexture = new RTTexture();
+RTTexture *droplet = new RTTexture();
+RTTexture *boxTexture = new RTTexture();
+RTTexture *torusTexture = new RTTexture();
+
 RTMaterial redspehreMaterial( vec3( 1, 0, 0 ), DIFFUSE_AND_REFLECTIVE );
 RTMaterial yellowspehreMaterial( vec3(1, 1, 0 ), DIFFUSE_AND_REFLECTIVE );
 
-RTMaterial boxReflectiveMaterial( vec3( 0, 1, 1 ), REFLECTIVE );
-
-RTTexture *floorTexture = new RTTexture();
-RTTexture *droplet = new RTTexture();
+RTMaterial boxReflectiveMaterial( vec3( 1, 1, 1 ), boxTexture, DIFFUSE_AND_REFLECTIVE );
+//RTMaterial boxwithTextureMaterial( vec3( 0, 1, 1 ), floorTexture, DIFFUSE );
 
 RTMaterial floorMaterial( vec3( 1, 1, 1 ), floorTexture, DIFFUSE );
 RTMaterial mirrorWallMaterial( vec3( 1, 1, 1 ), REFLECTIVE );
 
-RTMaterial coneMaterial( vec3( 0, 0, 1 ), DIFFUSE );
+RTMaterial coneMaterial( vec3( 1, 1, 1 ), boxTexture, DIFFUSE );
 
-RTMaterial torusMaterial( vec3( 1, 0, 0 ), DIFFUSE );
+RTMaterial torusMaterial( vec3( 1, 1, 1 ), torusTexture, DIFFUSE );
 RTMaterial sphereMaterial( vec3( 1, 1, 1 ), TRANSMISSIVE_AND_REFLECTIVE );
 
 RTMaterial transmissiveMaterial( droplet, DIFFUSE_AND_REFLECTIVE );
@@ -48,9 +51,17 @@ void Game::Init()
 	//////////////////////////////////////////////////////////////////////////
 	floorTexture->LoadImage("./assets/floor_diffuse.PNG");
 	droplet->LoadImage( "./assets/BeachStones.jpg" );
+	boxTexture->LoadImage( "./assets/box.png" );
+	torusTexture->LoadImage( "./assets/BumpyMetal.jpg" );
 
 	floorMaterial.textureScale.x = 0.1f;
 	floorMaterial.textureScale.y = 0.1f;
+
+	coneMaterial.textureScale.x = 0.1f;
+	coneMaterial.textureScale.y = 0.1f;
+
+	torusMaterial.textureScale.x = 64.0f;
+	torusMaterial.textureScale.y = 64.0f;
 
 	mirrorWallMaterial.reflectionFactor = 1.0f;
 
@@ -61,7 +72,7 @@ void Game::Init()
 	transmissiveMaterial.textureScale.y = 1.010f;
 	transmissiveMaterial.reflectionFactor = 0.3f;
 
-	boxReflectiveMaterial.reflectionFactor = 0.4f;
+	boxReflectiveMaterial.reflectionFactor = 0.2f;
 	torusMaterial.indexOfRefraction = 2.417f;
 	sphereMaterial.indexOfRefraction = 2.417f;
 	/////////////////////////////////////////////////////////////////////////
@@ -124,11 +135,11 @@ void Game::Init()
 	scene.addObject( pSphere2 );
 
 	scene.addObject( pCone );
-	scene.addObject( pTorus );
+ 	scene.addObject( pTorus );
 
 	scene.addObject( pSphere3 );
 
-	scene.addObject( mesh );
+//	scene.addObject( mesh );
 
 	//auto s = scene.getObjects()[1]->getMaterial().shadingType;
 	///////////////////////////////////////////////////////////////////////////////

@@ -13,4 +13,8 @@ class RTBox : public RTPrimitive
   private:
 	vec3 min;
 	vec3 max;
+
+	float distanceX;
+	float distanceY;
+	float distanceZ;
 };

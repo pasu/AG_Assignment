@@ -86,5 +86,10 @@ const SurfacePointData RTTorus::getSurfacePointData( const RTIntersection &inter
 	float m = sqrtf( mInnerRadius * mInnerRadius - k * k );
 	vec3 N = point - A - ( pos - A ) * ( m / ( mOuterRadius + m ) );
 
-	return {normalize( N ), {0, 0}, point};
+	float theta = atan2( A.x, A.z );
+	float theta2 = atan2( sqrtf( A.x * A.x + A.z * A.z ) - mOuterRadius, A.y );
+
+	vec2 texCoords = {0.5f + theta / ( 2.0f * Utils::RT_PI ), 0.5f + theta2 / ( 2.0f * Utils::RT_PI )};
+
+	return {normalize( N ), texCoords , point};
 }

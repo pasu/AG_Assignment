@@ -12,4 +12,8 @@ class RTCone : public RTPrimitive
   private:
 	vec3 top;
 	float radius;
+
+	vec3 dir;
+	vec3 tangent;
+	vec3 binormal;
 };
