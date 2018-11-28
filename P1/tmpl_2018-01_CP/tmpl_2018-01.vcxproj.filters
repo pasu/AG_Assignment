@@ -24,6 +24,7 @@
     <ClCompile Include="RTTorus.cpp" />
     <ClCompile Include="quarticsolver.cpp" />
     <ClCompile Include="RTCone.cpp" />
+    <ClCompile Include="RTCameraController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -53,6 +54,7 @@
     <ClInclude Include="RTTorus.h" />
     <ClInclude Include="quarticsolver.h" />
     <ClInclude Include="RTCone.h" />
+    <ClInclude Include="RTCameraController.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">

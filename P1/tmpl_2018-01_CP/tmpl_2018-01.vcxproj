@@ -140,6 +140,7 @@
     <ClCompile Include="quarticsolver.cpp" />
     <ClCompile Include="RayTracer.cpp" />
     <ClCompile Include="RTBox.cpp" />
+    <ClCompile Include="RTCameraController.cpp" />
     <ClCompile Include="RTCone.cpp" />
     <ClCompile Include="RTIntersection.cpp" />
     <ClCompile Include="RTLight.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="RenderOptions.h" />
     <ClInclude Include="RTBox.h" />
     <ClInclude Include="RTCamera.h" />
+    <ClInclude Include="RTCameraController.h" />
     <ClInclude Include="RTCone.h" />
     <ClInclude Include="RTIntersection.h" />
     <ClInclude Include="RTLight.h" />

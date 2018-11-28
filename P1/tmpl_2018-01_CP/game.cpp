@@ -8,6 +8,7 @@
 #include "RTObjMesh.h"
 #include "RTTorus.h"
 #include "RTCone.h"
+#include "RTCameraController.h"
 // -----------------------------------------------------------
 // Initialize the application
 // -----------------------------------------------------------
@@ -120,20 +121,20 @@ void Game::Init()
 	mesh->setPosition( 0.0f, 3.0f, -10.0f );
 	mesh->setRotation( -Utils::RT_PI / 2.0, -Utils::RT_PI / 2.0, 0.0f );
 	mesh->setScale( 5.3f, 5.3f, 5.3f );
-	mesh->applyTransforms();
+	//mesh->applyTransforms();
 
 	scene.addObject( plane1 );
-	scene.addObject( plane2 );
+	//scene.addObject( plane2 );
 
 	scene.addObject( box );
 
-	scene.addObject( pSphere1 );
+	//scene.addObject( pSphere1 );
 	scene.addObject( pSphere2 );
 
-	scene.addObject( pCone );
- 	scene.addObject( pTorus );
+	//scene.addObject( pCone );
+ 	//scene.addObject( pTorus );
 
-	scene.addObject( pSphere3 );
+	//scene.addObject( pSphere3 );
 
 	//scene.addObject( mesh );
 
@@ -152,11 +153,15 @@ void Game::Shutdown()
 static Sprite rotatingGun( new Surface( "assets/aagun.tga" ), 36 );
 static int frame = 0;
 static DWORD tt = 0;
+
+
 // -----------------------------------------------------------
 // Main application tick function
 // -----------------------------------------------------------
 void Game::Tick( float deltaTime )
 {
+	updateCamera(*(scene.getCamera()));
+	
 	// clear the graphics window
 //	screen->Clear( 0 );
 	// print something in the graphics window
@@ -178,26 +183,9 @@ void Game::Tick( float deltaTime )
 
 void Tmpl8::Game::KeyDown( int key )
 {
-	switch ( key )
-	{
-	case 4://A
-		scene.getCamera()->translateX( -1.0f );
-		break;
-	case 7: //D
-		scene.getCamera()->translateX( 1.0f );
-		break;
-	case 22: //S
-		scene.getCamera()->translateY( -1.0f );
-		break;
-	case 26: //W
-		scene.getCamera()->translateY( 1.0f );
-		break;
-	default:
-		break;
-	}
+
 }
 
 void Tmpl8::Game::MouseWheel( int y )
 {
-	scene.getCamera()->translateZ( y );
 }
