@@ -43,7 +43,7 @@ void Game::Init()
 	renderOptions.width = 800;
 	renderOptions.height = 800;
 	renderOptions.maxRecursionDepth = 8;
-	renderOptions.shadowBias = 0.1f;
+	renderOptions.shadowBias = 0.01f;
 
 	pTracer = new RayTracer( scene, renderOptions );
 	//////////////////////////////////////////////////////////////////////////
@@ -124,11 +124,11 @@ void Game::Init()
 	//mesh->applyTransforms();
 
 	scene.addObject( plane1 );
-	//scene.addObject( plane2 );
+	scene.addObject( plane2 );
 
 	scene.addObject( box );
 
-	//scene.addObject( pSphere1 );
+	scene.addObject( pSphere1 );
 	scene.addObject( pSphere2 );
 
 	//scene.addObject( pCone );

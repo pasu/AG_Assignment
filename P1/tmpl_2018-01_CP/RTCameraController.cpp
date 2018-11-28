@@ -34,24 +34,26 @@ void updateRotation( RTCamera &camera )
 	}
 }
 
+static constexpr float moving_speed = 0.5;
+
 void updateTranslation(RTCamera& camera)
 {
 	const Uint8 *state = SDL_GetKeyboardState( NULL );
 	if (state[SDL_SCANCODE_W]) {
-		camera.moveForward(0.2);
+		camera.moveForward( moving_speed );
 	}
 	
 	if (state[SDL_SCANCODE_S]) {
-		camera.moveForward( -0.2 );
+		camera.moveForward( -moving_speed );
 	}
 	if ( state[SDL_SCANCODE_A] )
 	{
-		camera.moveLeft( 0.2 );
+		camera.moveLeft( moving_speed );
 	}
 
 	if ( state[SDL_SCANCODE_D] )
 	{
-		camera.moveLeft( -0.2 );
+		camera.moveLeft( -moving_speed );
 	}
 
 	if ( state[SDL_SCANCODE_Q] )

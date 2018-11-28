@@ -19,6 +19,9 @@ const RTIntersection RTPlane::intersect( const RTRay &ray ) const
 	{
 		float num = dot( normal, ray.orig - pos );
 		intersection.rayT = -num / denominator;
+		if (num < 0 && denominator < 0) {// anti - seam
+			intersection.rayT = 0;
+		}
 	}
 	return intersection;
 }
