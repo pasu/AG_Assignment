@@ -48,7 +48,7 @@ void Game::Init()
 	pTracer = new RayTracer( scene, renderOptions );
 	//////////////////////////////////////////////////////////////////////////
 	floorTexture->LoadTextureImage("./assets/floor_diffuse.PNG");
-	floorTexture->generateMipmap( 8, 10.0f );
+	floorTexture->generateMipmap( 8, 6.0f );
 	boxTexture->LoadTextureImage( "./assets/box.png" );
 	torusTexture->LoadTextureImage( "./assets/BumpyMetal.jpg" );
 	meshTexture->LoadTextureImage( "./assets/Cesium_Man.jpg" );

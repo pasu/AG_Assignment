@@ -14,7 +14,8 @@ const Tmpl8::vec3 RTTexture::getTexel( float s, float t,float z, const vec2 &sca
 	s *= scale.x;
 	t *= scale.y;
 	
-	int mip = (int)(z / mip0_distance);
+	int mip = (int)(std::log((z / mip0_distance))/std::log(2))+1;
+
 	mip = std::max( mip, 0 );
 	float wrappedS;
 	float wrappedT;

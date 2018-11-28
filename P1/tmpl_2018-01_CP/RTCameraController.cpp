@@ -34,7 +34,7 @@ void updateRotation( RTCamera &camera )
 	}
 }
 
-static constexpr float moving_speed = 0.5;
+static constexpr float moving_speed = 1.0;
 
 void updateTranslation(RTCamera& camera)
 {
@@ -58,12 +58,12 @@ void updateTranslation(RTCamera& camera)
 
 	if ( state[SDL_SCANCODE_Q] )
 	{
-		camera.moveUp( 0.2 );
+		camera.moveUp( moving_speed );
 	}
 
 	if ( state[SDL_SCANCODE_E] )
 	{
-		camera.moveUp( -0.2 );
+		camera.moveUp( -moving_speed );
 	}
 }
 
