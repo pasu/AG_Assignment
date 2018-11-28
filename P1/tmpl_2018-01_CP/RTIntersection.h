@@ -7,10 +7,15 @@ class RTIntersection
 	RTIntersection();
 	RTIntersection( const RTRay *ray, const RTPrimitive *object, const float rayT );
 
+	
+
 public:
 	const RTRay *ray;
 	const RTPrimitive *object;
 	float rayT;
+
+	const SurfacePointData *surfacePointData;
+	const RTMaterial *material;
 
 	//Triangle Only
 	int triangleIndex;

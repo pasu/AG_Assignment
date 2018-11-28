@@ -21,7 +21,7 @@ class PointLight : public RTLight
 	PointLight( vec3 _color, float _power, vec3 _pos ) : RTLight( _color, _power ), pos( _pos )
 	{
 	}
-	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const RTMaterial &material )override
+	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const vec3 & texture )override
 	{
 		vec3 d = pos - pd.position;
 		float l2 = d.sqrLentgh();
@@ -37,7 +37,7 @@ class PointLight : public RTLight
 		}
 		float cosine = pd.normal.dot( nd );
 		cosine = ( cosine > 0 ? cosine : 0 ) / l2 * power;
-		return cosine * material.getAlbedoAtPoint( pd.textureCoordinates.x, pd.textureCoordinates.y );
+		return cosine * texture;
 	}
 };
 
@@ -51,7 +51,7 @@ class ParrallelLight : public RTLight
 	{
 
 	}
-	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const RTMaterial &material ) override
+	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const vec3& texture ) override
 	{
 		const RTRay ray = RTRay( pd.position - rt.getRenderOptions().shadowBias * direction, -direction );
 		const RTIntersection intersection = rt.findNearestObjectIntersection( ray );
@@ -61,7 +61,7 @@ class ParrallelLight : public RTLight
 		}
 		float cosine = pd.normal.dot( -direction );
 		cosine = ( cosine > 0 ? cosine : 0 ) * power;
-		return cosine * material.getAlbedoAtPoint( pd.textureCoordinates.x, pd.textureCoordinates.y );
+		return cosine * texture;
 	}
 };
 

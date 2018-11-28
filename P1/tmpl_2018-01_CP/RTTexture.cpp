@@ -1,6 +1,5 @@
-#include "precomp.h"
 #include "RTTexture.h"
-
+#include "precomp.h"
 
 RTTexture::RTTexture()
 {
@@ -10,11 +9,13 @@ RTTexture::~RTTexture()
 {
 }
 
-const Tmpl8::vec3 RTTexture::getTexel( float s, float t, const vec2 &scale /*= vec2( 1, 1 ) */ ) const
+const Tmpl8::vec3 RTTexture::getTexel( float s, float t,float z, const vec2 &scale /*= vec2( 1, 1 ) */ ) const
 {
 	s *= scale.x;
 	t *= scale.y;
-
+	
+	int mip = (int)(z / mip0_distance);
+	mip = std::max( mip, 0 );
 	float wrappedS;
 	float wrappedT;
 
@@ -29,37 +30,39 @@ const Tmpl8::vec3 RTTexture::getTexel( float s, float t, const vec2 &scale /*= v
 		wrappedT = 1 - ( abs( t ) - (int)abs( t ) );
 
 	//return getTexelFromFile(wrappedS*(width-1), wrappedT*(height-1));
-	return bilinearInterpolation( wrappedS, wrappedT );
+	return bilinearInterpolation( wrappedS, wrappedT ,mip);
 }
 
-const Tmpl8::vec3 RTTexture::bilinearInterpolation( float u, float v ) const
+const Tmpl8::vec3 RTTexture::bilinearInterpolation( float u, float v, int mip ) const
 {
-	const float pu = ( m_Width - 1 ) * u;
-	const float pv = ( m_Height - 1 ) * v;
+	mip = std::min( mip, mip_level-1 );
+	int width = m_Width >> mip;
+	int height = m_Height >> mip;
+	const float pu = ( width - 1 ) * u;
+	const float pv = ( height - 1 ) * v;
 	const int x = (int)pu;
 	const int y = (int)pv;
 	const float uPrime = pu - x;
 	const float vPrime = pv - y;
 
-	const int xl = x - 1 >= 0 ? x - 1 : m_Width - 1;
-	const int xr = x + 1 < m_Width ? x + 1 : 0;
-	const int yb = y - 1 >= 0 ? y - 1 : m_Height - 1;
-	const int yt = y + 1 < m_Height ? y + 1 : 0;
+	const int xl = x - 1 >= 0 ? x - 1 : width - 1;
+	const int xr = x + 1 < width ? x + 1 : 0;
+	const int yb = y - 1 >= 0 ? y - 1 : height - 1;
+	const int yt = y + 1 < height ? y + 1 : 0;
 
-	return ( 1.0f - uPrime ) * ( 1.0f - vPrime ) * getTexelFromFile( xl, yb ) +
-		   uPrime * ( 1.0f - vPrime ) * getTexelFromFile( xr, yb ) +
-		   ( 1.0f - uPrime ) * vPrime * getTexelFromFile( xl, yt ) +
-		   uPrime * vPrime * getTexelFromFile( xr, yt );
+	return ( 1.0f - uPrime ) * ( 1.0f - vPrime ) * getTexelFromFile( xl, yb ,mip) +
+		   uPrime * ( 1.0f - vPrime ) * getTexelFromFile( xr, yb,mip ) +
+		   ( 1.0f - uPrime ) * vPrime * getTexelFromFile( xl, yt,mip ) +
+		   uPrime * vPrime * getTexelFromFile( xr, yt,mip );
 }
 
-const Tmpl8::vec3 RTTexture::getTexelFromFile( const int x, const int y ) const
+const Tmpl8::vec3 RTTexture::getTexelFromFile( const int x, const int y, int mip ) const
 {
-	int basePixel = ( x + ( ( ( m_Height - 1 ) - y ) * m_Width ) ) * 4;
-	byte *data = (byte *)m_Buffer;
-	return {data[basePixel] / 255.0f, data[basePixel + 1] / 255.0f, data[basePixel + 2] / 255.0f};
+	int basePixel = ( x + ( ( ( (m_Height>>mip) - 1 ) - y ) * (m_Width>>mip) ) );
+	return m_Buffer[mip][basePixel];
 }
 
-void RTTexture::LoadImage( char *a_File )
+void RTTexture::LoadTextureImage( char *a_File )
 {
 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 	fif = FreeImage_GetFileType( a_File, 0 );
@@ -69,12 +72,46 @@ void RTTexture::LoadImage( char *a_File )
 	FreeImage_Unload( tmp );
 	m_Width = m_Pitch = FreeImage_GetWidth( dib );
 	m_Height = FreeImage_GetHeight( dib );
-	m_Buffer = (Pixel *)MALLOC64( m_Width * m_Height * sizeof( Pixel ) );
+	m_Buffer[0] = (vec3 *)MALLOC64( m_Width * m_Height * sizeof( vec3 ) );
 
 	for ( int y = 0; y < m_Height; y++ )
 	{
 		unsigned char *line = FreeImage_GetScanLine( dib, m_Height - 1 - y );
-		memcpy( m_Buffer + y * m_Pitch, line, m_Width * sizeof( Pixel ) );
+		for ( int x = 0; x < m_Width; x++ )
+		{
+			int basePixel = x * 4;
+			unsigned char *data = (byte *)line;
+			m_Buffer[0][y * m_Width + x] = {data[basePixel] / 255.0f, data[basePixel + 1] / 255.0f, data[basePixel + 2] / 255.0f};
+		}
 	}
 	FreeImage_Unload( dib );
+	mip_level = 1;
+	mip0_distance = 10000.0f;
+}
+
+void RTTexture::generateMipmap( int level, float mip0Distance )
+{
+	mip_level = std::min( level, 8 );
+	mip0_distance = mip0Distance;
+	for ( int mip = 1; mip < mip_level; mip++ )
+	{
+		int currentWidth = m_Width >> mip;
+		int currentHeight = m_Height >> mip;
+		m_Buffer[mip] = (vec3 *)MALLOC64( currentWidth * currentHeight * sizeof( vec3 ) );
+		for ( int y = 0; y < currentHeight; y++ )
+		{
+			//{lasty, lastx} = coordinate in (mip-1) level map
+			int lasty = y *2;
+			int lastWidth = currentWidth *2;
+			vec3 *current = m_Buffer[mip];
+			vec3 *last = m_Buffer[mip - 1];
+			for ( int x = 0; x < currentWidth; x++ )
+			{
+				int lastx = x << 1;
+				current[y * currentWidth + x] = ( last[lasty * lastWidth + lastx] + last[lasty * lastWidth + lastx + 1] +
+												  last[( lasty + 1 ) * lastWidth + lastx] + last[( lasty + 1 ) * lastWidth + lastx + 1] ) *
+												0.25f;
+			}
+		}
+	}
 }

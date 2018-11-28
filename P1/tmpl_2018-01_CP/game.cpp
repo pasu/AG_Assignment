@@ -39,7 +39,6 @@ RTMaterial meshMaterial( vec3( 1, 1, 1 ), meshTexture,DIFFUSE );
 
 void Game::Init()
 {
-	
 	renderOptions.fov = 51.52f;
 	renderOptions.width = 800;
 	renderOptions.height = 800;
@@ -48,10 +47,11 @@ void Game::Init()
 
 	pTracer = new RayTracer( scene, renderOptions );
 	//////////////////////////////////////////////////////////////////////////
-	floorTexture->LoadImage("./assets/floor_diffuse.PNG");
-	boxTexture->LoadImage( "./assets/box.png" );
-	torusTexture->LoadImage( "./assets/BumpyMetal.jpg" );
-	meshTexture->LoadImage( "./assets/Cesium_Man.jpg" );
+	floorTexture->LoadTextureImage("./assets/floor_diffuse.PNG");
+	floorTexture->generateMipmap( 8, 10.0f );
+	boxTexture->LoadTextureImage( "./assets/box.png" );
+	torusTexture->LoadTextureImage( "./assets/BumpyMetal.jpg" );
+	meshTexture->LoadTextureImage( "./assets/Cesium_Man.jpg" );
 	floorMaterial.textureScale.x = 0.1f;
 	floorMaterial.textureScale.y = 0.1f;
 

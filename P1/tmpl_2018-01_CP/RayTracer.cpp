@@ -48,31 +48,34 @@ const vec3 RayTracer::castRay( const RTRay &ray, const int depth ) const
 	if ( depth > renderOptions.maxRecursionDepth )
 		return vec3( 0, 1, 0 );
 
-	const RTIntersection &intersection = findNearestObjectIntersection( ray );
+	RTIntersection &intersection = findNearestObjectIntersection( ray );
 
 	if ( intersection.isIntersecting() )
 	{
-		const SurfacePointData &surfacePointData = intersection.object->getSurfacePointData( intersection );
-		const RTMaterial &material = intersection.object->getMaterial();
+		intersection.surfacePointData = &(intersection.object->getSurfacePointData( intersection ));
 
-		return shade( ray, material, surfacePointData, depth );
+		return shade( ray, intersection, depth );
 	}
 	else
 		return scene.backgroundColor;
 }
 
-const vec3 RayTracer::shade( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const
+const vec3 RayTracer::shade( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const
 {
-	const vec3 &albedo = material.getAlbedoAtPoint( surfacePointData.textureCoordinates.x, surfacePointData.textureCoordinates.y );
+	auto &surfacePointData = *intersection.surfacePointData;
+	const RTMaterial &material = intersection.object->getMaterial();
+	float distance = ( surfacePointData.position - scene.getCamera()->getEye() ).length();
+	const vec3 &albedo = material.getAlbedoAtPoint( surfacePointData.textureCoordinates.x, surfacePointData.textureCoordinates.y, distance );
+
 
 	//return 0x00ff0000;
 	if ( material.shadingType == DIFFUSE )
 	{
-		return shade_diffuse( castedRay, material, surfacePointData, depth );
+		return shade_diffuse( castedRay, intersection, depth );
 	}
 	else if ( material.shadingType == REFLECTIVE )
 	{
-		return material.reflectionFactor * shade_reflective( castedRay, material, surfacePointData, depth );
+		return material.reflectionFactor * shade_reflective( castedRay, intersection, depth );
 	}
 	else if ( material.shadingType == TRANSMISSIVE_AND_REFLECTIVE )
 	{
@@ -86,7 +89,7 @@ const vec3 RayTracer::shade( const RTRay &castedRay, const RTMaterial &material,
 		// compute refraction if it is not a case of total internal reflection
 		if (reflectionFactor < 1.0f)
 		{
-			refractionColor = shade_transmissive( castedRay, material, surfacePointData, depth );
+			refractionColor = shade_transmissive( castedRay, intersection, depth );
 
 			// Burger-Lambert-Beer law
 			vec3 dis = castedRay.orig - surfacePointData.position;
@@ -94,19 +97,19 @@ const vec3 RayTracer::shade( const RTRay &castedRay, const RTMaterial &material,
 			vec3 transparency = vec3( expf( absorbance.x ), expf( absorbance.y ), expf( absorbance.z ) );
 			refractionColor = refractionColor *transparency;
 		}
-		reflectionColor = shade_reflective( castedRay, material, surfacePointData, depth );
+		reflectionColor = shade_reflective( castedRay, intersection, depth );
 		return reflectionColor * reflectionFactor + refractionColor * ( 1.0f - reflectionFactor );
 	}
 	else if ( material.shadingType == DIFFUSE_AND_REFLECTIVE )
 	{
-		vec3 reflectionColor = shade_reflective( castedRay, material, surfacePointData, depth );
-		vec3 diffuseColor = shade_diffuse( castedRay, material, surfacePointData, depth );
+		vec3 reflectionColor = shade_reflective( castedRay, intersection, depth );
+		vec3 diffuseColor = shade_diffuse( castedRay, intersection, depth );
 		return material.reflectionFactor * reflectionColor + ( 1.0f - material.reflectionFactor ) * diffuseColor;
 	}
 
 }
 
-const RTIntersection RayTracer::findNearestObjectIntersection( const RTRay &ray ) const
+RTIntersection RayTracer::findNearestObjectIntersection( const RTRay &ray ) const
 {
 	static auto& objects = scene.getObjects();
 
@@ -125,41 +128,48 @@ const RTIntersection RayTracer::findNearestObjectIntersection( const RTRay &ray 
 	return nearestIntersection;
 }
 
-const Tmpl8::vec3 RayTracer::shade_diffuse( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const
+const Tmpl8::vec3 RayTracer::shade_diffuse( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const
 {
+	auto &surfacePointData = *intersection.surfacePointData;
+	const RTMaterial &material = intersection.object->getMaterial();
 	vec3 color( 0.0f );
 	if ( castedRay.dir.dot( surfacePointData.normal ) > 0 )
 	{
 		return color;
 	}
-	const vec3 &albedo = material.getAlbedoAtPoint( surfacePointData.textureCoordinates.x, surfacePointData.textureCoordinates.y );
+	const vec3 &albedo = material.getAlbedoAtPoint( surfacePointData.textureCoordinates.x, surfacePointData.textureCoordinates.y,castedRay.distance_traveled+intersection.rayT );
 	//color = scene.ambientLight * albedo;
 	static auto &light_list = scene.getLights();
 	for ( RTLight *light : light_list )
 	{
-		color += light->shade( surfacePointData, *this, material );
+		color += light->shade( surfacePointData, *this, albedo );
 	}
 
 	return color;
 }
 
-const Tmpl8::vec3 RayTracer::shade_reflective( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const
+const Tmpl8::vec3 RayTracer::shade_reflective( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const
 {
+	auto &surfacePointData = *intersection.surfacePointData;
+	const RTMaterial &material = intersection.object->getMaterial();
 	vec3 nd = castedRay.dir - ( ( 2 * castedRay.dir.dot( surfacePointData.normal ) ) * surfacePointData.normal );
-	RTRay refRay = RTRay( surfacePointData.position + 0.0001 * nd, nd );
+	RTRay refRay = RTRay( surfacePointData.position + 0.0001 * nd, nd, castedRay.distance_traveled+intersection.rayT );
 	return castRay( refRay, depth + 1 );
 }
 
-const Tmpl8::vec3 RayTracer::shade_transmissive( const RTRay &castedRay, const RTMaterial &material, const SurfacePointData &surfacePointData, const int depth ) const
+const Tmpl8::vec3 RayTracer::shade_transmissive( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const
 {
-	
+	auto &surfacePointData = *intersection.surfacePointData;
+	const RTMaterial &material = intersection.object->getMaterial();
 	const vec3 &normal = surfacePointData.normal; // normal texture later
-	const vec3 &albedo = material.getAlbedoAtPoint( surfacePointData.textureCoordinates.x, surfacePointData.textureCoordinates.y );
+
+	float distance = ( surfacePointData.position - scene.getCamera()->getEye() ).length();
+	const vec3 &albedo = material.getAlbedoAtPoint( surfacePointData.textureCoordinates.x, surfacePointData.textureCoordinates.y,distance );
 	const bool outside = dot( castedRay.dir, normal ) < 0;
 	const vec3 bias = renderOptions.shadowBias * normal;
 	const vec3 &refractionDirection = refract( castedRay.dir, normal, material.indexOfRefraction );
 	const vec3 refractionRayOrig = outside ? surfacePointData.position - bias : surfacePointData.position + bias;
-	const RTRay refractionRay( refractionRayOrig, refractionDirection );
+	const RTRay refractionRay( refractionRayOrig, refractionDirection,castedRay.distance_traveled + intersection.rayT );
 	return castRay( refractionRay, depth + 1 ) * albedo;
 }
 

@@ -20,7 +20,7 @@ public:
   
   const ShadingType shadingType;
 
-  const vec3 getAlbedoAtPoint( const float s, const float t ) const;
+  const vec3 getAlbedoAtPoint( const float s,float z, const float t ) const;
 
   float reflectionFactor;
   float indexOfRefraction;

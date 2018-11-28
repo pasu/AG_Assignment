@@ -28,10 +28,10 @@
 {
 }
 
-const vec3 RTMaterial::getAlbedoAtPoint( const float s, const float t ) const
+const vec3 RTMaterial::getAlbedoAtPoint( const float s, const float t, float z ) const
 {
 	if ( albedoTexture == 0 )
 		return color;
 	else
-		return color * albedoTexture->getTexel( s, t, textureScale );
+		return color * albedoTexture->getTexel( s, t,z, textureScale );
 }
