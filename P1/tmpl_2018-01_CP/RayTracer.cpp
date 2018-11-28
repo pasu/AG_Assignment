@@ -137,7 +137,7 @@ const Tmpl8::vec3 RayTracer::shade_diffuse( const RTRay &castedRay, const RTInte
 	{
 		return color;
 	}
-	const vec3 &albedo = material.getAlbedoAtPoint( surfacePointData.textureCoordinates.x, surfacePointData.textureCoordinates.y,castedRay.distance_traveled+intersection.rayT );
+	const vec3 albedo = material.getAlbedoAtPoint( surfacePointData.textureCoordinates.x, surfacePointData.textureCoordinates.y,castedRay.distance_traveled+intersection.rayT );
 	//color = scene.ambientLight * albedo;
 	static auto &light_list = scene.getLights();
 	for ( RTLight *light : light_list )
@@ -153,7 +153,7 @@ const Tmpl8::vec3 RayTracer::shade_reflective( const RTRay &castedRay, const RTI
 	auto &surfacePointData = *intersection.surfacePointData;
 	const RTMaterial &material = intersection.object->getMaterial();
 	vec3 nd = castedRay.dir - ( ( 2 * castedRay.dir.dot( surfacePointData.normal ) ) * surfacePointData.normal );
-	RTRay refRay = RTRay( surfacePointData.position + 0.0001 * nd, nd, castedRay.distance_traveled+intersection.rayT );
+	RTRay refRay = RTRay( surfacePointData.position + renderOptions.shadowBias * nd, nd, castedRay.distance_traveled+intersection.rayT );
 	return castRay( refRay, depth + 1 );
 }
 
