@@ -40,8 +40,8 @@ RTMaterial meshMaterial( vec3( 1, 1, 1 ), meshTexture,DIFFUSE );
 void Game::Init()
 {
 	renderOptions.fov = 51.52f;
-	renderOptions.width = 800;
-	renderOptions.height = 800;
+	renderOptions.width = SCRWIDTH;
+	renderOptions.height = SCRHEIGHT;
 	renderOptions.maxRecursionDepth = 8;
 	renderOptions.shadowBias = 0.01f;
 
@@ -95,7 +95,7 @@ void Game::Init()
 							boxReflectiveMaterial );
 	
 
-	RTSphere *pSphere1 = new RTSphere( vec3( -15.0f, 0.0f, -40.0f ), 5, redspehreMaterial );
+	RTSphere *pSphere1 = new RTSphere( vec3( -15.0f, 0.0f, -40.0f ), 5, sphereMaterial );
 	
 
 	RTSphere *pSphere2 = new RTSphere( vec3( 15.0f, 0.0f, -40.0f ), 5.0f, yellowspehreMaterial );
