@@ -7,7 +7,7 @@
 // Prevent expansion clashes (when using std::min and std::max):
 #define NOMINMAX
 
-#define NUMBER_THREAD 4
+#define NUMBER_THREAD 8
 
 #define SCRWIDTH 800
 #define SCRHEIGHT 800

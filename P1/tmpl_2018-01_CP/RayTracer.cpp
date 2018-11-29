@@ -33,25 +33,13 @@ void RayTracer::render( Surface *screen )
 {
 	scene.getCamera()->Update();
 	
-	//startRenderThread( 0, 799, 0, 799 );
-	
-	startRenderThread( 0, 400, 0, 99 );
-	startRenderThread( 0, 400, 100, 199 );
-	startRenderThread( 0, 400, 200, 299 );
-	startRenderThread( 0, 400, 300, 399 );
-	startRenderThread( 0, 400, 400, 499 );
-	startRenderThread( 0, 400, 500, 599 );
-	startRenderThread( 0, 400, 600, 699 );
-	startRenderThread( 0, 400, 700, 799 );
-
-	startRenderThread( 401, 799, 0, 99 );
-	startRenderThread( 401, 799, 100, 199 );
-	startRenderThread( 401, 799, 200, 299 );
-	startRenderThread( 401, 799, 300, 399 );
-	startRenderThread( 401, 799, 400, 499 );
-	startRenderThread( 401, 799, 500, 599 );
-	startRenderThread( 401, 799, 600, 699 );
-	startRenderThread( 401, 799, 700, 799 );
+	int chunkWidth = renderOptions.width / NUMBER_THREAD;
+	for (int i = 0; i < NUMBER_THREAD; i++)
+	{
+		int x_min = chunkWidth * i;
+		int x_max = std::min(x_min + chunkWidth,renderOptions.width) - 1;
+		startRenderThread( x_min, x_max, 0, renderOptions.height - 1 );
+	}
 	
 	waitRenderThreads();
 
