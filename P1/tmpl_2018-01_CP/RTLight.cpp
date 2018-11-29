@@ -37,7 +37,7 @@ class PointLight : public RTLight
 		}
 		float cosine = pd.normal.dot( nd );
 		cosine = ( cosine > 0 ? cosine : 0 ) / l2 * power;
-		return cosine * texture;
+		return cosine * texture*color;
 	}
 };
 
@@ -61,7 +61,7 @@ class ParrallelLight : public RTLight
 		}
 		float cosine = pd.normal.dot( -direction );
 		cosine = ( cosine > 0 ? cosine : 0 ) * power;
-		return cosine * texture;
+		return cosine * texture * color;
 	}
 };
 

@@ -27,7 +27,7 @@ RTMaterial yellowspehreMaterial( vec3(1, 1, 0 ), DIFFUSE_AND_REFLECTIVE );
 RTMaterial boxReflectiveMaterial( vec3( 1, 1, 1 ), boxTexture, DIFFUSE_AND_REFLECTIVE );
 //RTMaterial boxwithTextureMaterial( vec3( 0, 1, 1 ), floorTexture, DIFFUSE );
 
-RTMaterial floorMaterial( vec3( 1, 1, 1 ), floorTexture, DIFFUSE );
+RTMaterial floorMaterial( vec3( 1, 1, 1 ), floorTexture, DIFFUSE_AND_REFLECTIVE );
 RTMaterial mirrorWallMaterial( vec3( 1, 1, 1 ), REFLECTIVE );
 
 RTMaterial coneMaterial( vec3( 1, 1, 1 ), boxTexture, DIFFUSE );
@@ -54,6 +54,7 @@ void Game::Init()
 	meshTexture->LoadTextureImage( "./assets/Cesium_Man.jpg" );
 	floorMaterial.textureScale.x = 0.1f;
 	floorMaterial.textureScale.y = 0.1f;
+	floorMaterial.reflectionFactor = 0.3f;
 
 	coneMaterial.textureScale.x = 0.1f;
 	coneMaterial.textureScale.y = 0.1f;
@@ -75,7 +76,7 @@ void Game::Init()
 	vec3 posL3 = vec3( -10.0f, 10.0f, -40.0f );
 	vec3 posL4 = vec3( 0.0f, 0.0f, 10.0f );
 	RTLight* pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 1500.0f,  posL1);
-	RTLight *pLight2 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, posL2 );
+	RTLight *pLight2 = RTLight::createPointLight( vec3( 1.0f, .0f, .0f ), 500.0f, posL2 );
 	RTLight *pLight3 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, posL3 );
 	RTLight *pLight4 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, posL4 );
 
