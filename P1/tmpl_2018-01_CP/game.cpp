@@ -76,8 +76,8 @@ void Game::Init()
 	vec3 posL3 = vec3( -10.0f, 10.0f, -40.0f );
 	vec3 posL4 = vec3( 0.0f, 0.0f, 10.0f );
 	RTLight* pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 1500.0f,  posL1);
-	RTLight *pLight2 = RTLight::createPointLight( vec3( 1.0f, .0f, .0f ), 500.0f, posL2 );
-	RTLight *pLight3 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, posL3 );
+	RTLight *pLight2 = RTLight::createPointLight( vec3( 1.0f, .0f, .0f ), 1000.0f, posL2 );
+	RTLight *pLight3 = RTLight::createPointLight( vec3( .0f, 1.0f, .0f ), 500.0f, posL3 );
 	RTLight *pLight4 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, posL4 );
 
 	scene.addLight( pLight );
