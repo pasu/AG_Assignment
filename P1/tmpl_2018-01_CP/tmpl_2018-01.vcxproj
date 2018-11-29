@@ -132,10 +132,12 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PreprocessorDefinitions>WIN64;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <!-- END Custom section -->
   <ItemGroup>
+    <ClCompile Include="FXAA.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="quarticsolver.cpp" />
     <ClCompile Include="RayTracer.cpp" />
@@ -160,6 +162,7 @@
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FXAA.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="precomp.h" />
     <ClInclude Include="quarticsolver.h" />

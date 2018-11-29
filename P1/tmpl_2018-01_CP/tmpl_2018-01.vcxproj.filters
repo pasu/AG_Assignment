@@ -25,6 +25,7 @@
     <ClCompile Include="quarticsolver.cpp" />
     <ClCompile Include="RTCone.cpp" />
     <ClCompile Include="RTCameraController.cpp" />
+    <ClCompile Include="FXAA.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -55,6 +56,7 @@
     <ClInclude Include="quarticsolver.h" />
     <ClInclude Include="RTCone.h" />
     <ClInclude Include="RTCameraController.h" />
+    <ClInclude Include="FXAA.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">

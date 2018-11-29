@@ -1,10 +1,11 @@
 #include "RayTracer.h"
 #include "precomp.h"
-
+#include "fxaa.h"
 RayTracer::RayTracer( const Scene &scene, const RenderOptions &renderOptions ) : renderOptions( renderOptions ), scene( scene )
 {
 	size = renderOptions.width * renderOptions.height;
 	pPixels = new unsigned int[size];
+	hdrPixels = new vec3[size];
 }
 
 RayTracer::~RayTracer()
@@ -24,7 +25,16 @@ void RayTracer::render( Surface *screen ) const
 		for ( int x = 0; x < renderOptions.width; ++x )
 		{
 			RTRay r = generatePrimaryRay( x, y );
-			vec3 color = castRay( r, 0 );
+			hdrPixels[y*renderOptions.width+x] = castRay( r, 0 );
+		}
+	}
+
+	runFXAA( hdrPixels, renderOptions.width, renderOptions.height );
+
+
+	for (int y = 0; y < renderOptions.height; ++y) {
+		for (int x = 0; x < renderOptions.width; ++x) {
+			auto &color = hdrPixels[y * renderOptions.width + x];
 #define lmt( x ) ( ( x ) < 255 ? ( x ) : 255 )
 			unsigned int colorf = 0xff000000 | lmt( (unsigned int)( color.z * 255 ) ) | lmt( (unsigned int)( color.y * 255 ) ) << 8 | lmt( (unsigned int)( color.x * 255 ) ) << 16;
 #undef lmt

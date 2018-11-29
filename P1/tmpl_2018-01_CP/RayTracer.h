@@ -35,4 +35,5 @@ class RayTracer
 	const Scene &scene;
 	int size;
 	unsigned  int *pPixels;
+	vec3 *hdrPixels;
 };

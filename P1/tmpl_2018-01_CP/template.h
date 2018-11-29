@@ -4,7 +4,7 @@
 #pragma once
 
 #define TEMPLATE_VERSION	"Template_v2018.01"
-
+#include <stdint.h>
 typedef unsigned char uchar;
 typedef unsigned char byte;
 typedef int64_t int64;
