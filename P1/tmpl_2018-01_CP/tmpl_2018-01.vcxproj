@@ -141,6 +141,7 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="quarticsolver.cpp" />
     <ClCompile Include="RayTracer.cpp" />
+    <ClCompile Include="RayTracerThread.cpp" />
     <ClCompile Include="RTBox.cpp" />
     <ClCompile Include="RTCameraController.cpp" />
     <ClCompile Include="RTCone.cpp" />

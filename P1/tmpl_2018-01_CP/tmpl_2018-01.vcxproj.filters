@@ -26,6 +26,7 @@
     <ClCompile Include="RTCone.cpp" />
     <ClCompile Include="RTCameraController.cpp" />
     <ClCompile Include="FXAA.cpp" />
+    <ClCompile Include="RayTracerThread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />

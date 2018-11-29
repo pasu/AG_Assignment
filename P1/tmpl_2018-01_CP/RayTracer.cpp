@@ -17,17 +17,43 @@ RayTracer::~RayTracer()
 	}
 }
 
-void RayTracer::render( Surface *screen ) const
+void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 {
-	scene.getCamera()->Update();
-	for ( int y = 0; y < renderOptions.height; ++y )
+	for ( int y = y_min; y <= y_max; ++y )
 	{
-		for ( int x = 0; x < renderOptions.width; ++x )
+		for ( int x = x_min; x <= x_max; ++x )
 		{
 			RTRay r = generatePrimaryRay( x, y );
-			hdrPixels[y*renderOptions.width+x] = castRay( r, 0 );
+			hdrPixels[y * renderOptions.width + x] = castRay( r, 0 );
 		}
 	}
+}
+
+void RayTracer::render( Surface *screen )
+{
+	scene.getCamera()->Update();
+	
+	//startRenderThread( 0, 799, 0, 799 );
+	
+	startRenderThread( 0, 400, 0, 99 );
+	startRenderThread( 0, 400, 100, 199 );
+	startRenderThread( 0, 400, 200, 299 );
+	startRenderThread( 0, 400, 300, 399 );
+	startRenderThread( 0, 400, 400, 499 );
+	startRenderThread( 0, 400, 500, 599 );
+	startRenderThread( 0, 400, 600, 699 );
+	startRenderThread( 0, 400, 700, 799 );
+
+	startRenderThread( 401, 799, 0, 99 );
+	startRenderThread( 401, 799, 100, 199 );
+	startRenderThread( 401, 799, 200, 299 );
+	startRenderThread( 401, 799, 300, 399 );
+	startRenderThread( 401, 799, 400, 499 );
+	startRenderThread( 401, 799, 500, 599 );
+	startRenderThread( 401, 799, 600, 699 );
+	startRenderThread( 401, 799, 700, 799 );
+	
+	waitRenderThreads();
 
 	runFXAA( hdrPixels, renderOptions.width, renderOptions.height );
 
@@ -44,6 +70,8 @@ void RayTracer::render( Surface *screen ) const
 
 	memcpy( screen->GetBuffer(), pPixels, size * 4 );
 }
+
+
 
 const RTRay &RayTracer::generatePrimaryRay( const int x, const int y ) const
 {
@@ -226,3 +254,4 @@ const Tmpl8::vec3 RayTracer::refract( const vec3 &I, const vec3 &N, const float 
 	//k < 0 = total internal reflection
 	return k < 0.0f ? vec3( 0.0f ) : ( eta * I ) + ( eta * cosi - sqrtf( k ) ) * n;
 }
+
