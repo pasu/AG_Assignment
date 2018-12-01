@@ -31,13 +31,23 @@ class PointLight : public RTLight
 		RTRay ray = RTRay( pd.position + rt.getRenderOptions().shadowBias * nd, nd );
 		const RTIntersection &intersection = rt.findNearestObjectIntersection( ray );
 
-		if ( intersection.rayT < l && intersection.isIntersecting() )
+		if ( !intersection.isIntersecting() || intersection.rayT > distanceToPoint( ray .orig) )
 		{
-			return vec3(.0f,.0f,.0f);
+			float cosine = pd.normal.dot( nd );
+			cosine = ( cosine > 0 ? cosine : 0 ) / l2 * power;
+			return cosine * texture * color;
 		}
-		float cosine = pd.normal.dot( nd );
-		cosine = ( cosine > 0 ? cosine : 0 ) / l2 * power;
-		return cosine * texture*color;
+		else if ( intersection.object->getMaterial().shadingType == TRANSMISSIVE_AND_REFLECTIVE )
+		{
+			SurfacePointData shadowObjectSurfacePoint = intersection.object->getSurfacePointData( intersection );
+			return vec3( .0f, .0f, .0f );
+		}
+		
+	}
+
+	float distanceToPoint( const vec3 &point ) const
+	{
+		return ( pos - point ).length();
 	}
 };
 

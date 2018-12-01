@@ -17,6 +17,9 @@ public:
 	void KeyDown( int key );
 	void MouseWheel( int y );
 
+	void scene_default();
+	void scene_beer();
+
   private:
 	Surface* screen;
 	RayTracer *pTracer;

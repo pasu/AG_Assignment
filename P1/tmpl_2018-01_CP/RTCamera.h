@@ -13,6 +13,14 @@ class RTCamera
 		eye = e;
 	}
 
+	void setFov(const float& angle)
+	{
+		float y = 1.0f;
+		float x = tan( angle / Utils::RT_PI );
+
+		tanFovHalf = vec2( x, y );
+	}
+
 	RTCamera()
 	{
 		// 		eye = vec3( 0, 0, 5 );
