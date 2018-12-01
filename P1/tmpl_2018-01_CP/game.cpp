@@ -76,8 +76,8 @@ void Game::Init()
 	vec3 posL3 = vec3( -10.0f, 10.0f, -40.0f );
 	vec3 posL4 = vec3( 0.0f, 0.0f, 10.0f );
 	RTLight* pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 1500.0f,  posL1);
-	RTLight *pLight2 = RTLight::createPointLight( vec3( 1.0f, .0f, .0f ), 1000.0f, posL2 );
-	RTLight *pLight3 = RTLight::createPointLight( vec3( .0f, 1.0f, .0f ), 500.0f, posL3 );
+	RTLight *pLight2 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 1000.0f, posL2 );
+	RTLight *pLight3 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, posL3 );
 	RTLight *pLight4 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, posL4 );
 
 	scene.addLight( pLight );
@@ -95,7 +95,7 @@ void Game::Init()
 							boxReflectiveMaterial );
 	
 
-	RTSphere *pSphere1 = new RTSphere( vec3( -15.0f, 0.0f, -40.0f ), 5, sphereMaterial );
+	RTSphere *pSphere1 = new RTSphere( vec3( -15.0f, 0.0f, -40.0f ), 5, redspehreMaterial );
 	
 
 	RTSphere *pSphere2 = new RTSphere( vec3( 15.0f, 0.0f, -40.0f ), 5.0f, yellowspehreMaterial );
@@ -135,7 +135,7 @@ void Game::Init()
 	//scene.addObject( pCone );
  	//scene.addObject( pTorus );
 
-	//scene.addObject( pSphere3 );
+	scene.addObject( pSphere3 );
 
 	//scene.addObject( mesh );
 
@@ -167,8 +167,6 @@ void Game::Tick( float deltaTime )
 //	screen->Clear( 0 );
 	// print something in the graphics window
 	pTracer->render( screen );
-
-	screen->Print( "hello world", 2, 2, 0xffffff );
 	// print something to the text window
 // 	printf( "this goes to the console window.\n" );
 // 	// draw a sprite
@@ -176,10 +174,14 @@ void Game::Tick( float deltaTime )
 // 	rotatingGun.Draw( screen, 100, 100 );
 	if (++frame == 10) {
 		DWORD nt = GetTickCount();
-		printf( "%.2f\n", 10000.0f / ( nt - tt ) );
+
+		sprintf( buffer, "FPS: %.2f", 10000.0f / ( nt - tt ) );
+
 		tt = nt;
 		frame = 0;
 	}
+
+	screen->Print( buffer, 2, 2, 0xffffff );
 }
 
 void Tmpl8::Game::KeyDown( int key )

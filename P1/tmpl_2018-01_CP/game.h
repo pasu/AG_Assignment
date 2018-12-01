@@ -20,6 +20,8 @@ public:
   private:
 	Surface* screen;
 	RayTracer *pTracer;
+
+	char buffer[128];
 };
 
 }; // namespace Tmpl8
