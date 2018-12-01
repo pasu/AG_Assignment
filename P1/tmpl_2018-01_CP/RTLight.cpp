@@ -42,6 +42,8 @@ class PointLight : public RTLight
 			SurfacePointData shadowObjectSurfacePoint = intersection.object->getSurfacePointData( intersection );
 			return vec3( .0f, .0f, .0f );
 		}
+
+		return vec3( .0f, .0f, .0f );
 		
 	}
 
