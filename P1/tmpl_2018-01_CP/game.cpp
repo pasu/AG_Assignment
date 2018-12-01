@@ -9,33 +9,18 @@
 #include "RTTorus.h"
 #include "RTCone.h"
 #include "RTCameraController.h"
+
+#include "RTTextureManager.h"
+#include "RTMaterialManager.h"
 // -----------------------------------------------------------
 // Initialize the application
 // -----------------------------------------------------------
+RTTextureManager gTexManager;
+RTMaterialManager gMaterialManager;
 
 Scene scene( vec3( 0.1f ), vec3( 43.0f/255.0f, 203.0f / 255.0f, 246.0f/255.0f ) );
 RenderOptions renderOptions;
 
-RTTexture *floorTexture = new RTTexture();
-RTTexture *boxTexture = new RTTexture();
-RTTexture *torusTexture = new RTTexture();
-RTTexture *meshTexture = new RTTexture();
-
-RTMaterial redspehreMaterial( vec3( 1, 0, 0 ), DIFFUSE_AND_REFLECTIVE );
-RTMaterial yellowspehreMaterial( vec3(1, 1, 0 ), DIFFUSE_AND_REFLECTIVE );
-
-RTMaterial boxReflectiveMaterial( vec3( 1, 1, 1 ), boxTexture, DIFFUSE_AND_REFLECTIVE );
-//RTMaterial boxwithTextureMaterial( vec3( 0, 1, 1 ), floorTexture, DIFFUSE );
-
-RTMaterial floorMaterial( vec3( 1, 1, 1 ), floorTexture, DIFFUSE_AND_REFLECTIVE );
-RTMaterial mirrorWallMaterial( vec3( 1, 1, 1 ), REFLECTIVE );
-
-RTMaterial coneMaterial( vec3( 1, 1, 1 ), boxTexture, DIFFUSE );
-
-RTMaterial torusMaterial( vec3( 1, 1, 1 ), torusTexture, DIFFUSE );
-RTMaterial sphereMaterial( vec3( 1, 1, 1 ), TRANSMISSIVE_AND_REFLECTIVE );
-
-RTMaterial meshMaterial( vec3( 1, 1, 1 ), meshTexture,DIFFUSE );
 
 void Game::Init()
 {
@@ -47,11 +32,27 @@ void Game::Init()
 
 	pTracer = new RayTracer( scene, renderOptions );
 	//////////////////////////////////////////////////////////////////////////
-	floorTexture->LoadTextureImage("./assets/floor_diffuse.PNG");
-	floorTexture->generateMipmap( 8, 6.0f );
-	boxTexture->LoadTextureImage( "./assets/box.png" );
-	torusTexture->LoadTextureImage( "./assets/BumpyMetal.jpg" );
-	meshTexture->LoadTextureImage( "./assets/Cesium_Man.jpg" );
+	RTTexture *floorTexture = gTexManager.CreateTexture( "./assets/floor_diffuse.PNG", true, 8, 6.0f );
+	RTTexture *boxTexture = gTexManager.CreateTexture( "./assets/box.png" );
+	RTTexture *torusTexture = gTexManager.CreateTexture( "./assets/BumpyMetal.jpg" );
+	RTTexture *meshTexture = gTexManager.CreateTexture( "./assets/Cesium_Man.jpg" );
+
+	RTMaterial &redspehreMaterial = gMaterialManager.CreateMaterial( vec3( 1, 0, 0 ), DIFFUSE_AND_REFLECTIVE );
+
+	RTMaterial &yellowspehreMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 0 ), DIFFUSE_AND_REFLECTIVE );
+
+	RTMaterial &boxReflectiveMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), boxTexture, DIFFUSE_AND_REFLECTIVE );
+
+	RTMaterial &floorMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), floorTexture, DIFFUSE_AND_REFLECTIVE );
+	RTMaterial &mirrorWallMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), REFLECTIVE );
+
+	RTMaterial &coneMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), boxTexture, DIFFUSE );
+
+	RTMaterial &torusMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), torusTexture, DIFFUSE );
+	RTMaterial &sphereMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), TRANSMISSIVE_AND_REFLECTIVE );
+
+	RTMaterial &meshMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), meshTexture, DIFFUSE );
+
 	floorMaterial.textureScale.x = 0.1f;
 	floorMaterial.textureScale.y = 0.1f;
 	floorMaterial.reflectionFactor = 0.3f;
@@ -78,7 +79,7 @@ void Game::Init()
 	RTLight* pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 1500.0f,  posL1);
 	RTLight *pLight2 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 1000.0f, posL2 );
 	RTLight *pLight3 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, posL3 );
-	RTLight *pLight4 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, posL4 );
+	//RTLight *pLight4 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, posL4 );
 
 	scene.addLight( pLight );
 	scene.addLight( pLight2 );
@@ -109,20 +110,12 @@ void Game::Init()
 	
 
  	RTSphere *pSphere3 = new RTSphere( vec3( 0.0f, 0.0f, 0.0f ), 3.0f, sphereMaterial );
-// 	
-// 
-// 	RTSphere *pSphere4 = new RTSphere( vec3( 0.0f, 0.0f, -5.0f ), 2.0f, sphereMaterial );
-// 	//scene.addObject( pSphere4 );
-// 
-// 	RTSphere *pSphere5 = new RTSphere( vec3( 0.0f, 5.0f, -10.0f ), 1.0f, sphereMaterial );
-// 	//scene.addObject( pSphere5 );
-
 
 	RTObjMesh *mesh = new RTObjMesh( "./assets/Cesium_Man.dae", meshMaterial );
 	mesh->setPosition( 0.0f, 3.0f, -10.0f );
 	mesh->setRotation( -Utils::RT_PI / 2.0, -Utils::RT_PI / 2.0, 0.0f );
 	mesh->setScale( 5.3f, 5.3f, 5.3f );
-	//mesh->applyTransforms();
+	mesh->applyTransforms();
 
 	scene.addObject( plane1 );
 	scene.addObject( plane2 );
@@ -138,8 +131,6 @@ void Game::Init()
 	scene.addObject( pSphere3 );
 
 	//scene.addObject( mesh );
-
-	//auto s = scene.getObjects()[1]->getMaterial().shadingType;
 	///////////////////////////////////////////////////////////////////////////////
 
 }

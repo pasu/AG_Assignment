@@ -7,7 +7,7 @@ class RTTexture
 
 	const vec3 getTexel( float s, float t, float z, const vec2 &scale = vec2( 1, 1 ) ) const;
 
-	void LoadTextureImage( char *a_File );
+	void LoadTextureImage( const char *a_File );
 
 	int GetWidth() { return m_Width; }
 	int GetHeight() { return m_Height; }

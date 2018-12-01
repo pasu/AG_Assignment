@@ -148,12 +148,14 @@
     <ClCompile Include="RTIntersection.cpp" />
     <ClCompile Include="RTLight.cpp" />
     <ClCompile Include="RTMaterial.cpp" />
+    <ClCompile Include="RTMaterialManager.cpp" />
     <ClCompile Include="RTObjMesh.cpp" />
     <ClCompile Include="RTPlane.cpp" />
     <ClCompile Include="RTPrimitive.cpp" />
     <ClCompile Include="RTRay.cpp" />
     <ClCompile Include="RTSphere.cpp" />
     <ClCompile Include="RTTexture.cpp" />
+    <ClCompile Include="RTTextureManager.cpp" />
     <ClCompile Include="RTTorus.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="surface.cpp" />
@@ -176,6 +178,7 @@
     <ClInclude Include="RTIntersection.h" />
     <ClInclude Include="RTLight.h" />
     <ClInclude Include="RTMaterial.h" />
+    <ClInclude Include="RTMaterialManager.h" />
     <ClInclude Include="RTObjMesh.h" />
     <ClInclude Include="RTPlane.h" />
     <ClInclude Include="RTPrimitive.h" />
@@ -183,6 +186,7 @@
     <ClInclude Include="RTSphere.h" />
     <ClInclude Include="RTSurfacePointData.h" />
     <ClInclude Include="RTTexture.h" />
+    <ClInclude Include="RTTextureManager.h" />
     <ClInclude Include="RTTorus.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="surface.h" />

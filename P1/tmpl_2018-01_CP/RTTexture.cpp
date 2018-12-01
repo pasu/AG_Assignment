@@ -63,7 +63,7 @@ const Tmpl8::vec3 RTTexture::getTexelFromFile( const int x, const int y, int mip
 	return m_Buffer[mip][basePixel];
 }
 
-void RTTexture::LoadTextureImage( char *a_File )
+void RTTexture::LoadTextureImage( const char *a_File )
 {
 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 	fif = FreeImage_GetFileType( a_File, 0 );

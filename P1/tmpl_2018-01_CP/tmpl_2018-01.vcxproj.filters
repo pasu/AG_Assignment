@@ -27,6 +27,8 @@
     <ClCompile Include="RTCameraController.cpp" />
     <ClCompile Include="FXAA.cpp" />
     <ClCompile Include="RayTracerThread.cpp" />
+    <ClCompile Include="RTTextureManager.cpp" />
+    <ClCompile Include="RTMaterialManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -58,6 +60,8 @@
     <ClInclude Include="RTCone.h" />
     <ClInclude Include="RTCameraController.h" />
     <ClInclude Include="FXAA.h" />
+    <ClInclude Include="RTTextureManager.h" />
+    <ClInclude Include="RTMaterialManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">
