@@ -82,7 +82,7 @@ void RTTexture::LoadTextureImage( const char *a_File )
 		{
 			int basePixel = x * 4;
 			unsigned char *data = (byte *)line;
-			m_Buffer[0][y * m_Width + x] = {data[basePixel] / 255.0f, data[basePixel + 1] / 255.0f, data[basePixel + 2] / 255.0f};
+			m_Buffer[0][y * m_Width + x] = {data[basePixel + 2] / 255.0f, data[basePixel + 1] / 255.0f, data[basePixel] / 255.0f};
 		}
 	}
 	FreeImage_Unload( dib );

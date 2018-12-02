@@ -32,7 +32,9 @@ void Game::Init()
 
 	pTracer = new RayTracer( scene, renderOptions );
 
-	scene_default();
+	//pCamera->turnLeft( -Utils::RT_PI / 2.0f );
+	//scene_default();
+	scene_fresnel_beer();
 }
 
 // -----------------------------------------------------------
@@ -182,6 +184,41 @@ void Tmpl8::Game::scene_default()
 	///////////////////////////////////////////////////////////////////////////////
 }
 
-void Tmpl8::Game::scene_beer()
+void Tmpl8::Game::scene_fresnel_beer()
 {
+	//////////////////////////////////////////////////////////////////////////
+	RTTexture *floorTexture = gTexManager.CreateTexture( "./assets/floor_diffuse.png", true, 8, 6.0f );
+	RTMaterial &floorMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), floorTexture, DIFFUSE );
+
+	RTTexture *wallTexture = gTexManager.CreateTexture( "./assets/1d_debug.png", false, 8, 6.0f );
+	RTMaterial &wallMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), wallTexture, DIFFUSE );
+
+	RTMaterial &lensMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), TRANSMISSIVE_AND_REFLECTIVE );
+
+
+	floorMaterial.textureScale.x = 0.1f;
+	floorMaterial.textureScale.y = 0.1f;
+
+	wallMaterial.textureScale.x = 0.08f;
+	wallMaterial.textureScale.y = 0.08f;
+
+
+	lensMaterial.reflectionFactor = 0.4f;
+	lensMaterial.indexOfRefraction = 1.317f;
+	/////////////////////////////////////////////////////////////////////////
+	scene.ambientLight = 1.0f;
+
+	RTPlane *plane1 = new RTPlane( vec3( 0.0f, -30.0f, -40.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), floorMaterial );
+	RTPlane *plane2 = new RTPlane( vec3( 0.0f, 0.0f, -100.0f ), vec3( 0.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 0.0f ), wallMaterial );
+
+	RTPlane *plane3 = new RTPlane( vec3( 0.0f, -10.0f, -100.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), lensMaterial );
+
+	RTSphere *pSphere3 = new RTSphere( vec3( 0.0f, 0.0f, -20.0f ), 10.0f, lensMaterial );
+
+	scene.addObject( plane1 );
+	scene.addObject( plane2 );
+	scene.addObject( plane3 );
+
+	//scene.addObject( pSphere3 );
+	///////////////////////////////////////////////////////////////////////////////
 }

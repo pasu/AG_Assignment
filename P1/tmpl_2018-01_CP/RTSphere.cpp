@@ -12,39 +12,43 @@ const RTIntersection RTSphere::intersect( const RTRay &ray ) const
 	RTIntersection intersection( &ray, this, -1.0f );
 
 	vec3 C = pos - ray.orig;
-	float t = dot( C, ray.dir );
-	vec3 Q = C - t * ray.dir;
-	float p2 = dot( Q, Q );
-	if ( p2 > radius * radius )
-		return intersection;
+	float radiusSquare = radius * radius;
 
-	t -= sqrt( radius * radius - p2 );
-	if (t>0.0f)
+	if ( C.sqrLentgh() < radiusSquare )
 	{
-		intersection.rayT = t;
+		float t = dot( C, ray.dir );
+		vec3 Q = C - t * ray.dir;
+		float p2 = dot( Q, Q );
+
+		t -= sqrt( radiusSquare - p2 );
+		if ( t > 0.0f )
+		{
+			intersection.rayT = t;
+		}
 	}
-
-	//return intersection;
-
-	// analytic solution
-	vec3 L = ray.orig - pos;
-	float a = dot( ray.dir, ray.dir );
-	float b = 2 * dot( ray.dir, L );
-	float c = dot( L, L ) - ( radius * radius );
-
-	float t0, t1;
-
-	if ( !Utils::solveQuadratic( a, b, c, t0, t1 ) )
-		return intersection;
-
-	if ( t0 < 0 )
+	else
 	{
-		t0 = t1;
-		if ( t0 < 0 )
+		// analytic solution
+		vec3 L = -C;
+		float a = dot( ray.dir, ray.dir );
+		float b = 2 * dot( ray.dir, L );
+		float c = dot( L, L ) - ( radiusSquare );
+
+		float t0, t1;
+
+		if ( !Utils::solveQuadratic( a, b, c, t0, t1 ) )
 			return intersection;
+
+		if ( t0 < 0 )
+		{
+			t0 = t1;
+			if ( t0 < 0 )
+				return intersection;
+		}
+
+		intersection.rayT = t0;
 	}
 
-	intersection.rayT = t0;
 	return intersection;
 }
 

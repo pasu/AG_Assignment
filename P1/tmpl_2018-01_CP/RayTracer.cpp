@@ -112,18 +112,20 @@ const vec3 RayTracer::shade( const RTRay &castedRay, const RTIntersection &inter
 
 		float reflectionFactor;
 		reflectionFactor = fresnel( castedRay.dir, normal, material.indexOfRefraction );
+		//reflectionFactor = material.reflectionFactor;
 		// compute refraction if it is not a case of total internal reflection
 		if (reflectionFactor < 1.0f)
 		{
 			refractionColor = shade_transmissive( castedRay, intersection, depth );
-
+			//refractionColor = vec3( 0, 0, 0 );
 			// Burger-Lambert-Beer law
 			vec3 dis = castedRay.orig - surfacePointData.position;
-			vec3 absorbance = albedo * 0.05f * ( -dis.length());
+			vec3 absorbance = albedo * 0.04f * ( -dis.length());
 			vec3 transparency = vec3( expf( absorbance.x ), expf( absorbance.y ), expf( absorbance.z ) );
 			refractionColor = refractionColor *transparency;
 		}
 		reflectionColor = shade_reflective( castedRay, intersection, depth );
+		//reflectionColor = vec3( 1, 1, 1 );
 		return reflectionColor * reflectionFactor + refractionColor * ( 1.0f - reflectionFactor );
 	}
 	else if ( material.shadingType == DIFFUSE_AND_REFLECTIVE )
@@ -164,7 +166,7 @@ const Tmpl8::vec3 RayTracer::shade_diffuse( const RTRay &castedRay, const RTInte
 		return color;
 	}
 	const vec3 albedo = material.getAlbedoAtPoint( surfacePointData.textureCoordinates.x, surfacePointData.textureCoordinates.y,castedRay.distance_traveled+intersection.rayT );
-	//color = scene.ambientLight * albedo;
+	color = scene.ambientLight * albedo;
 	static auto &light_list = scene.getLights();
 	for ( RTLight *light : light_list )
 	{
@@ -222,6 +224,7 @@ float RayTracer::fresnel( const vec3 &I, const vec3 &N, const float refractionIn
 		float Rp = ( ( etai * cosi ) - ( etat * cost ) ) / ( ( etai * cosi ) + ( etat * cost ) );
 		return ( Rs * Rs + Rp * Rp ) / 2.0f;
 	}
+
 }
 
 const Tmpl8::vec3 RayTracer::refract( const vec3 &I, const vec3 &N, const float refractionIndex ) const
