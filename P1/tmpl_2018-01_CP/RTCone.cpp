@@ -69,7 +69,7 @@ const RTIntersection RTCone::intersect( const RTRay &ray ) const
 		}
 
 		discriminant = sqrtf( discriminant );
-		float denominator = 1.0 / ( 2.0 * a );
+		float denominator = 1.0f / ( 2.0f * a );
 
 		root = ( -b - discriminant ) * denominator;
 		if ( root > 0.0 )

@@ -144,8 +144,6 @@ const SurfacePointData RTObjMesh::getSurfacePointData( const RTIntersection &int
 	aiVector3D &ta = mesh->mTextureCoords[0][faces[intersection.triangleIndex].mIndices[0]];
 	aiVector3D &tb = mesh->mTextureCoords[0][faces[intersection.triangleIndex].mIndices[1]];
 	aiVector3D &tc = mesh->mTextureCoords[0][faces[intersection.triangleIndex].mIndices[2]];
-	// Barycentric Interpolation
-	vec3 bary;
 
 	// The area of a triangle is
 	float areaABC, areaPBC, areaPCA;
