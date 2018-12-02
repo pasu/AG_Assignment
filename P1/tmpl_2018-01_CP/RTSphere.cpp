@@ -14,7 +14,7 @@ const RTIntersection RTSphere::intersect( const RTRay &ray ) const
 	vec3 C = pos - ray.orig;
 	float radiusSquare = radius * radius;
 
-	if ( C.sqrLentgh() < radiusSquare )
+	if ( C.sqrLentgh() > radiusSquare )
 	{
 		float t = dot( C, ray.dir );
 		vec3 Q = C - t * ray.dir;

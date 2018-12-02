@@ -24,7 +24,8 @@ void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 		for ( int x = x_min; x <= x_max; ++x )
 		{
 			RTRay r = generatePrimaryRay( x, y );
-			hdrPixels[y * renderOptions.width + x] = castRay( r, 0 );
+			RTIntersection intersection;
+			hdrPixels[y * renderOptions.width + x] = castRay( r, 0, intersection );
 		}
 	}
 }
@@ -69,12 +70,12 @@ const RTRay &RayTracer::generatePrimaryRay( const int x, const int y ) const
 	return RTRay( origin, dir );
 }
 
-const vec3 RayTracer::castRay( const RTRay &ray, const int depth ) const
+const vec3 RayTracer::castRay( const RTRay &ray, const int depth, RTIntersection &intersection ) const
 {
 	if ( depth > renderOptions.maxRecursionDepth )
 		return vec3( 0, 1, 0 );
 
-	RTIntersection &intersection = findNearestObjectIntersection( ray );
+	intersection = findNearestObjectIntersection( ray );
 
 	if ( intersection.isIntersecting() )
 	{
@@ -116,13 +117,17 @@ const vec3 RayTracer::shade( const RTRay &castedRay, const RTIntersection &inter
 		// compute refraction if it is not a case of total internal reflection
 		if (reflectionFactor < 1.0f)
 		{
-			refractionColor = shade_transmissive( castedRay, intersection, depth );
+			RTIntersection intersectionObj;
+			refractionColor = shade_transmissive( castedRay, intersection, depth, intersectionObj );
 			//refractionColor = vec3( 0, 0, 0 );
-			// Burger-Lambert-Beer law
-			vec3 dis = castedRay.orig - surfacePointData.position;
-			vec3 absorbance = albedo * 0.04f * ( -dis.length());
-			vec3 transparency = vec3( expf( absorbance.x ), expf( absorbance.y ), expf( absorbance.z ) );
-			refractionColor = refractionColor *transparency;
+
+			if (intersectionObj.isInSideObj())
+			{
+				// Burger-Lambert-Beer law
+				vec3 absorbance = albedo * 0.15f * ( -intersectionObj.rayT );
+				vec3 transparency = vec3( expf( absorbance.x ), expf( absorbance.y ), expf( absorbance.z ) );
+				refractionColor = refractionColor * transparency;
+			}
 		}
 		reflectionColor = shade_reflective( castedRay, intersection, depth );
 		//reflectionColor = vec3( 1, 1, 1 );
@@ -182,10 +187,12 @@ const Tmpl8::vec3 RayTracer::shade_reflective( const RTRay &castedRay, const RTI
 	const RTMaterial &material = intersection.object->getMaterial();
 	vec3 nd = castedRay.dir - ( ( 2 * castedRay.dir.dot( surfacePointData.normal ) ) * surfacePointData.normal );
 	RTRay refRay = RTRay( surfacePointData.position + renderOptions.shadowBias * nd, nd, castedRay.distance_traveled+intersection.rayT );
-	return castRay( refRay, depth + 1 );
+
+	RTIntersection intersection2;
+	return castRay( refRay, depth + 1, intersection2 );
 }
 
-const Tmpl8::vec3 RayTracer::shade_transmissive( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const
+const Tmpl8::vec3 RayTracer::shade_transmissive( const RTRay &castedRay, const RTIntersection &intersection, const int depth, RTIntersection &intersectionObj ) const
 {
 	auto &surfacePointData = *intersection.surfacePointData;
 	const RTMaterial &material = intersection.object->getMaterial();
@@ -198,7 +205,8 @@ const Tmpl8::vec3 RayTracer::shade_transmissive( const RTRay &castedRay, const R
 	const vec3 &refractionDirection = refract( castedRay.dir, normal, material.indexOfRefraction );
 	const vec3 refractionRayOrig = outside ? surfacePointData.position - bias : surfacePointData.position + bias;
 	const RTRay refractionRay( refractionRayOrig, refractionDirection,castedRay.distance_traveled + intersection.rayT );
-	return castRay( refractionRay, depth + 1 ) * albedo;
+
+	return castRay( refractionRay, depth + 1, intersectionObj ) * albedo;
 }
 
 float RayTracer::fresnel( const vec3 &I, const vec3 &N, const float refractionIndex ) const

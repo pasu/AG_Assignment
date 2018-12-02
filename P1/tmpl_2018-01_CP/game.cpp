@@ -33,8 +33,8 @@ void Game::Init()
 	pTracer = new RayTracer( scene, renderOptions );
 
 	//pCamera->turnLeft( -Utils::RT_PI / 2.0f );
-	//scene_default();
-	scene_fresnel_beer();
+	scene_default();
+	//scene_fresnel_beer();
 }
 
 // -----------------------------------------------------------
@@ -195,6 +195,8 @@ void Tmpl8::Game::scene_fresnel_beer()
 
 	RTMaterial &lensMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), TRANSMISSIVE_AND_REFLECTIVE );
 
+	RTMaterial &sphereMaterial = gMaterialManager.CreateMaterial( vec3( 1, 0, 0 ), TRANSMISSIVE_AND_REFLECTIVE );
+
 
 	floorMaterial.textureScale.x = 0.1f;
 	floorMaterial.textureScale.y = 0.1f;
@@ -203,22 +205,34 @@ void Tmpl8::Game::scene_fresnel_beer()
 	wallMaterial.textureScale.y = 0.08f;
 
 
-	lensMaterial.reflectionFactor = 0.4f;
-	lensMaterial.indexOfRefraction = 1.317f;
+	lensMaterial.reflectionFactor = 0.1f;
+	lensMaterial.indexOfRefraction = 1.217f;
+	sphereMaterial.reflectionFactor = 0.1f;
+	sphereMaterial.indexOfRefraction = 1.2f;
 	/////////////////////////////////////////////////////////////////////////
 	scene.ambientLight = 1.0f;
+
+	vec3 posL1 = vec3( 0.0f, 10.0f, -10.0f );
+	RTLight *pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 2500.0f, posL1 );
+	
+	scene.addLight( pLight );
+
 
 	RTPlane *plane1 = new RTPlane( vec3( 0.0f, -30.0f, -40.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), floorMaterial );
 	RTPlane *plane2 = new RTPlane( vec3( 0.0f, 0.0f, -100.0f ), vec3( 0.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 0.0f ), wallMaterial );
 
 	RTPlane *plane3 = new RTPlane( vec3( 0.0f, -10.0f, -100.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), lensMaterial );
 
-	RTSphere *pSphere3 = new RTSphere( vec3( 0.0f, 0.0f, -20.0f ), 10.0f, lensMaterial );
+	RTSphere *pSphere1 = new RTSphere( vec3( -5.0f, 0.0f, -10.0f ), 1.0f, sphereMaterial );
+	RTSphere *pSphere2 = new RTSphere( vec3( -1.0f, 0.0f, -10.0f ), 2.0f, sphereMaterial );
+	RTSphere *pSphere3 = new RTSphere( vec3( 5.0f, 0.0f, -10.0f ), 3.0f, sphereMaterial );
 
 	scene.addObject( plane1 );
 	scene.addObject( plane2 );
 	scene.addObject( plane3 );
 
-	//scene.addObject( pSphere3 );
+	scene.addObject( pSphere1 );
+	scene.addObject( pSphere2 );
+	scene.addObject( pSphere3 );
 	///////////////////////////////////////////////////////////////////////////////
 }
