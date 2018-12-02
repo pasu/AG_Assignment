@@ -3,10 +3,22 @@
 
 RTTexture::RTTexture()
 {
+	for ( int i = 0; i < 8; i++ )
+	{
+		m_Buffer[i] = NULL;
+	}
 }
 
 RTTexture::~RTTexture()
 {
+	for (int i=0;i<8;i++)
+	{
+		if (m_Buffer[i])
+		{
+			_aligned_free( m_Buffer[i] );
+			m_Buffer[i] = NULL;
+		}
+	}
 }
 
 const Tmpl8::vec3 RTTexture::getTexel( float s, float t,float z, const vec2 &scale /*= vec2( 1, 1 ) */ ) const

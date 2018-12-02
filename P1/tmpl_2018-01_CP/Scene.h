@@ -19,6 +19,8 @@ public:
 	inline const vector<RTPrimitive *> &getObjects() const { return primitivecollection; }
 	inline const vector<RTLight *> &getLights() const { return lightcollection; }
 
+	void ClearAllObj();
+	void ClearAllLight();
 	vec3 ambientLight;
 	vec3 backgroundColor;
 	unsigned int backgroundColorPixel;

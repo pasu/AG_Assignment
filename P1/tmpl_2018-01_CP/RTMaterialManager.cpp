@@ -8,12 +8,7 @@ RTMaterialManager::RTMaterialManager()
 
 RTMaterialManager::~RTMaterialManager()
 {
-	for ( auto it = mMaterials.begin(); it != mMaterials.end(); ++it )
-	{
-		RTMaterial *pMaterial = it->second;
-		delete pMaterial;
-		pMaterial = NULL;
-	}
+	ClearAll();
 }
 
 RTMaterial &RTMaterialManager::CreateMaterial( const vec3 &color, const ShadingType shadingType ) 
@@ -56,6 +51,18 @@ RTMaterial &RTMaterialManager::CreateMaterial( const vec3 &color, const RTTextur
 		pMaterial = got->second;
 		return *pMaterial;
 	}
+}
+
+void RTMaterialManager::ClearAll()
+{
+	for ( auto it = mMaterials.begin(); it != mMaterials.end(); ++it )
+	{
+		RTMaterial *pMaterial = it->second;
+		delete pMaterial;
+		pMaterial = NULL;
+	}
+
+	mMaterials.clear();
 }
 
 int RTMaterialManager::getHashCode( const vec3 &color, const RTTexture *albedo, const vec2 &textureScale, const ShadingType shadingType, const float reflectionFactor, const float indexOfRefraction ) const

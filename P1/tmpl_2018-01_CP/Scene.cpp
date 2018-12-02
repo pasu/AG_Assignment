@@ -19,19 +19,8 @@ Scene::~Scene()
 {
 	delete camera;
 
-	for ( RTPrimitive* obj : primitivecollection )
-	{
-		delete obj;
-		obj = NULL;
-	}
-	primitivecollection.clear();
-
-	for ( RTLight *light : lightcollection )
-	{
-		delete light;
-		light = NULL;
-	}
-	lightcollection.clear();
+	ClearAllLight();
+	ClearAllObj();
 }
 
 void Scene::addObject( RTPrimitive *object )
@@ -47,4 +36,24 @@ void Scene::addLight( RTLight *light )
 RTCamera *Scene::getCamera()const
 {
 	return camera;
+}
+
+void Scene::ClearAllObj()
+{
+	for ( RTPrimitive *obj : primitivecollection )
+	{
+		delete obj;
+		obj = NULL;
+	}
+	primitivecollection.clear();
+}
+
+void Scene::ClearAllLight()
+{
+	for ( RTLight *light : lightcollection )
+	{
+		delete light;
+		light = NULL;
+	}
+	lightcollection.clear();
 }

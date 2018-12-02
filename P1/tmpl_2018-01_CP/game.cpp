@@ -35,6 +35,12 @@ void Game::Init()
 	//pCamera->turnLeft( -Utils::RT_PI / 2.0f );
 	scene_default();
 	//scene_fresnel_beer();
+	//gTexManager.CreateTexture( "./assets/floor_diffuse.png", true, 8, 6.0f );
+// 	gTexManager.ClearAll();
+// 	gMaterialManager.ClearAll();
+// 	scene.ClearAllLight();
+// 	scene.ClearAllObj();
+// 	scene_default();
 }
 
 // -----------------------------------------------------------
@@ -79,6 +85,26 @@ void Game::Tick( float deltaTime )
 
 void Tmpl8::Game::KeyDown( int key )
 {
+	static int index = 0;
+	static int scenecount = 2;
+	if (key == 79)
+	{
+		gTexManager.ClearAll();
+		gMaterialManager.ClearAll();
+		scene.ClearAllLight();
+		scene.ClearAllObj();
+
+		index++;
+		switch ( index % scenecount )
+		{
+		case 0:
+			scene_default();
+			break;
+		case 1:
+			scene_fresnel_beer();
+			break;
+		}
+	}
 
 }
 
@@ -129,10 +155,11 @@ void Tmpl8::Game::scene_default()
 	torusMaterial.indexOfRefraction = 2.417f;
 	sphereMaterial.indexOfRefraction = 2.417f;
 	/////////////////////////////////////////////////////////////////////////
-	vec3 posL1 = vec3( 00.0f, 40.0f, -5.0f );
-	vec3 posL2 = vec3( 10.0f, 10.0f, -40.0f );
-	vec3 posL3 = vec3( -10.0f, 10.0f, -40.0f );
-	vec3 posL4 = vec3( 0.0f, 0.0f, 10.0f );
+	scene.ambientLight = 0.1f;
+	vec3 posL1 = vec3( 00.0f, 40.0f, -25.0f );
+	vec3 posL2 = vec3( 10.0f, 10.0f, -60.0f );
+	vec3 posL3 = vec3( -10.0f, 10.0f, -60.0f );
+	vec3 posL4 = vec3( 0.0f, 0.0f, -10.0f );
 	RTLight *pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 1500.0f, posL1 );
 	RTLight *pLight2 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 1000.0f, posL2 );
 	RTLight *pLight3 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 500.0f, posL3 );
@@ -144,28 +171,28 @@ void Tmpl8::Game::scene_default()
 	//scene.addLight( pLight4 );
 	scene.addLight( RTLight::createParralleLight( vec3( 1.0f, 1.0f, 1.0f ), 0.5f, vec3( 0.707, -0.707, 0 ) ) );
 
-	RTPlane *plane1 = new RTPlane( vec3( 0.0f, -11.5f, -10.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), floorMaterial );
-	RTPlane *plane2 = new RTPlane( vec3( 0.0f, 0.0f, -100.0f ), vec3( 0.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 0.0f ), mirrorWallMaterial );
+	RTPlane *plane1 = new RTPlane( vec3( 0.0f, -11.5f, -30.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), floorMaterial );
+	RTPlane *plane2 = new RTPlane( vec3( 0.0f, 0.0f, -120.0f ), vec3( 0.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 0.0f ), mirrorWallMaterial );
 
-	RTBox *box = new RTBox( vec3( 0.0f, 0.0f, -85.0f ), vec3( 20.0f, 20.0f, 10.0f ),
+	RTBox *box = new RTBox( vec3( 0.0f, 0.0f, -105.0f ), vec3( 20.0f, 20.0f, 10.0f ),
 							boxReflectiveMaterial );
 
-	RTSphere *pSphere1 = new RTSphere( vec3( -15.0f, 0.0f, -40.0f ), 5, redspehreMaterial );
+	RTSphere *pSphere1 = new RTSphere( vec3( -15.0f, 0.0f, -60.0f ), 5, redspehreMaterial );
 
-	RTSphere *pSphere2 = new RTSphere( vec3( 15.0f, 0.0f, -40.0f ), 5.0f, yellowspehreMaterial );
+	RTSphere *pSphere2 = new RTSphere( vec3( 15.0f, 0.0f, -60.0f ), 5.0f, yellowspehreMaterial );
 
-	RTCone *pCone = new RTCone( vec3( 15, 25, -30 ), vec3( 15, 20, -30 ), 5, coneMaterial );
+	RTCone *pCone = new RTCone( vec3( 15, 25, -50 ), vec3( 15, 20, -50 ), 5, coneMaterial );
 
-	RTTorus *pTorus = new RTTorus( vec3( -15.0f, 10.0f, -20.0f ), vec3( 0.0f, 1.0f, 2.0f ), 2.0f, 4.0f,
+	RTTorus *pTorus = new RTTorus( vec3( -15.0f, 10.0f, -40.0f ), vec3( 0.0f, 1.0f, 2.0f ), 2.0f, 4.0f,
 								   torusMaterial );
 
-	RTSphere *pSphere3 = new RTSphere( vec3( 0.0f, 0.0f, 0.0f ), 3.0f, sphereMaterial );
+	RTSphere *pSphere3 = new RTSphere( vec3( 0.0f, 0.0f, -20.0f ), 3.0f, sphereMaterial );
 
-	RTObjMesh *mesh = new RTObjMesh( "./assets/Cesium_Man.dae", meshMaterial );
-	mesh->setPosition( 0.0f, 3.0f, -10.0f );
-	mesh->setRotation( -Utils::RT_PI / 2.0, -Utils::RT_PI / 2.0, 0.0f );
-	mesh->setScale( 5.3f, 5.3f, 5.3f );
-	mesh->applyTransforms();
+// 	RTObjMesh *mesh = new RTObjMesh( "./assets/Cesium_Man.dae", meshMaterial );
+// 	mesh->setPosition( 0.0f, 2.0f, -10.0f );
+// 	mesh->setRotation( -Utils::RT_PI / 2.0, -Utils::RT_PI / 2.0, 0.0f );
+// 	//mesh->setScale( .03f, .03f,.03f );
+// 	mesh->applyTransforms();
 
 	scene.addObject( plane1 );
 	scene.addObject( plane2 );
@@ -175,8 +202,8 @@ void Tmpl8::Game::scene_default()
 	scene.addObject( pSphere1 );
 	scene.addObject( pSphere2 );
 
-	//scene.addObject( pCone );
-	//scene.addObject( pTorus );
+	scene.addObject( pCone );
+	scene.addObject( pTorus );
 
 	scene.addObject( pSphere3 );
 

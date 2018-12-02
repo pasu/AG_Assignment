@@ -17,6 +17,7 @@ class RTMaterialManager
 
 	RTMaterial &CreateMaterial( const vec3 &color, const RTTexture *albedo, const vec2 &textureScale, const ShadingType shadingType, const float reflectionFactor, const float indexOfRefraction ) ;
 
+	void ClearAll();
 	private:
 	int getHashCode( const vec3 &color, const RTTexture *albedo, const vec2 &textureScale, const ShadingType shadingType, const float reflectionFactor, const float indexOfRefraction ) const;
 	private:

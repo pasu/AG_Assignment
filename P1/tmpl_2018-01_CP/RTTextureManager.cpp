@@ -4,16 +4,12 @@
 
 RTTextureManager::RTTextureManager()
 {
+
 }
 
 RTTextureManager::~RTTextureManager()
 {
-	for (auto it = mTextures.begin(); it != mTextures.end(); ++it)
-	{
-		RTTexture *pTexture = it->second;
-		delete pTexture;
-		pTexture = NULL;
-	}
+	ClearAll();
 }
 
 RTTexture *RTTextureManager::CreateTexture( string strFileName, bool bMipMap /*= false*/, int nLevelNum /*= 8*/, float dis /*= 6.0f */ )
@@ -39,4 +35,16 @@ RTTexture *RTTextureManager::CreateTexture( string strFileName, bool bMipMap /*=
 	}
 
 	return pTexture;
+}
+
+void RTTextureManager::ClearAll()
+{
+	for ( auto it = mTextures.begin(); it != mTextures.end(); ++it )
+	{
+		RTTexture *pTexture = it->second;
+		delete pTexture;
+		pTexture = NULL;
+	}
+
+	mTextures.clear();
 }
