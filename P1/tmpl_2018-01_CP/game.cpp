@@ -191,7 +191,7 @@ void Tmpl8::Game::scene_default()
 	RTTorus *pTorus = new RTTorus( vec3( -15.0f, 10.0f, -40.0f ), vec3( 0.0f, 1.0f, 2.0f ), 2.0f, 4.0f,
 								   torusMaterial );
 
-	RTSphere *pSphere3 = new RTSphere( vec3( 0.0f, 0.0f, -20.0f ), 3.0f, sphereMaterial );
+	RTSphere *pSphere3 = new RTSphere( vec3( 0.0f, 2.0f, -20.0f ), 3.0f, sphereMaterial );
 
 // 	RTObjMesh *mesh = new RTObjMesh( "./assets/Cesium_Man.dae", meshMaterial );
 // 	mesh->setPosition( 0.0f, 2.0f, -10.0f );
@@ -276,25 +276,32 @@ void Tmpl8::Game::scene_light()
 	vec3 lightRed( 248. / 255., 192. / 255., 196. / 255 );
 	RTChessBoardTexture *chessboardTexture = gTexManager.CreateChessBoardTexture( vec3( 1 ), vec3( 0 ) );
 
-	RTMaterial& brownCheckerBoardMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), chessboardTexture, vec2( 0.2f ), DIFFUSE, 0.8f, 1.5f );
-	RTMaterial &whiteMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), 0, vec2( 0.1f ), DIFFUSE, 0.8f, 1.5f );
-	RTMaterial &redMaterial = gMaterialManager.CreateMaterial( vec3( 1, 0, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 1.5f );
-	RTMaterial &greenMaterial = gMaterialManager.CreateMaterial( vec3( 0, 1, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 1.5f );
+	RTMaterial& brownCheckerBoardMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), chessboardTexture, vec2( 0.2f ), DIFFUSE, 0.8f, 2.5f );
+	RTMaterial &whiteMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), 0, vec2( 0.1f ), DIFFUSE, 0.8f, 2.5f );
+	RTMaterial &redMaterial = gMaterialManager.CreateMaterial( vec3( 1, 0, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
+	RTMaterial &greenMaterial = gMaterialManager.CreateMaterial( vec3( 0, 1, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
 	RTMaterial &blueGlassMaterial = gMaterialManager.CreateMaterial( lightBlue, 0, vec2( 1.0f ), TRANSMISSIVE_AND_REFLECTIVE, 0.95f, 1.5f );
-	RTMaterial &mirrorMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), 0, vec2( 1.0f ), REFLECTIVE, 0.8f, 1.5f );
+	RTMaterial &mirrorMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), 0, vec2( 1.0f ), REFLECTIVE, 0.8f, 2.5f );
 
 	scene.addObject( new RTPlane( vec3( -10.0f, 0.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, -1.0f ), redMaterial ) );
 	scene.addObject( new RTPlane( vec3( 10.0f, 0.0f, 0.0f ), vec3( -1.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, -1.0f ), greenMaterial ) );
 	scene.addObject( new RTPlane( vec3( 0.0f, -5.0f, 0.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), brownCheckerBoardMaterial ) );
-	scene.addObject( new RTPlane( vec3( 0.0f, 0.0f, -35.0f ), vec3( 0.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 0.0f ), whiteMaterial ) );
+ 	scene.addObject( new RTPlane( vec3( 0.0f, 0.0f, -35.0f ), vec3( 0.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 0.0f ), whiteMaterial ) );
 	scene.addObject( new RTPlane( vec3( 0.0f, 13.0f, 0.0f ), vec3( 0.0f, -1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), whiteMaterial ) );
 	scene.addObject( new RTPlane( vec3( 0.0f, 0.0f, 1.0f ), vec3( 0.0f, 0.0f, -1.0f ), vec3( 1.0f, 0.0f, 0.0f ), whiteMaterial ) );
 
-	scene.addObject( new RTSphere( vec3( 3.0f, -1.0f, -25.0f ), 4.0f, mirrorMaterial ) );
+	RTObjMesh *mesh = new RTObjMesh( "assets/bunny.obj", mirrorMaterial );
+	mesh->setPosition( 0, -2, -7 );
+	mesh->setRotation( 0.0f, 0.0f, 0.0f );
+	mesh->setScale( 0.1f, 0.1f, 0.1f );
+	mesh->applyTransforms();
+	scene.addObject( mesh );
+
+	//scene.addObject( new RTSphere( vec3( 3.0f, -1.0f, -25.0f ), 4.0f, mirrorMaterial ) );
 	scene.addObject( new RTSphere( vec3( -4.0f, -3.0f, -15.0f ), 2.0f, mirrorMaterial ) );
 	scene.addObject( new RTSphere( vec3( 5.0f, -4.0f, -13.0f ), 1.0f, mirrorMaterial ) );
-	
-	scene.addObject( new RTBox( vec3( -0.0f, 9.0f, -30.0f ), vec3( 21.0f, 2.0f, 3.0f ), blueGlassMaterial ) );
+ 	
+ 	scene.addObject( new RTBox( vec3( -0.0f, 9.0f, -30.0f ), vec3( 21.0f, 2.0f, 3.0f ), blueGlassMaterial ) );
 	/////////////////////////////////////////////////////////////////////////
 	scene.ambientLight = 0.3f;
 

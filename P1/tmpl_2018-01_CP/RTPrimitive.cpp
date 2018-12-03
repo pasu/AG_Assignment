@@ -6,6 +6,6 @@ RTPrimitive::RTPrimitive( vec3 center, const RTMaterial &material )
 {
 }
 
-RTPrimitive::RTPrimitive( const RTMaterial &material ) : material( material )
+RTPrimitive::RTPrimitive( const RTMaterial &material ) : pos(vec3(0.0f)),material( material )
 {
 }

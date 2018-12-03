@@ -42,10 +42,20 @@ void RTObjMesh::applyTransforms()
 	modelMatrix.cell[11] = pos.z;
 
 	mat4 scaleXYZ;
-	scaleXYZ.cell[0] = scale.x;
-	scaleXYZ.cell[5] = scale.y;
-	scaleXYZ.cell[10] = scale.z;
-	modelMatrix = modelMatrix * scaleXYZ;
+	modelMatrix.cell[0] *= scale.x;
+	modelMatrix.cell[1] *= scale.x;
+	modelMatrix.cell[2] *= scale.x;
+	modelMatrix.cell[3] *= scale.x;
+	modelMatrix.cell[4] *= scale.y;
+	modelMatrix.cell[5] *= scale.y;
+	modelMatrix.cell[6] *= scale.y;
+	modelMatrix.cell[7] *= scale.y;
+	modelMatrix.cell[8] *= scale.z;
+	modelMatrix.cell[9] *= scale.z;
+	modelMatrix.cell[10] *= scale.z;
+	modelMatrix.cell[11] *= scale.z;
+
+	//modelMatrix = modelMatrix * scaleXYZ;
 
 	computeNormalMatrix();
 
@@ -133,25 +143,21 @@ const SurfacePointData RTObjMesh::getSurfacePointData( const RTIntersection &int
 				 na.y + intersection.u * ( nb.y - na.y ) + intersection.v * ( nc.y - na.y ),
 				 na.z + intersection.u * ( nb.z - na.z ) + intersection.v * ( nc.z - na.z ) );
 
-	aiVector3D &a = mesh->mVertices[faces[intersection.triangleIndex].mIndices[0]];
-	aiVector3D &b = mesh->mVertices[faces[intersection.triangleIndex].mIndices[1]];
-	aiVector3D &c = mesh->mVertices[faces[intersection.triangleIndex].mIndices[2]];
+// 	aiVector3D &a = mesh->mVertices[faces[intersection.triangleIndex].mIndices[0]];
+// 	aiVector3D &b = mesh->mVertices[faces[intersection.triangleIndex].mIndices[1]];
+// 	aiVector3D &c = mesh->mVertices[faces[intersection.triangleIndex].mIndices[2]];
 // 
-// 	vec3 position(a.x + intersection.u * (b.x - a.x) + intersection.v * (c.x - a.x),
-// 		a.y + intersection.u * (b.y - a.y) + intersection.v * (c.y - a.y),
-// 		a.z + intersection.u * (b.z - a.z) + intersection.v * (c.z - a.z));
-
-	aiVector3D &ta = mesh->mTextureCoords[0][faces[intersection.triangleIndex].mIndices[0]];
-	aiVector3D &tb = mesh->mTextureCoords[0][faces[intersection.triangleIndex].mIndices[1]];
-	aiVector3D &tc = mesh->mTextureCoords[0][faces[intersection.triangleIndex].mIndices[2]];
-
-	// The area of a triangle is
-	float areaABC, areaPBC, areaPCA;
-	Barycentric( point, vec3( a.x, a.y, a.z ), vec3( b.x, b.y, b.z ), vec3( c.x, c.y, c.z ),
-				 areaABC, areaPBC, areaPCA );
-
-	vec2 texCoords = vec2( ta.x, ta.y ) * areaABC + vec2( tb.x, tb.y ) * areaPBC + vec2( tc.x, tc.y ) * areaPCA;
-
+// 	aiVector3D &ta = mesh->mTextureCoords[0][faces[intersection.triangleIndex].mIndices[0]];
+// 	aiVector3D &tb = mesh->mTextureCoords[0][faces[intersection.triangleIndex].mIndices[1]];
+// 	aiVector3D &tc = mesh->mTextureCoords[0][faces[intersection.triangleIndex].mIndices[2]];
+// 
+// 	// The area of a triangle is
+// 	float areaABC, areaPBC, areaPCA;
+// 	Barycentric( point, vec3( a.x, a.y, a.z ), vec3( b.x, b.y, b.z ), vec3( c.x, c.y, c.z ),
+// 				 areaABC, areaPBC, areaPCA );
+// 
+// 	vec2 texCoords = vec2( ta.x, ta.y ) * areaABC + vec2( tb.x, tb.y ) * areaPBC + vec2( tc.x, tc.y ) * areaPCA;
+	vec2 texCoords;
 	return {normalize( normal ), texCoords, point};
 }
 
