@@ -188,10 +188,11 @@ const SurfacePointData RTCone::getSurfacePointData( const RTIntersection &inters
 
 	float v = pointPositionRelativelyToBottom.dot( coneAxis );
 	vec3 A = normalize( pointPositionRelativelyToBottom - v * coneAxis );
-	float phi = acos( dot( A, tangent ) );
+	float value = std::max( -1.0f, std::min( 1.0f, dot( A, tangent ) ) );
+
+	float phi = acos( value );
 
 	vec2 texCoords = {phi * 2 * Utils::RT_PI, v};
 
 	return {normal, texCoords, point};
-	;
 }
