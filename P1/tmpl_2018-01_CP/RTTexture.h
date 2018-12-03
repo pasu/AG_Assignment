@@ -3,9 +3,9 @@ class RTTexture
 {
   public:
 	RTTexture();
-	~RTTexture();
+	virtual ~RTTexture();
 
-	const vec3 getTexel( float s, float t, float z, const vec2 &scale = vec2( 1, 1 ) ) const;
+	virtual const vec3 getTexel( float s, float t, float z, const vec2 &scale = vec2( 1, 1 ) ) const;
 
 	void LoadTextureImage( const char *a_File );
 

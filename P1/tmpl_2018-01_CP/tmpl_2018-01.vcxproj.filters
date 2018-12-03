@@ -29,6 +29,7 @@
     <ClCompile Include="RayTracerThread.cpp" />
     <ClCompile Include="RTTextureManager.cpp" />
     <ClCompile Include="RTMaterialManager.cpp" />
+    <ClCompile Include="RTChessBoardTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -62,6 +63,7 @@
     <ClInclude Include="FXAA.h" />
     <ClInclude Include="RTTextureManager.h" />
     <ClInclude Include="RTMaterialManager.h" />
+    <ClInclude Include="RTChessBoardTexture.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">

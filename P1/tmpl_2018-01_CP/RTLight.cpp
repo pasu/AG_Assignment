@@ -4,7 +4,7 @@
 
 RTLight::RTLight( vec3 _color, float _power ) : color( _color ), power( _power ), 
 mConstantAttenutaionCoefficient( 0.0f ), mLinearAttenutaionCoefficient( 0.0f ), mQuadraticAttenutaionCoefficient(1.0f),
-mUmbraAngle( 40.0f ), mPenumbraAngle( 160.0f ), mFalloffFactor( 1.0f )
+mUmbraAngle( 60.0f ), mPenumbraAngle( 120 ), mFalloffFactor( 1.0f )
 {
 	mUmbraAngle = mUmbraAngle * Utils::RT_PI / 180.0f;
 	mPenumbraAngle = mPenumbraAngle * Utils::RT_PI / 180.0f;
