@@ -34,10 +34,10 @@ void Game::Init()
 	pTracer = new RayTracer( scene, renderOptions );
 
 	//pCamera->turnLeft( -Utils::RT_PI / 2.0f );
-	scene_default();
+	//scene_default();
 	//scene_fresnel_beer();
 	//scene_light();
-	//scene_tw();
+	scene_tw();
 	//gTexManager.CreateTexture( "./assets/floor_diffuse.png", true, 8, 6.0f );
 // 	gTexManager.ClearAll();
 // 	gMaterialManager.ClearAll();
@@ -389,10 +389,10 @@ void Tmpl8::Game::scene_tw()
 	RTSphere *sphere1 = new RTSphere( vec3( 5.0f, -3.0f, -16.0f ), 4.0f, *mirrorMaterial );
 	scene.addObject( sphere1 );
 
-	RTSphere *sphere2 = new RTSphere( vec3( -0.2f, 0.0f, -3.0f ), 0.8f, *whiteGlassMaterial );
+	RTSphere *sphere2 = new RTSphere( vec3( -1.0f, 0.0f, -13.0f ), 4.0f, *whiteGlassMaterial );
 	scene.addObject( sphere2 );
 
-	RTInnerSphere *sphere3 = new RTInnerSphere( vec3( -0.2f, 0.0f, -3.0f ), 0.77f, *whiteGlassMaterial );
+	RTInnerSphere *sphere3 = new RTInnerSphere( vec3( -1.0f, 0.0f, -13.0f ), 3.7f, *whiteGlassMaterial );
 	scene.addObject( sphere3 );
 
 	RTPlane *plane2 = new RTPlane( vec3( 0.0f, 0.0f, -2.0f ), vec3( 0.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 0.0f ), *whiteGlassMaterial );
