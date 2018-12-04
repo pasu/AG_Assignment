@@ -36,7 +36,7 @@ class RTLight
 	static RTLight *createParralleLight( vec3 _color, float _power, vec3 _direction );
 	static RTLight *createSpotLight( vec3 _color, float _power, vec3 _pos,vec3 _direction );
 
-	virtual vec3 shade( const SurfacePointData & pd, const RayTracer &rt, const vec3& texture) = 0; // shade a diffused surface
+	virtual vec3 shade( const SurfacePointData & pd, const RayTracer &rt, const vec3& texture, float highlight = 1.0f) = 0; // shade a diffused surface
 
 	void setAttenuation( const float& constant,
 						 const float &linear, const float &quadratic )

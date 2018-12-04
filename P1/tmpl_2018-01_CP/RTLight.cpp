@@ -28,7 +28,7 @@ class PointLight : public RTLight
 	PointLight( vec3 _color, float _power, vec3 _pos ) : RTLight( _color, _power ), pos( _pos )
 	{
 	}
-	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const vec3 & texture )override
+	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const vec3 & texture,float highlight )override
 	{
 		vec3 d = pos - pd.position;
 		float l2 = d.sqrLentgh();
@@ -41,7 +41,10 @@ class PointLight : public RTLight
 		if ( !intersection.isIntersecting() || intersection.rayT > distanceToPoint( ray .orig) )
 		{
 			float cosine = pd.normal.dot( nd );
-			cosine = ( cosine > 0 ? cosine : 0 ) / ( mConstantAttenutaionCoefficient + mLinearAttenutaionCoefficient * l + mQuadraticAttenutaionCoefficient*l2 ) * power;
+			cosine = ( cosine > 0 ? cosine : 0 );
+			cosine = pow( cosine+0.01, highlight );
+			cosine = cosine	/ ( mConstantAttenutaionCoefficient + mLinearAttenutaionCoefficient * l + mQuadraticAttenutaionCoefficient*l2 ) * power;
+
 			return cosine * texture * color;
 		}
 
@@ -65,7 +68,7 @@ class SpotLight : public RTLight
 	SpotLight( vec3 _color, float _power, vec3 _pos, vec3 _dir ) : RTLight( _color, _power ), pos( _pos ), dir( _dir )
 	{
 	}
-	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const vec3 &texture ) override
+	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const vec3 &texture,float highlight ) override
 	{
 		vec3 d = pos - pd.position;
 		float l2 = d.sqrLentgh();
@@ -97,7 +100,10 @@ class SpotLight : public RTLight
 			}
 
 			float disAttenuation = ( mConstantAttenutaionCoefficient + mLinearAttenutaionCoefficient * l + mQuadraticAttenutaionCoefficient * l2 );
-			lightVectorDotNormal = ( lightVectorDotNormal > 0 ? lightVectorDotNormal : 0 ) / disAttenuation * spotAttenuation * power;
+			lightVectorDotNormal = ( lightVectorDotNormal > 0 ? lightVectorDotNormal : 0 );
+			
+			lightVectorDotNormal  = lightVectorDotNormal/ disAttenuation *spotAttenuation *power;
+			lightVectorDotNormal = pow( lightVectorDotNormal, highlight );
 			return lightVectorDotNormal * texture * color;
 		}
 
@@ -120,7 +126,7 @@ class ParrallelLight : public RTLight
 	{
 
 	}
-	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const vec3& texture ) override
+	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const vec3& texture,float highlight ) override
 	{
 		const RTRay ray = RTRay( pd.position - rt.getRenderOptions().shadowBias * direction, -direction );
 		const RTIntersection intersection = rt.findNearestObjectIntersection( ray );
@@ -129,7 +135,10 @@ class ParrallelLight : public RTLight
 			return vec3( .0f, .0f, .0f );
 		}
 		float cosine = pd.normal.dot( -direction );
-		cosine = ( cosine > 0 ? cosine : 0 ) * power;
+		cosine = ( cosine > 0 ? cosine : 0 );
+		
+		cosine = cosine*power;
+		cosine = pow( cosine, highlight );
 		return cosine * texture * color;
 	}
 };

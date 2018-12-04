@@ -355,8 +355,10 @@ void Tmpl8::Game::scene_tw()
 	RTChessBoardTexture *chessboardTexture = gTexManager.CreateChessBoardTexture( vec3( 219.0f / 255.0f, 31.0f / 255.0f, 7.0f / 255.0f ), vec3( 226.0f / 255.0f, 226.0f / 255.0f, 4.0f / 255.0f ) );
 
 	RTMaterial *ryCheckerBoardMaterial = new RTMaterial( chessboardTexture, DIFFUSE, vec3( 1, 0, 0 ) ,vec2(0.2,0.2));
-	RTMaterial *whiteGlassMaterial = new RTMaterial( vec3( 1 ),  DIFFUSE|REFRACT, vec3( 0.2, 0.0, 1.0f ), 2.0 );
-	RTMaterial*mirrorMaterial = new RTMaterial( vec3( 1,1,1 ), DIFFUSE | REFLECT, vec3( 0.5, 0.5, 0.0 ) );
+	RTMaterial *whiteGlassMaterial = new RTMaterial( vec3( 1 ),  DIFFUSE|REFRACT, vec3( 0.1, 0.0, 1.0f ), 1.5 );
+	whiteGlassMaterial->highlight = 50.0f;
+	RTMaterial*mirrorMaterial = new RTMaterial( vec3( 1,1,1 ), DIFFUSE | REFLECT, vec3( 0.3, 0.7, 0.0 ) );
+	mirrorMaterial->highlight = 1.0f;
 	RTPlane *plane = new RTPlane( vec3( 5.0f, -10.0f, -40.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), *ryCheckerBoardMaterial );
 	plane->boundaryxy = vec2( 20.0f, 100.0f );
 	scene.addObject( plane );
@@ -364,10 +366,10 @@ void Tmpl8::Game::scene_tw()
 	RTSphere *sphere1 = new RTSphere( vec3( 5.0f, -3.0f, -16.0f ), 4.0f, *mirrorMaterial );
 	scene.addObject( sphere1 );
 
-	RTSphere *sphere2 = new RTSphere( vec3( -0.5f, 0.0f, -5.0f ), 1.6f, *whiteGlassMaterial );
+	RTSphere *sphere2 = new RTSphere( vec3( -0.2f, 0.0f, -2.0f ), 0.8f, *whiteGlassMaterial );
 	scene.addObject( sphere2 );
 
-	RTInnerSphere *sphere3 = new RTInnerSphere( vec3( -0.5f, 0.0f, -5.0f ), 1.55f, *whiteGlassMaterial );
+	RTInnerSphere *sphere3 = new RTInnerSphere( vec3( -0.2f, 0.0f, -2.0f ), 0.77f, *whiteGlassMaterial );
 	scene.addObject( sphere3 );
 
 	RTPlane *plane2 = new RTPlane( vec3( 0.0f, 0.0f, -2.0f ), vec3( 0.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 0.0f ), *whiteGlassMaterial );
@@ -377,7 +379,7 @@ void Tmpl8::Game::scene_tw()
 	/////////////////////////////////////////////////////////////////////////
 	
 
-	RTLight *pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 640.0f, vec3( 5.0f, 20.0f, -6.0f ) );
+	RTLight *pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 4000.0f, vec3( -10.0f, 20.0f, 30.0f ) );
 	//RTLight *pLight2 = RTLight::createSpotLight( vec3( 1.0f, 1.0f, 1.0f ), 80.0, vec3( -0.05, 0.25, 1.1f ), vec3 (0,0,-1));
 	RTLight *pLight2 = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 400.0, vec3( 0.02f, 0.02f, -1.4f ) );
 	pLight2->setSpotlightRange( 1,2, 0.1 );

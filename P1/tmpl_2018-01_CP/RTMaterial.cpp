@@ -7,7 +7,8 @@
 	  reflectionFactor( DRT_factors.y ),
 	  refractionFactor( DRT_factors.z ),
 	  indexOfRefraction( fractionIndex ),
-	  albedoTexture( nullptr )
+	  albedoTexture( nullptr ),
+	  highlight( 1 )
 {
  }
 
@@ -20,7 +21,8 @@
 	 refractionFactor( DRT_factors.z ),
 	 indexOfRefraction( fractionIndex ),
 	   textureScale( textyreScale ),
-	   albedoTexture( albedo )
+	   albedoTexture( albedo ),
+	   highlight( 1 )
  {
  }
 

@@ -21,6 +21,8 @@ class RTMaterial
 	
 	float indexOfRefraction;
 
+	float highlight;
+
 	vec2 textureScale;
 
   private:
