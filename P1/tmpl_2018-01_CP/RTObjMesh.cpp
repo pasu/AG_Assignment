@@ -143,21 +143,26 @@ const SurfacePointData RTObjMesh::getSurfacePointData( const RTIntersection &int
 				 na.y + intersection.u * ( nb.y - na.y ) + intersection.v * ( nc.y - na.y ),
 				 na.z + intersection.u * ( nb.z - na.z ) + intersection.v * ( nc.z - na.z ) );
 
-// 	aiVector3D &a = mesh->mVertices[faces[intersection.triangleIndex].mIndices[0]];
-// 	aiVector3D &b = mesh->mVertices[faces[intersection.triangleIndex].mIndices[1]];
-// 	aiVector3D &c = mesh->mVertices[faces[intersection.triangleIndex].mIndices[2]];
-// 
-// 	aiVector3D &ta = mesh->mTextureCoords[0][faces[intersection.triangleIndex].mIndices[0]];
-// 	aiVector3D &tb = mesh->mTextureCoords[0][faces[intersection.triangleIndex].mIndices[1]];
-// 	aiVector3D &tc = mesh->mTextureCoords[0][faces[intersection.triangleIndex].mIndices[2]];
-// 
-// 	// The area of a triangle is
-// 	float areaABC, areaPBC, areaPCA;
-// 	Barycentric( point, vec3( a.x, a.y, a.z ), vec3( b.x, b.y, b.z ), vec3( c.x, c.y, c.z ),
-// 				 areaABC, areaPBC, areaPCA );
-// 
-// 	vec2 texCoords = vec2( ta.x, ta.y ) * areaABC + vec2( tb.x, tb.y ) * areaPBC + vec2( tc.x, tc.y ) * areaPCA;
 	vec2 texCoords;
+
+	if ( mesh->mTextureCoords[0] != NULL)
+	{
+		aiVector3D &a = mesh->mVertices[faces[intersection.triangleIndex].mIndices[0]];
+		aiVector3D &b = mesh->mVertices[faces[intersection.triangleIndex].mIndices[1]];
+		aiVector3D &c = mesh->mVertices[faces[intersection.triangleIndex].mIndices[2]];
+
+		aiVector3D &ta = mesh->mTextureCoords[0][faces[intersection.triangleIndex].mIndices[0]];
+		aiVector3D &tb = mesh->mTextureCoords[0][faces[intersection.triangleIndex].mIndices[1]];
+		aiVector3D &tc = mesh->mTextureCoords[0][faces[intersection.triangleIndex].mIndices[2]];
+
+		// The area of a triangle is
+		float areaABC, areaPBC, areaPCA;
+		Barycentric( point, vec3( a.x, a.y, a.z ), vec3( b.x, b.y, b.z ), vec3( c.x, c.y, c.z ),
+					 areaABC, areaPBC, areaPCA );
+
+		texCoords = vec2( ta.x, ta.y ) * areaABC + vec2( tb.x, tb.y ) * areaPBC + vec2( tc.x, tc.y ) * areaPCA;	
+	}
+	
 	return {normalize( normal ), texCoords, point};
 }
 
