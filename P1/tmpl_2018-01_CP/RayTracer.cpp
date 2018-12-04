@@ -228,16 +228,11 @@ float RayTracer::fresnel( const vec3 &I, const vec3 &N, const float refractionIn
 	{
 		float cost = sqrtf( std::max( 0.0f, 1.0f - sint * sint ) );
 		cosi = fabsf( cosi );
-		//float Rs = ( ( etat * cosi ) - ( etai * cost ) ) / ( ( etat * cosi ) + ( etai * cost ) );
-		//float Rp = ( ( etai * cosi ) - ( etat * cost ) ) / ( ( etai * cosi ) + ( etat * cost ) );
-		//return ( Rs * Rs + Rp * Rp ) / 2.0f;
+		float Rs = ( ( etat * cosi ) - ( etai * cost ) ) / ( ( etat * cosi ) + ( etai * cost ) );
+		float Rp = ( ( etai * cosi ) - ( etat * cost ) ) / ( ( etai * cosi ) + ( etat * cost ) );
+		return ( Rs * Rs + Rp * Rp ) / 2.0f;
 		float R0 = ( etai - etat ) / ( etai + etat );
-		R0 = R0 * R0;
-		float vers = 1 - cosi;
-		float vers2 = vers * vers;
-		float vers5 = vers2 * vers2 * vers;
-		float result= R0 + ( 1 - R0 ) * vers5;
-		return result;
+
 	}
 
 }

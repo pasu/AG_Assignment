@@ -18,7 +18,7 @@ public:
 	void MouseWheel( int y );
 
 	void scene_default();
-	//void scene_fresnel_beer();
+	void scene_fresnel_beer();
 	//void scene_light();
 	void scene_tw();
 

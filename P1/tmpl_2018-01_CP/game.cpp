@@ -34,8 +34,8 @@ void Game::Init()
 	pTracer = new RayTracer( scene, renderOptions );
 
 	//pCamera->turnLeft( -Utils::RT_PI / 2.0f );
-	scene_default();
-	//scene_fresnel_beer();
+	//scene_default();
+	scene_fresnel_beer();
 	//scene_light();
 	//scene_tw();
 	//gTexManager.CreateTexture( "./assets/floor_diffuse.png", true, 8, 6.0f );
@@ -222,32 +222,21 @@ void Tmpl8::Game::scene_default()
 	//scene.addObject( mesh );
 	///////////////////////////////////////////////////////////////////////////////
 }
-/*
+
 void Tmpl8::Game::scene_fresnel_beer()
 {
 	//////////////////////////////////////////////////////////////////////////
 	RTTexture *floorTexture = gTexManager.CreateTexture( "./assets/floor_diffuse.png", true, 8, 6.0f );
-	RTMaterial &floorMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), floorTexture, DIFFUSE );
+	RTMaterial &floorMaterial = *new RTMaterial( floorTexture, DIFFUSE, vec3( 1, 0, 0 ) , vec2(0.1,0.1));
 
 	RTTexture *wallTexture = gTexManager.CreateTexture( "./assets/1d_debug.png", false, 8, 6.0f );
-	RTMaterial &wallMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), wallTexture, DIFFUSE );
+	RTMaterial &wallMaterial = *new RTMaterial( wallTexture, DIFFUSE, vec3( 1, 0, 0 ), vec2(0.08,0.08) );
 
-	RTMaterial &lensMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), TRANSMISSIVE_AND_REFLECTIVE );
+	RTMaterial &lensMaterial = *new RTMaterial( vec3( 1, 1, 1 ), REFRACT | REFLECT, vec3( 0, 0.1, 0.9 ), 1.217 );
 
-	RTMaterial &sphereMaterial = gMaterialManager.CreateMaterial( vec3( 1, 0, 0 ), TRANSMISSIVE_AND_REFLECTIVE );
-
-
-	floorMaterial.textureScale.x = 0.1f;
-	floorMaterial.textureScale.y = 0.1f;
-
-	wallMaterial.textureScale.x = 0.08f;
-	wallMaterial.textureScale.y = 0.08f;
+	RTMaterial &sphereMaterial = *new RTMaterial( vec3( 1, 0, 0 ), REFRACT | REFLECT, vec3( 0, 0.1, 0.9 ), 1.2 );
 
 
-	lensMaterial.reflectionFactor = 0.1f;
-	lensMaterial.indexOfRefraction = 1.217f;
-	sphereMaterial.reflectionFactor = 0.1f;
-	sphereMaterial.indexOfRefraction = 1.2f;
 	/////////////////////////////////////////////////////////////////////////
 	scene.ambientLight = 1.0f;
 
@@ -275,7 +264,7 @@ void Tmpl8::Game::scene_fresnel_beer()
 	scene.addObject( pSphere3 );
 	///////////////////////////////////////////////////////////////////////////////
 }
-
+/*ss
 void Tmpl8::Game::scene_light()
 {
 	//////////////////////////////////////////////////////////////////////////
