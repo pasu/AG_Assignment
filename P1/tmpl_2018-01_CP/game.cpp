@@ -28,16 +28,16 @@ void Game::Init()
 {
 	renderOptions.width = SCRWIDTH;
 	renderOptions.height = SCRHEIGHT;
-	renderOptions.maxRecursionDepth = 8;
+	renderOptions.maxRecursionDepth = 4;
 	renderOptions.shadowBias = 0.01f;
 
 	pTracer = new RayTracer( scene, renderOptions );
 
 	//pCamera->turnLeft( -Utils::RT_PI / 2.0f );
-	scene_default();
+	//scene_default();
 	//scene_fresnel_beer();
 	//scene_light();
-	//scene_tw();
+	scene_tw();
 	//gTexManager.CreateTexture( "./assets/floor_diffuse.png", true, 8, 6.0f );
 // 	gTexManager.ClearAll();
 // 	gMaterialManager.ClearAll();
@@ -97,7 +97,7 @@ void Tmpl8::Game::KeyDown( int key )
 		scene.ClearAllLight();
 		scene.ClearAllObj();
 
-		index++;
+		index++; /*
 		switch ( index % scenecount )
 		{
 		case 0:
@@ -112,7 +112,7 @@ void Tmpl8::Game::KeyDown( int key )
 		case 3:
 			scene_tw();
 			break;
-		}
+		}*/
 	}
 
 }
@@ -120,7 +120,7 @@ void Tmpl8::Game::KeyDown( int key )
 void Tmpl8::Game::MouseWheel( int y )
 {
 }
-
+/*
 void Tmpl8::Game::scene_default()
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -315,7 +315,7 @@ void Tmpl8::Game::scene_light()
 	scene.addLight( pLight );
 	///////////////////////////////////////////////////////////////////////////////
 }
-
+*/
 void Tmpl8::Game::scene_tw()
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -354,20 +354,23 @@ void Tmpl8::Game::scene_tw()
 	//////////////////////////////////////////////////////////////////////////
 	RTChessBoardTexture *chessboardTexture = gTexManager.CreateChessBoardTexture( vec3( 219.0f / 255.0f, 31.0f / 255.0f, 7.0f / 255.0f ), vec3( 226.0f / 255.0f, 226.0f / 255.0f, 4.0f / 255.0f ) );
 
-	RTMaterial &ryCheckerBoardMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), chessboardTexture, vec2( 0.2f,0.3f ), DIFFUSE, 0.8f, 2.5f );
-	RTMaterial &whiteGlassMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), 0, vec2( 1.0f ), DIFFUSE_AND_REFLECTIVE, 0.9f, 1.35f );
-	RTMaterial &mirrorMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), 0, vec2( 1.0f ), TRANSMISSIVE_AND_REFLECTIVE, 0.8f, 20.1f );
-	RTPlane *plane = new RTPlane( vec3( 5.0f, -10.0f, -40.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), ryCheckerBoardMaterial );
+	RTMaterial *ryCheckerBoardMaterial = new RTMaterial( chessboardTexture, DIFFUSE, vec3( 1, 0, 0 ) ,vec2(0.2,0.2));
+	RTMaterial *whiteGlassMaterial = new RTMaterial( vec3( 1 ),  DIFFUSE|REFRACT, vec3( 0.2, 0.0, 1.0f ), 2.0 );
+	RTMaterial*mirrorMaterial = new RTMaterial( vec3( 1,1,1 ), DIFFUSE | REFLECT, vec3( 0.5, 0.5, 0.0 ) );
+	RTPlane *plane = new RTPlane( vec3( 5.0f, -10.0f, -40.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), *ryCheckerBoardMaterial );
 	plane->boundaryxy = vec2( 20.0f, 100.0f );
 	scene.addObject( plane );
 
-	RTSphere *sphere1 = new RTSphere( vec3( 5.0f, -3.0f, -16.0f ), 4.0f, mirrorMaterial );
+	RTSphere *sphere1 = new RTSphere( vec3( 5.0f, -3.0f, -16.0f ), 4.0f, *mirrorMaterial );
 	scene.addObject( sphere1 );
 
-	RTSphere *sphere2 = new RTSphere( vec3( 0.0f, 0.0f, -2.0f ), 0.6f, whiteGlassMaterial );
+	RTSphere *sphere2 = new RTSphere( vec3( -0.5f, 0.0f, -5.0f ), 1.6f, *whiteGlassMaterial );
 	scene.addObject( sphere2 );
 
-	RTPlane *plane2 = new RTPlane( vec3( 0.0f, 0.0f, -2.0f ), vec3( 0.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 0.0f ), whiteGlassMaterial );
+	RTInnerSphere *sphere3 = new RTInnerSphere( vec3( -0.5f, 0.0f, -5.0f ), 1.55f, *whiteGlassMaterial );
+	scene.addObject( sphere3 );
+
+	RTPlane *plane2 = new RTPlane( vec3( 0.0f, 0.0f, -2.0f ), vec3( 0.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 0.0f ), *whiteGlassMaterial );
 	plane2->boundaryxy = vec2( 0.6 );
 	plane2->bCircle = true;
 	//scene.addObject( plane2 );
@@ -380,6 +383,6 @@ void Tmpl8::Game::scene_tw()
 	pLight2->setSpotlightRange( 1,2, 0.1 );
 	pLight2->setAttenuation( 0, 0, 2 );
 	scene.addLight( pLight );
-	scene.addLight( pLight2 );
+	//scene.addLight( pLight2 );
 	///////////////////////////////////////////////////////////////////////////////
 }

@@ -44,11 +44,6 @@ class PointLight : public RTLight
 			cosine = ( cosine > 0 ? cosine : 0 ) / ( mConstantAttenutaionCoefficient + mLinearAttenutaionCoefficient * l + mQuadraticAttenutaionCoefficient*l2 ) * power;
 			return cosine * texture * color;
 		}
-		else if ( intersection.object->getMaterial().shadingType == TRANSMISSIVE_AND_REFLECTIVE )
-		{
-			SurfacePointData shadowObjectSurfacePoint = intersection.object->getSurfacePointData( intersection );
-			return vec3( .0f, .0f, .0f );
-		}
 
 		return vec3( .0f, .0f, .0f );
 		
@@ -104,11 +99,6 @@ class SpotLight : public RTLight
 			float disAttenuation = ( mConstantAttenutaionCoefficient + mLinearAttenutaionCoefficient * l + mQuadraticAttenutaionCoefficient * l2 );
 			lightVectorDotNormal = ( lightVectorDotNormal > 0 ? lightVectorDotNormal : 0 ) / disAttenuation * spotAttenuation * power;
 			return lightVectorDotNormal * texture * color;
-		}
-		else if ( intersection.object->getMaterial().shadingType == TRANSMISSIVE_AND_REFLECTIVE )
-		{
-			SurfacePointData shadowObjectSurfacePoint = intersection.object->getSurfacePointData( intersection );
-			return vec3( .0f, .0f, .0f );
 		}
 
 		return vec3( .0f, .0f, .0f );

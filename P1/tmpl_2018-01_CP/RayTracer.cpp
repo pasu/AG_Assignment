@@ -73,7 +73,7 @@ const RTRay &RayTracer::generatePrimaryRay( const int x, const int y ) const
 const vec3 RayTracer::castRay( const RTRay &ray, const int depth, RTIntersection &intersection ) const
 {
 	if ( depth > renderOptions.maxRecursionDepth )
-		return vec3( 0, 1, 0 );
+		return scene.backgroundColor;
 
 	intersection = findNearestObjectIntersection( ray );
 
@@ -94,20 +94,25 @@ const vec3 RayTracer::shade( const RTRay &castedRay, const RTIntersection &inter
 	float distance = ( surfacePointData.position - scene.getCamera()->getEye() ).length();
 	const vec3 &albedo = material.getAlbedoAtPoint( surfacePointData.textureCoordinates.x, surfacePointData.textureCoordinates.y, distance );
 
-
+	vec3 color( .0f );
+	vec3 color_reflect( .0f );
 	//return 0x00ff0000;
-	if ( material.shadingType == DIFFUSE )
+	if ( material.shadingType & DIFFUSE )
 	{
-		return shade_diffuse( castedRay, intersection, depth );
+		color += material.diffuseFactor * shade_diffuse( castedRay, intersection, depth );
 	}
-	else if ( material.shadingType == REFLECTIVE )
+	if ( material.shadingType & REFLECT )
 	{
-		return material.reflectionFactor * shade_reflective( castedRay, intersection, depth );
+		color_reflect = shade_reflective( castedRay, intersection, depth );
+
+		color+= material.reflectionFactor * color_reflect;
 	}
-	else if ( material.shadingType == TRANSMISSIVE_AND_REFLECTIVE )
+	if ( material.shadingType & REFRACT )
 	{
+		if (!(material.shadingType & REFLECT)) {
+			color_reflect = shade_reflective( castedRay, intersection, depth );
+		}
 		vec3 refractionColor = vec3( 0 );
-		vec3 reflectionColor = vec3( 0 );
 
 		const vec3 &normal = surfacePointData.normal;
 
@@ -128,17 +133,12 @@ const vec3 RayTracer::shade( const RTRay &castedRay, const RTIntersection &inter
 				vec3 transparency = vec3( expf( absorbance.x ), expf( absorbance.y ), expf( absorbance.z ) );
 				refractionColor = refractionColor * transparency;
 			}
+
 		}
-		reflectionColor = shade_reflective( castedRay, intersection, depth );
 		//reflectionColor = vec3( 1, 1, 1 );
-		return reflectionColor * reflectionFactor + refractionColor * ( 1.0f - reflectionFactor );
+		color += material.refractionFactor*( color_reflect *reflectionFactor + refractionColor *( 1.0f - reflectionFactor ));
 	}
-	else if ( material.shadingType == DIFFUSE_AND_REFLECTIVE )
-	{
-		vec3 reflectionColor = shade_reflective( castedRay, intersection, depth );
-		vec3 diffuseColor = shade_diffuse( castedRay, intersection, depth );
-		return material.reflectionFactor * reflectionColor + ( 1.0f - material.reflectionFactor ) * diffuseColor;
-	}
+	return color;
 
 }
 

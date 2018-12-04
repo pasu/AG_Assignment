@@ -41,7 +41,7 @@ RTMaterial &RTMaterialManager::CreateMaterial( const vec3 &color, const RTTextur
 
 	if ( got == mMaterials.end() )
 	{
-		pMaterial = new RTMaterial( color, albedo, textureScale, shadingType, reflectionFactor, indexOfRefraction );
+		//pMaterial = new RTMaterial( color, albedo, textureScale, shadingType, reflectionFactor, indexOfRefraction );
 		mMaterials.insert( {code, pMaterial} );
 
 		return *pMaterial;

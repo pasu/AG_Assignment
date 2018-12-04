@@ -1,33 +1,29 @@
 #pragma once
 #include "RTTexture.h"
-
-enum ShadingType
-{
-	DIFFUSE,
-	REFLECTIVE,
-	TRANSMISSIVE_AND_REFLECTIVE,
-	DIFFUSE_AND_REFLECTIVE
-};
+typedef unsigned int ShadingType;
+constexpr ShadingType DIFFUSE = 1;
+constexpr ShadingType REFLECT = 2;
+constexpr ShadingType REFRACT = 4;
 
 class RTMaterial
 {
-public:
-  RTMaterial( const vec3 &color, const ShadingType shadingType );
-  RTMaterial( const RTTexture *albedo, const ShadingType shadingType );
-  RTMaterial( const vec3 &color, const RTTexture *albedo, const ShadingType shadingType );
-  RTMaterial( const vec3 &color, const RTTexture *albedo, const ShadingType shadingType, const float reflectionFactor );
-  RTMaterial( const vec3 &color, const RTTexture *albedo, const vec2 &textureScale, const ShadingType shadingType, const float reflectionFactor, const float indexOfRefraction );
-  
-  const ShadingType shadingType;
+  public:
+	RTMaterial( const vec3 color, const ShadingType shadingType, const vec3 DRT_factors, const float fractionIndex = 1.0f );
+	RTMaterial( const RTTexture *albedo, const ShadingType shadingType, const vec3 DRT_factors, vec2 textyreScale = vec2(1,1),const float fractionIndex = 1.0f );
 
-  const vec3 getAlbedoAtPoint( const float s,float z, const float t ) const;
+	const ShadingType shadingType;
 
-  float reflectionFactor;
-  float indexOfRefraction;
+	const vec3 getAlbedoAtPoint( const float s, float z, const float t ) const;
 
-  vec2 textureScale;
+	float diffuseFactor;
+	float reflectionFactor;
+	float refractionFactor;
+	
+	float indexOfRefraction;
 
-private:
-  const vec3 color;
-  const RTTexture *albedoTexture;
+	vec2 textureScale;
+
+  private:
+	const vec3 color;
+	const RTTexture *albedoTexture;
 };
