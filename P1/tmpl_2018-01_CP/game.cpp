@@ -114,6 +114,31 @@ void Tmpl8::Game::KeyDown( int key )
 			break;
 		}
 	}
+	
+	if ( key == SDL_SCANCODE_LEFT )
+	{
+		gTexManager.ClearAll();
+		gMaterialManager.ClearAll();
+		scene.ClearAllLight();
+		scene.ClearAllObj();
+
+		index--;
+		switch ( index % scenecount )
+		{
+		case 0:
+			scene_default();
+			break;
+		case 1:
+			scene_fresnel_beer();
+			break;
+		case 2:
+			scene_light();
+			break;
+		case 3:
+			scene_tw();
+			break;
+		}
+	}
 
 }
 
