@@ -35,8 +35,8 @@ void Game::Init()
 
 	//pCamera->turnLeft( -Utils::RT_PI / 2.0f );
 	//scene_default();
-	scene_fresnel_beer();
-	//scene_light();
+	//scene_fresnel_beer();
+	scene_light();
 	//scene_tw();
 	//gTexManager.CreateTexture( "./assets/floor_diffuse.png", true, 8, 6.0f );
 // 	gTexManager.ClearAll();
@@ -264,7 +264,7 @@ void Tmpl8::Game::scene_fresnel_beer()
 	scene.addObject( pSphere3 );
 	///////////////////////////////////////////////////////////////////////////////
 }
-/*ss
+
 void Tmpl8::Game::scene_light()
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -272,12 +272,18 @@ void Tmpl8::Game::scene_light()
 	vec3 lightRed( 248. / 255., 192. / 255., 196. / 255 );
 	RTChessBoardTexture *chessboardTexture = gTexManager.CreateChessBoardTexture( vec3( 1 ), vec3( 0 ) );
 
-	RTMaterial& brownCheckerBoardMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), chessboardTexture, vec2( 0.2f ), DIFFUSE, 0.8f, 2.5f );
-	RTMaterial &whiteMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), 0, vec2( 0.1f ), DIFFUSE, 0.8f, 2.5f );
-	RTMaterial &redMaterial = gMaterialManager.CreateMaterial( vec3( 1, 0, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
-	RTMaterial &greenMaterial = gMaterialManager.CreateMaterial( vec3( 0, 1, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
-	RTMaterial &blueGlassMaterial = gMaterialManager.CreateMaterial( lightBlue, 0, vec2( 1.0f ), TRANSMISSIVE_AND_REFLECTIVE, 0.95f, 1.5f );
-	RTMaterial &mirrorMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), 0, vec2( 1.0f ), REFLECTIVE, 0.8f, 2.5f );
+	RTMaterial &brownCheckerBoardMaterial =* new RTMaterial( chessboardTexture, DIFFUSE,vec3(1,0,0), vec2(0.2f));
+		//gMaterialManager.CreateMaterial( vec3( 1 ), chessboardTexture, vec2( 0.2f ), DIFFUSE, 0.8f, 2.5f );
+	RTMaterial &whiteMaterial = *new RTMaterial( vec3( 1 ), DIFFUSE, vec3( 1, 0, 0 ) );
+		//gMaterialManager.CreateMaterial( vec3( 1 ), 0, vec2( 0.1f ), DIFFUSE, 0.8f, 2.5f );
+	RTMaterial &redMaterial = *new RTMaterial( vec3( 1, 0, 0 ), DIFFUSE, vec3( 1, 0, 0 ) );
+		//gMaterialManager.CreateMaterial( vec3( 1, 0, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
+	RTMaterial &greenMaterial = *new RTMaterial( vec3( 0, 1, 0 ), DIFFUSE, vec3( 1, 0, 0 ) );
+		//gMaterialManager.CreateMaterial( vec3( 0, 1, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
+	RTMaterial &blueGlassMaterial = *new RTMaterial( lightBlue, REFRACT | REFLECT,vec3(0,0.05,0.95),1.5 );
+		//gMaterialManager.CreateMaterial( lightBlue, 0, vec2( 1.0f ), TRANSMISSIVE_AND_REFLECTIVE, 0.95f, 1.5f );
+	RTMaterial &mirrorMaterial = *new RTMaterial( vec3( 1 ), REFLECT, vec3( 0, 0.8, 0 ) );
+		//gMaterialManager.CreateMaterial( vec3( 1 ), 0, vec2( 1.0f ), REFLECTIVE, 0.8f, 2.5f );
 
 	scene.addObject( new RTPlane( vec3( -10.0f, 0.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, -1.0f ), redMaterial ) );
 	scene.addObject( new RTPlane( vec3( 10.0f, 0.0f, 0.0f ), vec3( -1.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, -1.0f ), greenMaterial ) );
@@ -307,7 +313,7 @@ void Tmpl8::Game::scene_light()
 	scene.addLight( pLight );
 	///////////////////////////////////////////////////////////////////////////////
 }
-*/
+
 void Tmpl8::Game::scene_tw()
 {
 	//////////////////////////////////////////////////////////////////////////
