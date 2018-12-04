@@ -20,6 +20,7 @@ public:
 	void scene_default();
 	void scene_fresnel_beer();
 	void scene_light();
+	void scene_tw();
 
   private:
 	Surface* screen;

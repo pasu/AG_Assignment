@@ -9,8 +9,8 @@
 
 #define NUMBER_THREAD 8
 
-#define SCRWIDTH 800
-#define SCRHEIGHT 800
+#define SCRWIDTH 512
+#define SCRHEIGHT 512
 // #define FULLSCREEN
 // #define ADVANCEDGL	// faster if your system supports it
 

@@ -4,7 +4,7 @@
 #include "Utils.h"
 
 RTPlane::RTPlane( const vec3 &position, const vec3 &normal, const vec3 &tangent, const RTMaterial &material )
-	: RTPrimitive( position, material ), normal( normalize( normal ) ), tangent( normalize( tangent ) ), binormal( normalize( cross( normal, tangent ) ) ), boundaryxy(vec2(Utils::MAX_FLOAT))
+	: RTPrimitive( position, material ), normal( normalize( normal ) ), tangent( normalize( tangent ) ), binormal( normalize( cross( normal, tangent ) ) ), boundaryxy( vec2( Utils::MAX_FLOAT ) ), bCircle(false)
 {
 }
 
@@ -25,6 +25,14 @@ const RTIntersection RTPlane::intersect( const RTRay &ray ) const
 		vec3 localCoords = intersection.getIntersectionPosition() - pos;
 		vec2 distanceXY = vec2( dot( localCoords, tangent ), dot( localCoords, binormal ) );
 
+		if (bCircle)
+		{
+			if ( localCoords.sqrLentgh() > boundaryxy.x * boundaryxy.x )
+			{
+				intersection.rayT = -1.0f;
+				return intersection;
+			}
+		}
 		if ( fabsf( distanceXY.x ) > boundaryxy.x )
 		{
 			intersection.rayT = -1.0f;
