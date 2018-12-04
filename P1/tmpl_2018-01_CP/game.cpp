@@ -34,9 +34,9 @@ void Game::Init()
 	pTracer = new RayTracer( scene, renderOptions );
 
 	//pCamera->turnLeft( -Utils::RT_PI / 2.0f );
-	//scene_default();
+	scene_default();
 	//scene_fresnel_beer();
-	scene_light();
+	//scene_light();
 	//scene_tw();
 	//gTexManager.CreateTexture( "./assets/floor_diffuse.png", true, 8, 6.0f );
 // 	gTexManager.ClearAll();
@@ -97,7 +97,7 @@ void Tmpl8::Game::KeyDown( int key )
 		scene.ClearAllLight();
 		scene.ClearAllObj();
 
-		index++; /*
+		index++; 
 		switch ( index % scenecount )
 		{
 		case 0:
@@ -112,7 +112,7 @@ void Tmpl8::Game::KeyDown( int key )
 		case 3:
 			scene_tw();
 			break;
-		}*/
+		}
 	}
 
 }
