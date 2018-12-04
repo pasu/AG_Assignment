@@ -34,10 +34,10 @@ void Game::Init()
 	pTracer = new RayTracer( scene, renderOptions );
 
 	//pCamera->turnLeft( -Utils::RT_PI / 2.0f );
-	//scene_default();
+	scene_default();
 	//scene_fresnel_beer();
 	//scene_light();
-	scene_tw();
+	//scene_tw();
 	//gTexManager.CreateTexture( "./assets/floor_diffuse.png", true, 8, 6.0f );
 // 	gTexManager.ClearAll();
 // 	gMaterialManager.ClearAll();
@@ -120,49 +120,49 @@ void Tmpl8::Game::KeyDown( int key )
 void Tmpl8::Game::MouseWheel( int y )
 {
 }
-/*
+
 void Tmpl8::Game::scene_default()
 {
-	//////////////////////////////////////////////////////////////////////////
 	RTTexture *floorTexture = gTexManager.CreateTexture( "./assets/floor_diffuse.png", true, 8, 6.0f );
 	RTTexture *boxTexture = gTexManager.CreateTexture( "./assets/box.png" );
 	RTTexture *torusTexture = gTexManager.CreateTexture( "./assets/BumpyMetal.jpg" );
 	RTTexture *meshTexture = gTexManager.CreateTexture( "./assets/Cesium_Man.jpg" );
 
-	RTMaterial &redspehreMaterial = gMaterialManager.CreateMaterial( vec3( 1, 0, 0 ), DIFFUSE_AND_REFLECTIVE );
+	//RTMaterial &redspehreMaterial = gMaterialManager.CreateMaterial( vec3( 1, 0, 0 ), DIFFUSE_AND_REFLECTIVE );
+	RTMaterial *redsphereMaterial_p = new RTMaterial( vec3( 1, 0, 0 ), DIFFUSE | REFLECT, vec3( 0.6, 0.4, 0.0 ) );
+	RTMaterial redsphereMaterial = *redsphereMaterial_p;
 
-	RTMaterial &yellowspehreMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 0 ), DIFFUSE_AND_REFLECTIVE );
+	//RTMaterial &yellowspehreMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 0 ), DIFFUSE_AND_REFLECTIVE );
+	RTMaterial *yellowspehreMaterial_p = new RTMaterial( vec3( 1, 1, 0 ), DIFFUSE | REFLECT, vec3( 0.6, 0.4, 0.0 ) );
+	RTMaterial &yellowspehreMaterial = *yellowspehreMaterial_p;
 
-	RTMaterial &boxReflectiveMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), boxTexture, DIFFUSE_AND_REFLECTIVE );
+	//RTMaterial &boxReflectiveMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), boxTexture, DIFFUSE_AND_REFLECTIVE );
+	RTMaterial *boxReflectiveMaterial_p = new RTMaterial( boxTexture, DIFFUSE | REFLECT, vec3( 0.8, 0.2, 0.0 ) );
+	RTMaterial &boxReflectiveMaterial = *boxReflectiveMaterial_p;
 
-	RTMaterial &floorMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), floorTexture, DIFFUSE_AND_REFLECTIVE );
-	RTMaterial &mirrorWallMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), REFLECTIVE );
+	//RTMaterial &floorMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), floorTexture, DIFFUSE_AND_REFLECTIVE );
+	RTMaterial *floorMaterial_p = new RTMaterial( floorTexture, DIFFUSE | REFLECT, vec3( 0.7, 0.3, 0.0 ), vec2( 0.1, 0.1 ) );
+	RTMaterial floorMaterial = *floorMaterial_p;
 
-	RTMaterial &coneMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), boxTexture, DIFFUSE );
+	//RTMaterial &mirrorWallMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), REFLECTIVE );
+	RTMaterial *mirrorWallMaterial_p = new RTMaterial( vec3( 1, 1, 1 ), REFLECT, vec3( 0, 1, 0 ) );
+	RTMaterial mirrorWallMaterial = *mirrorWallMaterial_p;
 
-	RTMaterial &torusMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), torusTexture, DIFFUSE );
-	RTMaterial &sphereMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), TRANSMISSIVE_AND_REFLECTIVE );
+	//RTMaterial &coneMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), boxTexture, DIFFUSE );
+	RTMaterial *coneMaterial_p = new RTMaterial( boxTexture, DIFFUSE, vec3( 1, 0, 0 ), vec2( 0.1, 0.1 ) );
+	RTMaterial coneMaterial = *coneMaterial_p;
 
-	RTMaterial &meshMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), meshTexture, DIFFUSE );
+	//RTMaterial &torusMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), torusTexture, DIFFUSE );
+	RTMaterial *torusMaterial_p = new RTMaterial( torusTexture, DIFFUSE, vec3( 1, 0, 0 ), vec2( 64, 64 ), 2.417 );
+	RTMaterial torusMaterial = *torusMaterial_p;
 
-	floorMaterial.textureScale.x = 0.1f;
-	floorMaterial.textureScale.y = 0.1f;
-	floorMaterial.reflectionFactor = 0.3f;
+	//RTMaterial &sphereMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), TRANSMISSIVE_AND_REFLECTIVE );
+	RTMaterial *sphereMaterial_p = new RTMaterial( vec3( 1, 1, 1 ), REFRACT, vec3( 0, 0, 1 ), 2.417 );
+	RTMaterial sphereMaterial = *sphereMaterial_p;
 
-	coneMaterial.textureScale.x = 0.1f;
-	coneMaterial.textureScale.y = 0.1f;
-
-	torusMaterial.textureScale.x = 64.0f;
-	torusMaterial.textureScale.y = 64.0f;
-
-	mirrorWallMaterial.reflectionFactor = 1.0f;
-
-	redspehreMaterial.reflectionFactor = 0.4f;
-	yellowspehreMaterial.reflectionFactor = 0.4f;
-
-	boxReflectiveMaterial.reflectionFactor = 0.2f;
-	torusMaterial.indexOfRefraction = 2.417f;
-	sphereMaterial.indexOfRefraction = 2.417f;
+	//RTMaterial &meshMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), meshTexture, DIFFUSE );
+	RTMaterial *meshMaterial_p = new RTMaterial( meshTexture, DIFFUSE, vec3( 1, 0, 0 ) );
+	RTMaterial meshMaterial = *meshMaterial_p;
 	/////////////////////////////////////////////////////////////////////////
 	scene.ambientLight = 0.1f;
 	vec3 posL1 = vec3( 00.0f, 40.0f, -25.0f );
@@ -186,7 +186,7 @@ void Tmpl8::Game::scene_default()
 	RTBox *box = new RTBox( vec3( 0.0f, 0.0f, -105.0f ), vec3( 20.0f, 20.0f, 10.0f ),
 							boxReflectiveMaterial );
 
-	RTSphere *pSphere1 = new RTSphere( vec3( -15.0f, 0.0f, -60.0f ), 5, redspehreMaterial );
+	RTSphere *pSphere1 = new RTSphere( vec3( -15.0f, 0.0f, -60.0f ), 5, redsphereMaterial );
 
 	RTSphere *pSphere2 = new RTSphere( vec3( 15.0f, 0.0f, -60.0f ), 5.0f, yellowspehreMaterial );
 
@@ -219,7 +219,7 @@ void Tmpl8::Game::scene_default()
 	//scene.addObject( mesh );
 	///////////////////////////////////////////////////////////////////////////////
 }
-
+/*
 void Tmpl8::Game::scene_fresnel_beer()
 {
 	//////////////////////////////////////////////////////////////////////////
