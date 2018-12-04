@@ -44,7 +44,7 @@ void RayTracer::render( Surface *screen )
 	
 	waitRenderThreads();
 
-	runFXAA( hdrPixels, renderOptions.width, renderOptions.height );
+	//runFXAA( hdrPixels, renderOptions.width, renderOptions.height );
 
 
 	for (int y = 0; y < renderOptions.height; ++y) {
