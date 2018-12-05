@@ -68,3 +68,25 @@ const SurfacePointData RTSphere::getSurfacePointData( const RTIntersection &inte
 
 	return {normal, texCoords, surfacePoint, tangent, bitangent};
 }
+
+RTInnerSphere::RTInnerSphere( const vec3 &position, const float radius, RTMaterial &material )
+	: RTSphere(position,radius,material)
+{
+}
+
+const SurfacePointData RTInnerSphere::getSurfacePointData( const RTIntersection &intersection ) const
+{
+	const vec3 &surfacePoint = intersection.getIntersectionPosition();
+	vec3 localCoord = surfacePoint - pos;
+	vec3 normal = -normalize( localCoord );
+
+	float theta = atan2( localCoord.x, localCoord.z );
+	float phi = acos( localCoord.y / radius );
+
+	vec2 texCoords = {0.5f + theta / ( 2.0f * Utils::RT_PI ), 1.0f - ( phi / Utils::RT_PI )};
+
+	vec3 tangent( cos( theta ) * cos( phi ), cos( theta ) * sin( phi ), -sin( theta ) );
+	vec3 bitangent( -sin( phi ), cos( phi ), 0 );
+
+	return {normal, texCoords, surfacePoint, tangent, bitangent};
+}

@@ -44,7 +44,7 @@ void RayTracer::render( Surface *screen )
 	
 	waitRenderThreads();
 
-	runFXAA( hdrPixels, renderOptions.width, renderOptions.height );
+	//runFXAA( hdrPixels, renderOptions.width, renderOptions.height );
 
 
 	for (int y = 0; y < renderOptions.height; ++y) {
@@ -73,7 +73,7 @@ const RTRay &RayTracer::generatePrimaryRay( const int x, const int y ) const
 const vec3 RayTracer::castRay( const RTRay &ray, const int depth, RTIntersection &intersection ) const
 {
 	if ( depth > renderOptions.maxRecursionDepth )
-		return vec3( 0, 1, 0 );
+		return scene.backgroundColor;
 
 	intersection = findNearestObjectIntersection( ray );
 

@@ -28,7 +28,7 @@ void Game::Init()
 {
 	renderOptions.width = SCRWIDTH;
 	renderOptions.height = SCRHEIGHT;
-	renderOptions.maxRecursionDepth = 8;
+	renderOptions.maxRecursionDepth = 5;
 	renderOptions.shadowBias = 0.01f;
 
 	pTracer = new RayTracer( scene, renderOptions );
@@ -355,7 +355,7 @@ void Tmpl8::Game::scene_tw()
 	RTChessBoardTexture *chessboardTexture = gTexManager.CreateChessBoardTexture( vec3( 219.0f / 255.0f, 31.0f / 255.0f, 7.0f / 255.0f ), vec3( 226.0f / 255.0f, 226.0f / 255.0f, 4.0f / 255.0f ) );
 
 	RTMaterial &ryCheckerBoardMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), chessboardTexture, vec2( 0.2f,0.3f ), DIFFUSE, 0.8f, 2.5f );
-	RTMaterial &whiteGlassMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), 0, vec2( 1.0f ), DIFFUSE_AND_REFLECTIVE, 0.9f, 1.35f );
+	RTMaterial &whiteGlassMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), 0, vec2( 1.0f ), TRANSMISSIVE_AND_REFLECTIVE, 0.9f, 1.35f );
 	RTMaterial &mirrorMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), 0, vec2( 1.0f ), TRANSMISSIVE_AND_REFLECTIVE, 0.8f, 20.1f );
 	RTPlane *plane = new RTPlane( vec3( 5.0f, -10.0f, -40.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), ryCheckerBoardMaterial );
 	plane->boundaryxy = vec2( 20.0f, 100.0f );
@@ -364,8 +364,11 @@ void Tmpl8::Game::scene_tw()
 	RTSphere *sphere1 = new RTSphere( vec3( 5.0f, -3.0f, -16.0f ), 4.0f, mirrorMaterial );
 	scene.addObject( sphere1 );
 
-	RTSphere *sphere2 = new RTSphere( vec3( 0.0f, 0.0f, -2.0f ), 0.6f, whiteGlassMaterial );
+	RTSphere *sphere2 = new RTSphere( vec3( -0.1f, 0.0f, -2.0f ), 0.6f, whiteGlassMaterial );
 	scene.addObject( sphere2 );
+
+	RTInnerSphere *sphere3 = new RTInnerSphere( vec3( -0.1f, 0.0f, -2.0f ), 0.58f, whiteGlassMaterial );
+	scene.addObject( sphere3 );
 
 	RTPlane *plane2 = new RTPlane( vec3( 0.0f, 0.0f, -2.0f ), vec3( 0.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 0.0f ), whiteGlassMaterial );
 	plane2->boundaryxy = vec2( 0.6 );
