@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="game.cpp" />
+    <ClCompile Include="surface.cpp">
+      <Filter>template code</Filter>
+    </ClCompile>
+    <ClCompile Include="template.cpp">
+      <Filter>template code</Filter>
+    </ClCompile>
+    <ClCompile Include="RTBox.cpp">
+      <Filter>Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="RTCone.cpp">
+      <Filter>Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="RTObjMesh.cpp">
+      <Filter>Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="RTPlane.cpp">
+      <Filter>Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="RTPrimitive.cpp">
+      <Filter>Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="RTSphere.cpp">
+      <Filter>Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="RTTorus.cpp">
+      <Filter>Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="RTTextureManager.cpp">
+      <Filter>Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="RTTexture.cpp">
+      <Filter>Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="RTChessBoardTexture.cpp">
+      <Filter>Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="FXAA.cpp">
+      <Filter>Toolkit</Filter>
+    </ClCompile>
+    <ClCompile Include="quarticsolver.cpp">
+      <Filter>Toolkit</Filter>
+    </ClCompile>
+    <ClCompile Include="RayTracer.cpp">
+      <Filter>RayTracer</Filter>
+    </ClCompile>
+    <ClCompile Include="RayTracerThread.cpp">
+      <Filter>RayTracer</Filter>
+    </ClCompile>
+    <ClCompile Include="RTIntersection.cpp">
+      <Filter>RayTracer</Filter>
+    </ClCompile>
+    <ClCompile Include="RTCameraController.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="RTLight.cpp">
+      <Filter>Light</Filter>
+    </ClCompile>
+    <ClCompile Include="RTMaterial.cpp">
+      <Filter>Material</Filter>
+    </ClCompile>
+    <ClCompile Include="RTMaterialManager.cpp">
+      <Filter>Material</Filter>
+    </ClCompile>
+    <ClCompile Include="RTRay.cpp">
+      <Filter>RayTracer</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
+      <Filter>Toolkit</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="game.h" />
+    <ClInclude Include="surface.h">
+      <Filter>template code</Filter>
+    </ClInclude>
+    <ClInclude Include="template.h">
+      <Filter>template code</Filter>
+    </ClInclude>
+    <ClInclude Include="precomp.h" />
+    <ClInclude Include="RTBox.h">
+      <Filter>Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="RTCone.h">
+      <Filter>Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="RTObjMesh.h">
+      <Filter>Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="RTPlane.h">
+      <Filter>Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="RTPrimitive.h">
+      <Filter>Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="RTSphere.h">
+      <Filter>Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="RTTorus.h">
+      <Filter>Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="RTTextureManager.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="RTTexture.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="RTChessBoardTexture.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="FXAA.h">
+      <Filter>Toolkit</Filter>
+    </ClInclude>
+    <ClInclude Include="quarticsolver.h">
+      <Filter>Toolkit</Filter>
+    </ClInclude>
+    <ClInclude Include="RayTracer.h">
+      <Filter>RayTracer</Filter>
+    </ClInclude>
+    <ClInclude Include="RTIntersection.h">
+      <Filter>RayTracer</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderOptions.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="RTCamera.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="RTCameraController.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="RTLight.h">
+      <Filter>Light</Filter>
+    </ClInclude>
+    <ClInclude Include="RTMaterial.h">
+      <Filter>Material</Filter>
+    </ClInclude>
+    <ClInclude Include="RTMaterialManager.h">
+      <Filter>Material</Filter>
+    </ClInclude>
+    <ClInclude Include="RTRay.h">
+      <Filter>RayTracer</Filter>
+    </ClInclude>
+    <ClInclude Include="RTSurfacePointData.h">
+      <Filter>RayTracer</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Toolkit</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="template code">
+      <UniqueIdentifier>{bf32dd6e-4be7-4889-8ac6-49e7ee163c40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Primitives">
+      <UniqueIdentifier>{0f7571f4-a830-49e8-9e07-3ecd93c97bb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Texture">
+      <UniqueIdentifier>{5c0feec1-aa74-4053-8f84-ac762031cd03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Material">
+      <UniqueIdentifier>{d9a88c3d-cbb8-4414-b4ad-ef9e1bed93e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RayTracer">
+      <UniqueIdentifier>{6ddc32cc-6ea3-4bfb-82db-d8675bce9e31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Toolkit">
+      <UniqueIdentifier>{bac1737d-791f-47e6-b47f-ae65bc438eec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light">
+      <UniqueIdentifier>{28305b64-32de-4f3d-9461-f6eb4c0c038f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{57b34069-c01a-4067-8ee5-eeedff56fdfc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="_readme.txt">
+      <Filter>template code</Filter>
+    </Text>
+  </ItemGroup>
+</Project>
