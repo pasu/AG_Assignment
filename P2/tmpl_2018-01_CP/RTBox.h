@@ -10,11 +10,7 @@ class RTBox : public RTPrimitive
 	const RTIntersection intersect( const RTRay &ray ) const;
 	const SurfacePointData getSurfacePointData( const RTIntersection &intersection ) const;
 
-  private:
+  public:
 	vec3 min;
 	vec3 max;
-
-	float distanceX;
-	float distanceY;
-	float distanceZ;
 };

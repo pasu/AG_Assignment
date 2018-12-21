@@ -74,6 +74,10 @@
     <ClCompile Include="Utils.cpp">
       <Filter>Toolkit</Filter>
     </ClCompile>
+    <ClCompile Include="BVH.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="AABB.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -156,6 +160,10 @@
     <ClInclude Include="Utils.h">
       <Filter>Toolkit</Filter>
     </ClInclude>
+    <ClInclude Include="BVH.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="AABB.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">
