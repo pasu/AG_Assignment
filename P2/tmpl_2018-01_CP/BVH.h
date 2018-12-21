@@ -7,7 +7,8 @@
 struct BVHNode
 {
 	AABB bounds;
-	uint32_t leftFirst, count;
+	uint32_t start, nPrims, rightOffset;
+	//uint32_t leftFirst, count;
 };
 
 class BVH
@@ -25,8 +26,6 @@ class BVH
 	BVHNode *bvhTree;
 
 	bool getIntersection( const RTRay &ray, RTIntersection *intersection, bool occlusion ) const;
-
-	~BVH();
 
   private:
 	uint32_t nNodes, nLeafs, leafSize;

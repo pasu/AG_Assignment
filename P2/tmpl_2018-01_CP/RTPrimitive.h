@@ -3,6 +3,8 @@
 #include "RTRay.h"
 #include "RTSurfacePointData.h"
 
+#include "AABB.h"
+
 #define FLOAT_ZERO 0.000001f
 #define MAX_DISTANCE_TO_INTERSECTON FLT_MAX
 
@@ -18,7 +20,11 @@ class RTPrimitive
 
 	inline const RTMaterial &getMaterial() const { return material; }
 
+	AABB getAABB();
+	vec3 getCentroid();
+
   protected:
 	vec3 pos;
+	AABB box;
 	const RTMaterial& material;
 };

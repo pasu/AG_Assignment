@@ -1,5 +1,9 @@
 #pragma once
-#include "RTBox.h"
+#include "precomp.h"
+#include "RTRay.h"
+
+class RTBox;
+
 class AABB
 {
   public:
@@ -12,6 +16,9 @@ class AABB
 
 	void expandToInclude( const vec3 &p );
 	void expandToInclude( const AABB &b );
+	uint32_t maxDimension() const;
+
+	bool intersect( const RTRay &ray, float *tnear, float *tfar ) const;
 
   public:
 	vec3 min;
