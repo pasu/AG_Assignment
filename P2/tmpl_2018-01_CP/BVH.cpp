@@ -9,6 +9,7 @@ BVH::BVH( std::vector<RTPrimitive *> *objects, uint32_t leafSize /*= 4 */ )
 
 BVH::~BVH()
 {
+	delete[] bvhTree;
 }
 
 struct BVHTraversal
