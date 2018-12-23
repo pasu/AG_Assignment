@@ -58,12 +58,11 @@ bool BVH::getIntersection( const RTRay &ray, RTIntersection *intersection, bool 
 			for ( uint32_t o = 0; o < node.nPrims; ++o )
 			{
 				bool hit = false;
-				RTIntersection current;
 
-// 				const RTPrimitive *obj = ( *build_prims )[node.start + o];
-// 				hit = obj->getIntersection( ray, &current );
+				const RTPrimitive *obj = ( *build_prims )[node.start + o];
+				const RTIntersection &current = obj->intersect( ray );
 
-				if ( hit )
+				if ( current.isIntersecting() )
 				{
 					// If we're only looking for occlusion, then any hit is good enough
 					if ( occlusion )
