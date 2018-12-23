@@ -6,6 +6,15 @@ AABB::AABB()
 {
 }
 
+AABB::AABB( const AABB &obj )
+{
+	if ( &obj == this )
+		return;
+
+	this->min = obj.min;
+	this->max = obj.max;
+}
+
  AABB::AABB( const Vector3 &min, const Vector3 &max )
 	: min( min ), max( max )
 {

@@ -13,18 +13,18 @@ class RTIntersection;
 class RTPrimitive
 {
   public:
-	RTPrimitive( const vec3 center, const RTMaterial& material);
+	RTPrimitive( const vec3 center, const RTMaterial &material );
 	RTPrimitive( const RTMaterial &material );
 	virtual const RTIntersection intersect( const RTRay &ray ) const = 0;
 	virtual const SurfacePointData getSurfacePointData( const RTIntersection &intersection ) const = 0;
 
 	inline const RTMaterial &getMaterial() const { return material; }
 
-	AABB getAABB();
-	vec3 getCentroid();
+	AABB getAABB() const { return box; }
+	vec3 getCentroid() const { return pos; };
 
   protected:
 	vec3 pos;
 	AABB box;
-	const RTMaterial& material;
+	const RTMaterial &material;
 };

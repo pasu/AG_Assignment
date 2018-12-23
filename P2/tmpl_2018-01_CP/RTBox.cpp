@@ -6,13 +6,13 @@
 	max( vec3( center.x + dimensions.x / 2.0f, center.y + dimensions.y / 2.0f, center.z + dimensions.z / 2.0f ) ),
 	RTPrimitive( center, material )
 {
-	 
+	 box = AABB( min, max );
  }
 
  RTBox::RTBox( const vec3 &center, const vec3 &min, const vec3 max, const RTMaterial &material )
 	: min( min ), max( max ), RTPrimitive( center, material )
 {
-	 
+	 box = AABB( min, max );
  }
 
 RTBox::~RTBox()

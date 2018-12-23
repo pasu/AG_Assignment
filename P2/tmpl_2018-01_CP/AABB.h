@@ -98,11 +98,14 @@ class AABB
 {
   public:
 	AABB();
+	AABB(const AABB& obj);
 	~AABB();
 
 	AABB( const Vector3 &min, const Vector3 &max );
 	AABB( const Vector3 &p );
 	AABB( const RTBox &box );
+
+
 
 	void expandToInclude( const Vector3 &p );
 	void expandToInclude( const AABB &b );
