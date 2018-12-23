@@ -144,21 +144,7 @@ const vec3 RayTracer::shade( const RTRay &castedRay, const RTIntersection &inter
 
 RTIntersection RayTracer::findNearestObjectIntersection( const RTRay &ray ) const
 {
-	static auto& objects = scene.getObjects();
-
-	RTIntersection nearestIntersection;
-
-	for ( auto it = objects.begin(); it != objects.end(); ++it )
-	{
-		const RTIntersection &intersection = ( *it )->intersect( ray );
-
-		if ( intersection.isIntersecting() &&
-			 ( !nearestIntersection.isIntersecting() || intersection.rayT < nearestIntersection.rayT ) )
-		{
-			nearestIntersection = intersection;
-		}
-	}
-	return nearestIntersection;
+	return scene.findNearestObjectIntersection( ray );
 }
 
 const Tmpl8::vec3 RayTracer::shade_diffuse( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const

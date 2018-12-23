@@ -3,6 +3,7 @@
 #include "RTPrimitive.h"
 #include "RTCamera.h"
 #include <vector>
+#include "BVH.h"
 
 using namespace std;
 
@@ -25,8 +26,15 @@ public:
 	vec3 backgroundColor;
 	unsigned int backgroundColorPixel;
 
+	void BuildBVHTree();
+	bool getIntersection( const RTRay &ray, RTIntersection &nearestIntersection ) const;
+	RTIntersection findNearestObjectIntersection( const RTRay &ray ) const;
+
   private:
 	vector<RTPrimitive *> primitivecollection;
 	vector<RTLight *> lightcollection;
 	RTCamera* camera;
+
+	bool bInitializedBVH;
+	BVH *bvhTree;
 };
