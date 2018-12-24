@@ -4,6 +4,12 @@
 #include "RTRay.h"
 #include "RTIntersection.h"
 
+struct BVHNode_32
+{
+	AABB bounds;
+	//merge start and rightOffset as leftFirst;
+	uint32_t leftFirst, count;
+};
 struct BVHNode
 {
 	AABB bounds;
@@ -23,7 +29,7 @@ class BVH
 	void build();
 
 	// Fast Traversal System
-	BVHNode *bvhTree;
+	BVHNode_32 *bvhTree;
 
 	bool getIntersection( const RTRay &ray, RTIntersection *intersection, bool occlusion ) const;
 

@@ -1,8 +1,8 @@
-#include "precomp.h"
 #include "BVH.h"
+#include "precomp.h"
 
 BVH::BVH( std::vector<RTPrimitive *> *objects, uint32_t leafSize /*= 4 */ )
-: build_prims( objects ), leafSize( leafSize ), nNodes( 0 ), nLeafs( 0 ), bvhTree( NULL )
+	: build_prims( objects ), leafSize( leafSize ), nNodes( 0 ), nLeafs( 0 ), bvhTree( NULL )
 {
 	build();
 }
@@ -46,20 +46,21 @@ bool BVH::getIntersection( const RTRay &ray, RTIntersection *intersection, bool 
 		int ni = todo[stackptr].i;
 		float fnear = todo[stackptr].mint;
 		stackptr--;
-		const BVHNode &node( bvhTree[ni] );
+		const BVHNode_32 &node( bvhTree[ni] );
 
 		// If this node is further than the closest found intersection, continue
-		if ( intersection->rayT>0.0 && fnear > intersection->rayT )
+		if ( intersection->rayT > 0.0 && fnear > intersection->rayT )
 			continue;
 
 		// Is leaf -> Intersect
-		if ( node.rightOffset == 0 )
+		if ( ( node.leftFirst & 0x1 ) == 0 )
 		{
-			for ( uint32_t o = 0; o < node.nPrims; ++o )
+			uint32_t start = ( node.leftFirst >> 1 );
+			for ( uint32_t o = 0; o < node.count; ++o )
 			{
 				bool hit = false;
 
-				const RTPrimitive *obj = ( *build_prims )[node.start + o];
+				const RTPrimitive *obj = ( *build_prims )[start + o];
 				const RTIntersection &current = obj->intersect( ray );
 
 				if ( current.isIntersecting() )
@@ -81,8 +82,9 @@ bool BVH::getIntersection( const RTRay &ray, RTIntersection *intersection, bool 
 		else
 		{ // Not a leaf
 
+			uint32_t rightOffset = ( node.leftFirst >> 1 );
 			bool hitc0 = bvhTree[ni + 1].bounds.intersect( ray, bbhits, bbhits + 1 );
-			bool hitc1 = bvhTree[ni + node.rightOffset].bounds.intersect( ray, bbhits + 2, bbhits + 3 );
+			bool hitc1 = bvhTree[ni + rightOffset].bounds.intersect( ray, bbhits + 2, bbhits + 3 );
 
 			// Did we hit both nodes?
 			if ( hitc0 && hitc1 )
@@ -90,7 +92,7 @@ bool BVH::getIntersection( const RTRay &ray, RTIntersection *intersection, bool 
 
 				// We assume that the left child is a closer hit...
 				closer = ni + 1;
-				other = ni + node.rightOffset;
+				other = ni + rightOffset;
 
 				// ... If the right child was actually closer, swap the relavent values.
 				if ( bbhits[2] < bbhits[0] )
@@ -117,17 +119,18 @@ bool BVH::getIntersection( const RTRay &ray, RTIntersection *intersection, bool 
 
 			else if ( hitc1 )
 			{
-				todo[++stackptr] = BVHTraversal( ni + node.rightOffset, bbhits[2] );
+				todo[++stackptr] = BVHTraversal( ni + rightOffset, bbhits[2] );
 			}
 		}
 	}
 
 	// If we hit something,
-// 	if ( intersection->object != NULL )
-// 		intersection->hit = ray.o + ray.d * intersection->t;
-    if (intersection->object == nullptr) {
+	// 	if ( intersection->object != NULL )
+	// 		intersection->hit = ray.o + ray.d * intersection->t;
+	if ( intersection->object == nullptr )
+	{
 		intersection->rayT = -1;
-    }
+	}
 	return intersection->object != NULL;
 }
 
@@ -168,7 +171,7 @@ void BVH::build()
 		node.start = start;
 		node.nPrims = nPrims;
 		node.rightOffset = Untouched;
-		
+
 		// Calculate the bounding box for this node
 		AABB bb( ( *build_prims )[start]->getAABB() );
 		AABB bc( ( *build_prims )[start]->getCentroid() );
@@ -244,7 +247,21 @@ void BVH::build()
 	}
 
 	// Copy the temp node data to a flat array
-	bvhTree = new BVHNode[nNodes];
+	bvhTree = new BVHNode_32[nNodes];
 	for ( uint32_t n = 0; n < nNodes; ++n )
-		bvhTree[n] = buildnodes[n];
+	{
+		const BVHNode &node = buildnodes[n];
+
+		bvhTree[n].bounds = node.bounds;
+		bvhTree[n].count = node.nPrims;
+		// leaf
+		if (node.rightOffset == 0)
+		{
+			bvhTree[n].leftFirst = ( node.start << 1 ) + 0;
+		}
+		else
+		{
+			bvhTree[n].leftFirst = ( node.rightOffset << 1 ) + 1;
+		}
+	}
 }
