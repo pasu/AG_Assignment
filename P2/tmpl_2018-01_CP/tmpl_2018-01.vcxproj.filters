@@ -78,6 +78,7 @@
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="AABB.cpp" />
+    <ClCompile Include="RTTriangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -164,6 +165,7 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="AABB.h" />
+    <ClInclude Include="RTTriangle.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">
