@@ -173,6 +173,53 @@ void RTObjMesh::computeAABBbounds()
 	box = AABB( *boundingBox );
 }
 
+void RTObjMesh::getTriangles( vector<RTTriangle *> &triangleList )
+{
+	const aiScene *scene = importer->GetScene();
+
+	for ( unsigned int meshI = 0; meshI < scene->mNumMeshes; ++meshI )
+	{
+		aiMesh *mesh = scene->mMeshes[meshI];
+		aiFace *faces = mesh->mFaces;
+
+		for ( unsigned int faceI = 0; faceI < mesh->mNumFaces; ++faceI )
+		{
+			vec3 vertices[3];
+			vec3 normals[3];
+			vec2 texCoords[3];
+
+			aiVector3D &a = mesh->mVertices[faces[faceI].mIndices[0]];
+			aiVector3D &b = mesh->mVertices[faces[faceI].mIndices[1]];
+			aiVector3D &c = mesh->mVertices[faces[faceI].mIndices[2]];
+			vertices[0] = vec3( a.x, a.y, a.z );
+			vertices[1] = vec3( b.x, b.y, b.z );
+			vertices[2] = vec3( c.x, c.y, c.z );
+
+			aiVector3D &na = mesh->mNormals[faces[faceI].mIndices[0]];
+			aiVector3D &nb = mesh->mNormals[faces[faceI].mIndices[1]];
+			aiVector3D &nc = mesh->mNormals[faces[faceI].mIndices[2]];
+			normals[0] = vec3( na.x, na.y, na.z);
+			normals[1] = vec3( nb.x, nb.y, nb.z );
+			normals[2] = vec3( nc.x, nc.y, nc.z );
+
+			if ( mesh->mTextureCoords[0] != NULL )
+			{
+				aiVector3D &ta = mesh->mTextureCoords[0][faces[faceI].mIndices[0]];
+				aiVector3D &tb = mesh->mTextureCoords[0][faces[faceI].mIndices[1]];
+				aiVector3D &tc = mesh->mTextureCoords[0][faces[faceI].mIndices[2]];
+				
+				texCoords[0] = vec2( ta.x, ta.y );
+				texCoords[1] = vec2( tb.x, tb.y );
+				texCoords[2] = vec2( tc.x, tc.y );
+			}
+
+			triangleList.push_back( new RTTriangle( vertices[0], vertices[1], vertices[2],
+													normals[0], normals[1], normals[2],
+													texCoords[0], texCoords[1], texCoords[2],material ) );
+		}
+	}
+}
+
 const RTIntersection RTObjMesh::intersectTriangle( const RTRay &ray, const vec3 &a, const vec3 &b, const vec3 &c ) const
 {
 	RTIntersection intersection( &ray, this, -1 );

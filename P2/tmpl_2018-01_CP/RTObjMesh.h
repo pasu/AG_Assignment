@@ -7,6 +7,7 @@
 #include <assimp/scene.h>
 #include "RTMaterial.h"
 #include "RTBox.h"
+#include "RTTriangle.h"
 
 class RTObjMesh : public RTPrimitive
 {
@@ -69,6 +70,8 @@ class RTObjMesh : public RTPrimitive
 	}
 
 	void computeAABBbounds();
+
+	void getTriangles(vector<RTTriangle*>& triangleList);
   private:
 	const RTIntersection intersectTriangle( const RTRay &ray, const vec3 &a, const vec3 &b, const vec3 &c ) const;
 	const void computeBounds( const aiVector3D &vertex, vec3 &min, vec3 &max ) const;

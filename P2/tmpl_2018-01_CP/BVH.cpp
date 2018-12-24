@@ -27,7 +27,7 @@ struct BVHTraversal
 //!   than find the closest.
 bool BVH::getIntersection( const RTRay &ray, RTIntersection *intersection, bool occlusion ) const
 {
-	intersection->rayT = 999999999.f;
+	//intersection->rayT = 999999999.f;
 	intersection->object = NULL;
 	float bbhits[4];
 	int32_t closer, other;
@@ -49,7 +49,7 @@ bool BVH::getIntersection( const RTRay &ray, RTIntersection *intersection, bool 
 		const BVHNode &node( bvhTree[ni] );
 
 		// If this node is further than the closest found intersection, continue
-		if ( fnear > intersection->rayT )
+		if ( intersection->rayT>0.0 && fnear > intersection->rayT )
 			continue;
 
 		// Is leaf -> Intersect
@@ -71,7 +71,7 @@ bool BVH::getIntersection( const RTRay &ray, RTIntersection *intersection, bool 
 					}
 
 					// Otherwise, keep the closest intersection only
-					if ( current.rayT < intersection->rayT )
+					if ( intersection->rayT < 0.0f || current.rayT < intersection->rayT )
 					{
 						*intersection = current;
 					}

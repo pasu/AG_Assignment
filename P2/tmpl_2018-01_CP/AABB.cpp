@@ -38,8 +38,16 @@ void AABB::expandToInclude( const Vector3 &p )
 
 void AABB::expandToInclude( const AABB &b )
 {
-	min = ::min( min, b.min );
-	max = ::max( max, b.max );
+	for ( int i = 0; i < 3; ++i )
+	{
+		if ( b.min[i] < min[i] )
+			min[i] = b.min[i];
+		if ( b.max[i] > max[i] )
+			max[i] = b.max[i];
+	}
+
+// 	min = ::min( min, b.min );
+// 	max = ::max( max, b.max );
 }
 
 uint32_t AABB::maxDimension() const

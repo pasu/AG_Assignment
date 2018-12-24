@@ -17,9 +17,10 @@ struct Vector3
 	Vector3() {}
 	Vector3( float x, float y, float z, float w = 0.f ) : m128( _mm_set_ps( w, z, y, x ) ) {}
 	Vector3( const __m128 &m128 ) : m128( m128 ) {}
-	Vector3( vec3 value ) : m128( _mm_set_ps( value.dummy, value.z, value.y, value.x ) ) {}
+	Vector3( vec3 value ) : m128( _mm_set_ps( 0.f, value.z, value.y, value.x ) ) {}
 
-	Vector3 operator+( const Vector3 &b ) const { return _mm_add_ps( m128, b.m128 ); }
+	//Vector3 operator+( const Vector3 &b ) const { return _mm_add_ps( m128, b.m128 ); }
+	Vector3 operator+( const Vector3 &b ) const { return Vector3( x + b.x, y + b.y, z + b.z); }
 	Vector3 operator-( const Vector3 &b ) const { return _mm_sub_ps( m128, b.m128 ); }
 	Vector3 operator*( float b ) const { return _mm_mul_ps( m128, _mm_set_ps( b, b, b, b ) ); }
 	Vector3 operator/( float b ) const { return _mm_div_ps( m128, _mm_set_ps( b, b, b, b ) ); }
@@ -115,6 +116,6 @@ class AABB
 	float surfaceArea() const;
 
   public:
-	Vector3 min;
-	Vector3 max;
+	alignas( 16 ) Vector3 min;
+	alignas( 16 ) Vector3 max;
 };

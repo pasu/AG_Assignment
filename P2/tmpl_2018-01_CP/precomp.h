@@ -7,7 +7,7 @@
 // Prevent expansion clashes (when using std::min and std::max):
 #define NOMINMAX
 
-#define NUMBER_THREAD 16
+#define NUMBER_THREAD 1
 
 #define BVH_ON
 
