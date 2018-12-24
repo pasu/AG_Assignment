@@ -35,8 +35,8 @@ void Game::Init()
 	pTracer = new RayTracer( scene, renderOptions );
 
 	//pCamera->turnLeft( -Utils::RT_PI / 2.0f );
-	//scene_bvh();
-	scene_default();
+	scene_bvh();
+	//scene_default();
 	//scene_fresnel_beer();
 	//scene_light();
 	//scene_tw();
@@ -139,14 +139,16 @@ void Tmpl8::Game::scene_bvh()
 	vec3 lightBlue( 190. / 255., 237. / 255., 1. );
 	vec3 lightRed( 248. / 255., 192. / 255., 196. / 255 );
 	
-	RTMaterial &redMaterial = gMaterialManager.CreateMaterial( vec3( 1, 0, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
+	RTTexture *manTexture = gTexManager.CreateTexture( "./assets/Cesium_Man.jpg", true, 8, 20.0f );
 
-	RTObjMesh *mesh = new RTObjMesh( "assets/bunny.obj", redMaterial );
-	mesh->setPosition( 0, -2, -2.5 );
-	mesh->setRotation( 0.0f, 0.0f, 0.0f );
+	RTMaterial &redMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), manTexture, vec2( 1 ), DIFFUSE_AND_REFLECTIVE, 0.0f, 2.5f );
+
+	RTObjMesh *mesh = new RTObjMesh( "assets/Cesium_Man.dae", redMaterial );
+	mesh->setPosition( 0, -2, -3.5 );
+	mesh->setRotation( 180.0f, -90.0f, 0.0f );
 	mesh->setScale( 30.1f, 30.1f, 30.1f );
 	mesh->applyTransforms();
-
+//	scene.addObject( mesh );
 	vector<RTTriangle *> tarray;
 	mesh->getTriangles( tarray );
 
@@ -157,12 +159,12 @@ void Tmpl8::Game::scene_bvh()
 
 // 	scene.addObject( new RTSphere( vec3( -4.0f, -3.0f, -15.0f ), 2.0f, redMaterial ) );
 // 	scene.addObject( new RTSphere( vec3( 5.0f, -4.0f, -13.0f ), 1.0f, redMaterial ) );
- 
-//	scene.BuildBVHTree();
+	scene.addObject( new RTPlane( vec3( 0.0f, -60.0f, 0.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 0.0f, 0.0f, -1.0f ), redMaterial ) );
+	scene.BuildBVHTree();
 	/////////////////////////////////////////////////////////////////////////
 	scene.ambientLight = 0.3f;
 
-	RTLight *pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 40.0f, vec3( 0.0f, 7.0f, -18.0f ) );
+	RTLight *pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 400.0f, vec3( 0.0f, -20.0f, -100.0f ) );
 	scene.addLight( pLight );
 	///////////////////////////////////////////////////////////////////////////////
 }
