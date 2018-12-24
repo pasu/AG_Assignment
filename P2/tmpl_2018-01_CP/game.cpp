@@ -35,8 +35,8 @@ void Game::Init()
 	pTracer = new RayTracer( scene, renderOptions );
 
 	//pCamera->turnLeft( -Utils::RT_PI / 2.0f );
-	scene_bvh();
-	//scene_default();
+	//scene_bvh();
+	scene_default();
 	//scene_fresnel_beer();
 	//scene_light();
 	//scene_tw();
@@ -94,7 +94,7 @@ void Game::Tick( float deltaTime )
 void Tmpl8::Game::KeyDown( int key )
 {
 	static int index = 0;
-	static int scenecount = 4;
+	static int scenecount = 5;
 	if (key == 79)
 	{
 		gTexManager.ClearAll();
@@ -116,6 +116,9 @@ void Tmpl8::Game::KeyDown( int key )
 			break;
 		case 3:
 			scene_tw();
+			break;
+		case 4:
+			scene_bvh();
 			break;
 		}
 #ifdef BVH_ON
@@ -155,7 +158,7 @@ void Tmpl8::Game::scene_bvh()
 // 	scene.addObject( new RTSphere( vec3( -4.0f, -3.0f, -15.0f ), 2.0f, redMaterial ) );
 // 	scene.addObject( new RTSphere( vec3( 5.0f, -4.0f, -13.0f ), 1.0f, redMaterial ) );
  
-	scene.BuildBVHTree();
+//	scene.BuildBVHTree();
 	/////////////////////////////////////////////////////////////////////////
 	scene.ambientLight = 0.3f;
 
@@ -342,7 +345,14 @@ void Tmpl8::Game::scene_light()
 	mesh->setRotation( 0.0f, 0.0f, 0.0f );
 	mesh->setScale( 0.1f, 0.1f, 0.1f );
 	mesh->applyTransforms();
-	scene.addObject( mesh );
+	//scene.addObject( mesh );
+	vector<RTTriangle *> tarray;
+	mesh->getTriangles( tarray );
+
+	for ( size_t i = 0; i < tarray.size(); i++ )
+	{
+		scene.addObject( tarray[i] );
+	}
 
 	//scene.addObject( new RTSphere( vec3( 3.0f, -1.0f, -25.0f ), 4.0f, mirrorMaterial ) );
 	scene.addObject( new RTSphere( vec3( -4.0f, -3.0f, -15.0f ), 2.0f, mirrorMaterial ) );
