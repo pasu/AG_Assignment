@@ -68,6 +68,7 @@ class RTObjMesh : public RTPrimitive
 		u = 1.0f - v - w;
 	}
 
+	void computeAABBbounds();
   private:
 	const RTIntersection intersectTriangle( const RTRay &ray, const vec3 &a, const vec3 &b, const vec3 &c ) const;
 	const void computeBounds( const aiVector3D &vertex, vec3 &min, vec3 &max ) const;

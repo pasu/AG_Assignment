@@ -5,6 +5,7 @@
 RTTorus::RTTorus( const vec3 &center, const vec3 &axis, float innerRadius, float outerRadius, const RTMaterial &material )
 	: RTPrimitive( center, material ), mAxis( normalize( axis ) ), mInnerRadius( innerRadius ), mOuterRadius( outerRadius )
 {
+	computeAABBbounds();
 }
 
 RTTorus::~RTTorus()
@@ -92,4 +93,8 @@ const SurfacePointData RTTorus::getSurfacePointData( const RTIntersection &inter
 	vec2 texCoords = {0.5f + theta / ( 2.0f * Utils::RT_PI ), 0.5f + theta2 / ( 2.0f * Utils::RT_PI )};
 
 	return {normalize( N ), texCoords , point};
+}
+
+void RTTorus::computeAABBbounds()
+{
 }

@@ -22,6 +22,8 @@
 
 	tangent = normalize( cross( dir, binormal ) );
 	binormal = normalize( cross( dir, tangent ) );
+
+	computeAABBbounds();
 }
 
 RTCone::~RTCone()
@@ -195,4 +197,28 @@ const SurfacePointData RTCone::getSurfacePointData( const RTIntersection &inters
 	vec2 texCoords = {phi * 2 * Utils::RT_PI, v};
 
 	return {normal, texCoords, point};
+}
+
+void RTCone::computeAABBbounds()
+{
+	vec3 x_dir = tangent * radius;
+	vec3 y_dir = binormal * radius;
+
+	vec3 bottomcorner[8];
+	
+	bottomcorner[0] = pos + x_dir + y_dir;
+	bottomcorner[1] = pos + x_dir - y_dir;
+	bottomcorner[2] = pos - x_dir + y_dir;
+	bottomcorner[3] = pos - x_dir - y_dir;
+
+	bottomcorner[4] = top + x_dir + y_dir;
+	bottomcorner[5] = top + x_dir - y_dir;
+	bottomcorner[6] = top - x_dir + y_dir;
+	bottomcorner[7] = top - x_dir - y_dir;
+
+	Vector3 min, max;
+	getBounds( min, max,
+			   bottomcorner[0], bottomcorner[1], bottomcorner[2], bottomcorner[3],
+			   bottomcorner[4], bottomcorner[5], bottomcorner[6], bottomcorner[7] );
+	box = AABB( min, max );
 }

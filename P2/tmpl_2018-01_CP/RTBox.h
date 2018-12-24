@@ -10,6 +10,8 @@ class RTBox : public RTPrimitive
 	const RTIntersection intersect( const RTRay &ray ) const;
 	const SurfacePointData getSurfacePointData( const RTIntersection &intersection ) const;
 
+	void computeAABBbounds();
+
   public:
 	vec3 min;
 	vec3 max;

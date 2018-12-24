@@ -9,6 +9,7 @@ class RTCone : public RTPrimitive
 	const RTIntersection intersect( const RTRay &ray ) const ;
 	const SurfacePointData getSurfacePointData( const RTIntersection &intersection ) const;
 
+	void computeAABBbounds();
   private:
 	vec3 top;
 	float radius;

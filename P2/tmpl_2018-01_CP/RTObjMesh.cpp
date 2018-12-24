@@ -18,6 +18,8 @@ RTObjMesh::RTObjMesh( char *a_File, const RTMaterial &material )
 	}
 
 	applyTransforms();
+
+	computeAABBbounds();
 }
 
 RTObjMesh::~RTObjMesh()
@@ -164,6 +166,11 @@ const SurfacePointData RTObjMesh::getSurfacePointData( const RTIntersection &int
 	}
 	
 	return {normalize( normal ), texCoords, point};
+}
+
+void RTObjMesh::computeAABBbounds()
+{
+	box = AABB( *boundingBox );
 }
 
 const RTIntersection RTObjMesh::intersectTriangle( const RTRay &ray, const vec3 &a, const vec3 &b, const vec3 &c ) const

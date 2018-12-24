@@ -5,6 +5,7 @@
 RTSphere::RTSphere( const vec3 &position, const float radius, RTMaterial &material )
 	: RTPrimitive( position, material ), radius( radius )
 {
+	computeAABBbounds();
 }
 
 const RTIntersection RTSphere::intersect( const RTRay &ray ) const
@@ -67,6 +68,14 @@ const SurfacePointData RTSphere::getSurfacePointData( const RTIntersection &inte
 	vec3 bitangent( -sin( phi ), cos( phi ), 0 );
 
 	return {normal, texCoords, surfacePoint, tangent, bitangent};
+}
+
+void RTSphere::computeAABBbounds()
+{
+	vec3 min = pos - vec3( radius );
+	vec3 max = pos + vec3( radius );
+
+	box = AABB( min, max );
 }
 
 RTInnerSphere::RTInnerSphere( const vec3 &position, const float radius, RTMaterial &material )

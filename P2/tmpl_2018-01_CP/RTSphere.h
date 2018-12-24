@@ -8,6 +8,8 @@ class RTSphere : public RTPrimitive
 
 	const RTIntersection intersect( const RTRay &ray ) const;
 	const SurfacePointData getSurfacePointData( const RTIntersection &intersection ) const;
+
+	void computeAABBbounds();
   protected:
 	float radius;
 };
