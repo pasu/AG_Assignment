@@ -97,4 +97,44 @@ const SurfacePointData RTTorus::getSurfacePointData( const RTIntersection &inter
 
 void RTTorus::computeAABBbounds()
 {
+	vec3 binormal = 1.0f;
+	if ( fabs( mAxis.x ) > FLOAT_ZERO )
+	{
+		binormal.x = 0;
+	}
+	else if ( fabs( mAxis.y ) > FLOAT_ZERO )
+	{
+		binormal.y = 0;
+	}
+	else if ( fabs( mAxis.z ) > FLOAT_ZERO )
+	{
+		binormal.z = 0;
+	}
+
+	vec3 tangent = normalize( cross( mAxis, binormal ) );
+	binormal = normalize( cross( mAxis, tangent ) );
+
+	float radius = mInnerRadius + mOuterRadius;
+	vec3 x_dir = tangent * radius;
+	vec3 y_dir = binormal * radius;
+
+	vec3 bottomcorner[8];
+
+	vec3 bottom = pos - mAxis*mInnerRadius;
+	bottomcorner[0] = bottom + x_dir + y_dir;
+	bottomcorner[1] = bottom + x_dir - y_dir;
+	bottomcorner[2] = bottom - x_dir + y_dir;
+	bottomcorner[3] = bottom - x_dir - y_dir;
+
+	vec3 top = pos + mAxis * mInnerRadius;
+	bottomcorner[4] = top + x_dir + y_dir;
+	bottomcorner[5] = top + x_dir - y_dir;
+	bottomcorner[6] = top - x_dir + y_dir;
+	bottomcorner[7] = top - x_dir - y_dir;
+
+	Vector3 min, max;
+	getBounds( min, max,
+			   bottomcorner[0], bottomcorner[1], bottomcorner[2], bottomcorner[3],
+			   bottomcorner[4], bottomcorner[5], bottomcorner[6], bottomcorner[7] );
+	box = AABB( min, max );
 }
