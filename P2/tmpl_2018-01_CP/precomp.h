@@ -9,6 +9,8 @@
 
 #define NUMBER_THREAD 16
 
+#define BVH_ON
+
 #define SCRWIDTH 512
 #define SCRHEIGHT 512
 // #define FULLSCREEN

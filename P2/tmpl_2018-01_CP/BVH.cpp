@@ -125,7 +125,9 @@ bool BVH::getIntersection( const RTRay &ray, RTIntersection *intersection, bool 
 	// If we hit something,
 // 	if ( intersection->object != NULL )
 // 		intersection->hit = ray.o + ray.d * intersection->t;
-
+    if (intersection->object == nullptr) {
+		intersection->rayT = -1;
+    }
 	return intersection->object != NULL;
 }
 

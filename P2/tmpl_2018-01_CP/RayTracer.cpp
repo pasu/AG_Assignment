@@ -34,6 +34,9 @@ void RayTracer::render( Surface *screen )
 {
 	scene.getCamera()->Update();
 	
+#if NUMBER_THREAD==1
+    traceChunk( 0, renderOptions.width - 1, 0, renderOptions.height - 1 );
+#else
 	int chunkWidth = renderOptions.width / NUMBER_THREAD;
 	for (int i = 0; i < NUMBER_THREAD; i++)
 	{
@@ -43,7 +46,7 @@ void RayTracer::render( Surface *screen )
 	}
 	
 	waitRenderThreads();
-
+#endif
 	//runFXAA( hdrPixels, renderOptions.width, renderOptions.height );
 
 

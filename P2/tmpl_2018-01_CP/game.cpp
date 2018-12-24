@@ -44,6 +44,9 @@ void Game::Init()
 // 	scene.ClearAllLight();
 // 	scene.ClearAllObj();
 // 	scene_default();
+#ifdef BVH_ON
+	scene.BuildBVHTree();
+#endif
 }
 
 // -----------------------------------------------------------
@@ -113,6 +116,9 @@ void Tmpl8::Game::KeyDown( int key )
 			scene_tw();
 			break;
 		}
+#ifdef BVH_ON
+		scene.BuildBVHTree();
+#endif
 	}
 
 }

@@ -80,7 +80,7 @@ void Scene::BuildBVHTree()
 
 bool Scene::getIntersection( const RTRay &ray, RTIntersection &nearestIntersection )const
 {
-	return bvhTree->getIntersection( ray, &nearestIntersection,true);
+	return bvhTree->getIntersection( ray, &nearestIntersection,false);
 }
 
 RTIntersection Scene::findNearestObjectIntersection( const RTRay &ray ) const
