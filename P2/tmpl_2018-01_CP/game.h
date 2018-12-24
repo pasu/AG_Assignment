@@ -17,6 +17,7 @@ public:
 	void KeyDown( int key );
 	void MouseWheel( int y );
 
+	void scene_bvh();
 	void scene_default();
 	void scene_fresnel_beer();
 	void scene_light();

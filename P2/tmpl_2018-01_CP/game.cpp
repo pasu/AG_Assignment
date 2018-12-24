@@ -8,6 +8,7 @@
 #include "RTObjMesh.h"
 #include "RTTorus.h"
 #include "RTCone.h"
+#include "RTTriangle.h"
 #include "RTCameraController.h"
 
 #include "RTTextureManager.h"
@@ -34,7 +35,8 @@ void Game::Init()
 	pTracer = new RayTracer( scene, renderOptions );
 
 	//pCamera->turnLeft( -Utils::RT_PI / 2.0f );
-	scene_default();
+	scene_bvh();
+	//scene_default();
 	//scene_fresnel_beer();
 	//scene_light();
 	//scene_tw();
@@ -119,6 +121,41 @@ void Tmpl8::Game::KeyDown( int key )
 
 void Tmpl8::Game::MouseWheel( int y )
 {
+}
+
+
+void Tmpl8::Game::scene_bvh()
+{
+	//////////////////////////////////////////////////////////////////////////
+	vec3 lightBlue( 190. / 255., 237. / 255., 1. );
+	vec3 lightRed( 248. / 255., 192. / 255., 196. / 255 );
+	
+	RTMaterial &redMaterial = gMaterialManager.CreateMaterial( vec3( 1, 0, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
+
+	RTObjMesh *mesh = new RTObjMesh( "assets/bunny.obj", redMaterial );
+	mesh->setPosition( 0, -2, -2.5 );
+	mesh->setRotation( 0.0f, 0.0f, 0.0f );
+	mesh->setScale( 30.1f, 30.1f, 30.1f );
+	mesh->applyTransforms();
+
+	vector<RTTriangle *> tarray;
+	mesh->getTriangles( tarray );
+
+	for ( size_t i = 0; i < tarray.size(); i++ )
+	{
+		scene.addObject( tarray[i] );
+	}
+
+// 	scene.addObject( new RTSphere( vec3( -4.0f, -3.0f, -15.0f ), 2.0f, redMaterial ) );
+// 	scene.addObject( new RTSphere( vec3( 5.0f, -4.0f, -13.0f ), 1.0f, redMaterial ) );
+ 
+	scene.BuildBVHTree();
+	/////////////////////////////////////////////////////////////////////////
+	scene.ambientLight = 0.3f;
+
+	RTLight *pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 40.0f, vec3( 0.0f, 7.0f, -18.0f ) );
+	scene.addLight( pLight );
+	///////////////////////////////////////////////////////////////////////////////
 }
 
 void Tmpl8::Game::scene_default()

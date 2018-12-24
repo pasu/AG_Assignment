@@ -78,7 +78,9 @@
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="AABB.cpp" />
-    <ClCompile Include="RTTriangle.cpp" />
+    <ClCompile Include="RTTriangle.cpp">
+      <Filter>Primitives</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -165,7 +167,9 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="AABB.h" />
-    <ClInclude Include="RTTriangle.h" />
+    <ClInclude Include="RTTriangle.h">
+      <Filter>Primitives</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">
