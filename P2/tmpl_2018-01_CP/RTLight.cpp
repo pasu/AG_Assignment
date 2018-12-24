@@ -30,14 +30,16 @@ class PointLight : public RTLight
 	}
 	vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const vec3 & texture )override
 	{
+		
 		vec3 d = pos - pd.position;
 		float l2 = d.sqrLentgh();
 		float l = sqrt( l2 );
 		vec3 nd = d * ( 1.0f / l );
 
 		RTRay ray = RTRay( pd.position + rt.getRenderOptions().shadowBias * nd, nd );
+		
 		const RTIntersection &intersection = rt.findNearestObjectIntersection( ray );
-
+		
 		if ( !intersection.isIntersecting() || intersection.rayT > distanceToPoint( ray .orig) )
 		{
 			float cosine = pd.normal.dot( nd );

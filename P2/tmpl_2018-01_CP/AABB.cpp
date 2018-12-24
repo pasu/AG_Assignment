@@ -108,8 +108,12 @@ bool AABB::intersect( const RTRay &ray, float *tnear, float *tfar ) const
 		inv_dir = loadps( &inv_v );
 
 	// use a div if inverted directions aren't available
-	const __m128 l1 = mulps( subps( box_min, pos ), inv_dir );
-	const __m128 l2 = mulps( subps( box_max, pos ), inv_dir );
+	//const __m128 l1 = mulps( subps( box_min, pos ), inv_dir );
+	//const __m128 l2 = mulps( subps( box_max, pos ), inv_dir );
+    Vector3 temp =	( min - ray.orig ).cmul( inv_v);
+	const __m128 l1 = loadps( &temp );
+	temp = ( max - ray.orig ).cmul( inv_v);
+	const __m128 l2 = loadps( &temp );
 
 	// the order we use for those min/max is vital to filter out
 	// NaNs that happens when an inv_dir is +/- inf and
