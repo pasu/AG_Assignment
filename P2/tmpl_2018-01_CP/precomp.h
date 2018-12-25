@@ -10,6 +10,7 @@
 #define NUMBER_THREAD 8
 
 #define BVH_ON
+#define SAH_ON
 
 #define SCRWIDTH 512
 #define SCRHEIGHT 512

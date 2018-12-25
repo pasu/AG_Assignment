@@ -33,6 +33,8 @@ class BVH
 
 	bool getIntersection( const RTRay &ray, RTIntersection *intersection, bool occlusion ) const;
 
+	void getSplitDimAndCoordBySAH( uint32_t &split_dim, float &split_coord, uint32_t binnedNum, AABB &bc, uint32_t &start, uint32_t &end );
+
   private:
 	uint32_t nNodes, nLeafs, leafSize;
 };

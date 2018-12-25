@@ -159,7 +159,7 @@ void Tmpl8::Game::scene_bvh()
 
 // 	scene.addObject( new RTSphere( vec3( -4.0f, -3.0f, -15.0f ), 2.0f, redMaterial ) );
 // 	scene.addObject( new RTSphere( vec3( 5.0f, -4.0f, -13.0f ), 1.0f, redMaterial ) );
-	scene.addObject( new RTPlane( vec3( 0.0f, -60.0f, 0.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 0.0f, 0.0f, -1.0f ), redMaterial ) );
+//	scene.addObject( new RTPlane( vec3( 0.0f, -60.0f, 0.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 0.0f, 0.0f, -1.0f ), redMaterial ) );
 	scene.BuildBVHTree();
 	/////////////////////////////////////////////////////////////////////////
 	scene.ambientLight = 0.3f;

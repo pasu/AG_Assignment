@@ -1,5 +1,6 @@
 #include "BVH.h"
 #include "precomp.h"
+#include "Utils.h"
 
 BVH::BVH( std::vector<RTPrimitive *> *objects, uint32_t leafSize /*= 4 */ )
 	: build_prims( objects ), leafSize( leafSize ), nNodes( 0 ), nLeafs( 0 ), bvhTree( NULL )
@@ -212,9 +213,12 @@ void BVH::build()
 
 		// Set the split dimensions
 		uint32_t split_dim = bc.maxDimension();
-
 		// Split on the center of the longest axis
 		float split_coord = .5f * ( bc.min[split_dim] + bc.max[split_dim] );
+
+#ifdef SAH_ON
+		getSplitDimAndCoordBySAH( split_dim, split_coord, 20, bc, start, end );
+#endif
 
 		// Partition the list of objects on this split
 		uint32_t mid = start;
@@ -262,6 +266,61 @@ void BVH::build()
 		else
 		{
 			bvhTree[n].leftFirst = ( node.rightOffset << 1 ) + 1;
+		}
+	}
+}
+
+void BVH::getSplitDimAndCoordBySAH( uint32_t &split_dim, float &split_coord, uint32_t binnedNum, AABB &bc, uint32_t &start, uint32_t &end )
+{
+	float fCurrentCost = Utils::MAX_FLOAT;
+
+	for (uint32_t dim=0;dim<3;dim++)
+	{
+		uint32_t split_dim_current = dim;
+
+		float split_inc_step = ( bc.max[split_dim_current] - bc.min[split_dim_current] ) / binnedNum;
+		for ( uint32_t j = 1; j < binnedNum; j++ )
+		{
+			float split_coord_current = bc.min[split_dim_current] + j * split_inc_step;
+			float leftArea = 0;
+			float rightArea = 0;
+
+			float leftNumber = 0;
+			float rightNumber = 0;
+
+			for ( uint32_t i = start; i < end; ++i )
+			{
+				const AABB& box = ( *build_prims )[i]->getAABB();
+				if ( box.min[split_dim_current] < split_coord_current && box.max[split_dim_current] > split_coord_current )
+				{
+					float ratio = ( split_coord_current - box.min[split_dim_current] ) / ( box.max[split_dim_current] - box.min[split_dim_current] );
+					float area = box.surfaceArea();
+					leftArea += area * ratio;
+					rightArea += area * ( 1 - ratio );
+
+					leftNumber++;
+					rightNumber++;
+				}
+				else if ( ( *build_prims )[i]->getCentroid()[split_dim_current] < split_coord_current )
+				{
+					leftArea += ( *build_prims )[i]->getAABB().surfaceArea();
+					leftNumber++;
+				}
+				else
+				{
+					rightArea += ( *build_prims )[i]->getAABB().surfaceArea();
+					rightNumber++;
+				}
+			}
+
+			float fCost = leftArea * leftNumber + rightArea * rightNumber;
+			if ( fCurrentCost > fCost )
+			{
+				split_dim = split_dim_current;
+				split_coord = split_coord_current;
+
+				fCurrentCost = fCost;
+			}
 		}
 	}
 }
