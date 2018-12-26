@@ -89,6 +89,9 @@
     <ClCompile Include="RTGeometry.cpp">
       <Filter>RTObject</Filter>
     </ClCompile>
+    <ClCompile Include="TopLevelBVH.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -185,6 +188,9 @@
     </ClInclude>
     <ClInclude Include="RTGeometry.h">
       <Filter>RTObject</Filter>
+    </ClInclude>
+    <ClInclude Include="TopLevelBVH.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
