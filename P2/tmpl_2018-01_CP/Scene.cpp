@@ -32,9 +32,14 @@ Scene::~Scene()
 	}
 }
 
-void Scene::addObject( RTPrimitive *object )
+
+void Scene::addObject( RTPrimitive *primitive )
 {
-	primitivecollection.push_back( object );
+}
+
+void Scene::addObject( RTObject *object )
+{
+	objectcollection.push_back( object );
 }
 
 void Scene::addLight( RTLight *light )
@@ -49,12 +54,12 @@ RTCamera *Scene::getCamera()const
 
 void Scene::ClearAllObj()
 {
-	for ( RTPrimitive *obj : primitivecollection )
+	for ( RTObject *obj : objectcollection )
 	{
 		delete obj;
 		obj = NULL;
 	}
-	primitivecollection.clear();
+	objectcollection.clear();
 }
 
 void Scene::ClearAllLight()
@@ -74,7 +79,6 @@ void Scene::BuildBVHTree()
 		delete bvhTree;
 	}
 
-	bvhTree = new BVH( &primitivecollection );
 	bInitializedBVH = true;
 }
 
@@ -93,13 +97,14 @@ RTIntersection Scene::findNearestObjectIntersection( const RTRay &ray ) const
 	}
 	else
 	{
-		static auto &objects = primitivecollection;
+		static auto &objects = objectcollection;
 
 		for ( auto it = objects.begin(); it != objects.end(); ++it )
 		{
-			const RTIntersection &intersection = ( *it )->intersect( ray );
+			RTIntersection intersection;
+			bool intersect = ( *it )->getIntersection( ray,intersection );
 
-			if ( intersection.isIntersecting() &&
+			if ( intersect &&
 				 ( !nearestIntersection.isIntersecting() || intersection.rayT < nearestIntersection.rayT ) )
 			{
 				nearestIntersection = intersection;
@@ -114,6 +119,6 @@ void Scene::findNearestObjectIntersection( const RayPacket &raypacket, RTInterse
 {
 	if ( bInitializedBVH )
 	{
-		bvhTree->getIntersection( raypacket, intersections );
+		//bvhTree->getIntersection( raypacket, intersections );
 	}
 }

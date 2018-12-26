@@ -5,6 +5,7 @@
 #include <vector>
 #include "BVH.h"
 #include "RayPacket.h"
+#include"RTObject.h"
 
 using namespace std;
 
@@ -14,11 +15,11 @@ public:
 	Scene( const vec3 &ambientLight, const vec3 &backgroundColor );
 	~Scene();
 
-	void addObject( RTPrimitive *object );
+    void addObject(RTPrimitive * primitive);
+	void addObject( RTObject *object );
 	void addLight( RTLight *light );
 	RTCamera* getCamera()const;
 
-	inline const vector<RTPrimitive *> &getObjects() const { return primitivecollection; }
 	inline const vector<RTLight *> &getLights() const { return lightcollection; }
 
 	void ClearAllObj();
@@ -33,10 +34,12 @@ public:
 	void findNearestObjectIntersection( const RayPacket &raypacket, RTIntersection *intersections ) const;
 
   private:
-	vector<RTPrimitive *> primitivecollection;
+	vector<RTObject *> objectcollection;// objects in the scene
 	vector<RTLight *> lightcollection;
 	RTCamera* camera;
 
 	bool bInitializedBVH;
 	BVH *bvhTree;
+
+
 };

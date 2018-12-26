@@ -46,9 +46,6 @@ void Game::Init()
 // 	scene.ClearAllLight();
 // 	scene.ClearAllObj();
 // 	scene_default();
-#ifdef BVH_ON
-	scene.BuildBVHTree();
-#endif
 }
 
 // -----------------------------------------------------------
@@ -152,21 +149,26 @@ void Tmpl8::Game::scene_bvh()
 	vector<RTTriangle *> tarray;
 	mesh->getTriangles( tarray );
 
+    RTGeometry* robot = new RTGeometry();
+
 	for ( size_t i = 0; i < tarray.size(); i++ )
 	{
-		scene.addObject( tarray[i] );
+		robot->addObject( tarray[i] );
 	}
 
-// 	scene.addObject( new RTSphere( vec3( -4.0f, -3.0f, -15.0f ), 2.0f, redMaterial ) );
-// 	scene.addObject( new RTSphere( vec3( 5.0f, -4.0f, -13.0f ), 1.0f, redMaterial ) );
-//	scene.addObject( new RTPlane( vec3( 0.0f, -60.0f, 0.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 0.0f, 0.0f, -1.0f ), redMaterial ) );
-	scene.BuildBVHTree();
-	/////////////////////////////////////////////////////////////////////////
+	robot->BuildBVHTree();
+
+    RTObject* robot01 = new RTObject(robot);
+    scene.addObject( robot01 );
+
+    RTObject *robot02 = new RTObject( robot );
+	robot02->translate( vec3( 0, 30, 0 ) );
+	scene.addObject( robot02 );
+
 	scene.ambientLight = 0.3f;
 
 	RTLight *pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 400.0f, vec3( 0.0f, -20.0f, -100.0f ) );
 	scene.addLight( pLight );
-	///////////////////////////////////////////////////////////////////////////////
 }
 
 void Tmpl8::Game::scene_default()

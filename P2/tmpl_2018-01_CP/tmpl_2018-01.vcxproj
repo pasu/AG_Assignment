@@ -145,6 +145,7 @@
     <ClCompile Include="RayPacket.cpp" />
     <ClCompile Include="RayTracer.cpp" />
     <ClCompile Include="RayTracerThread.cpp" />
+    <ClCompile Include="RTObject.cpp" />
     <ClCompile Include="RTBox.cpp" />
     <ClCompile Include="RTCameraController.cpp" />
     <ClCompile Include="RTChessBoardTexture.cpp" />
@@ -154,7 +155,7 @@
     <ClCompile Include="RTLight.cpp" />
     <ClCompile Include="RTMaterial.cpp" />
     <ClCompile Include="RTMaterialManager.cpp" />
-    <ClCompile Include="RTObject.cpp" />
+    <ClCompile Include="RTGeometry.cpp" />
     <ClCompile Include="RTObjMesh.cpp" />
     <ClCompile Include="RTPlane.cpp" />
     <ClCompile Include="RTPrimitive.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="RayPacket.h" />
     <ClInclude Include="RayTracer.h" />
     <ClInclude Include="RenderOptions.h" />
+    <ClInclude Include="RTObject.h" />
     <ClInclude Include="RTBox.h" />
     <ClInclude Include="RTCamera.h" />
     <ClInclude Include="RTCameraController.h" />
@@ -191,7 +193,7 @@
     <ClInclude Include="RTLight.h" />
     <ClInclude Include="RTMaterial.h" />
     <ClInclude Include="RTMaterialManager.h" />
-    <ClInclude Include="RTObject.h" />
+    <ClInclude Include="RTGeometry.h" />
     <ClInclude Include="RTObjMesh.h" />
     <ClInclude Include="RTPlane.h" />
     <ClInclude Include="RTPrimitive.h" />

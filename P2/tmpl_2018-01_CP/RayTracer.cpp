@@ -104,7 +104,7 @@ const vec3 RayTracer::castRay( const RTRay &ray, const int depth, RTIntersection
 
 	if ( intersection.isIntersecting() )
 	{
-		intersection.surfacePointData = &(intersection.object->getSurfacePointData( intersection ));
+		
 
 		return shade( ray, intersection, depth );
 	}
@@ -125,7 +125,7 @@ void RayTracer::castRayPacket( const RayPacket &raypacket, vec3* colors ) const
 
 		if ( current.isIntersecting() )
 		{
-			current.surfacePointData = &( current.object->getSurfacePointData( current ) );
+			current.surfacePointData = current.object->getSurfacePointData( current );
 
 			colors[i] = shade( raypacket.m_ray[i], current, depth );
 		}
@@ -134,13 +134,13 @@ void RayTracer::castRayPacket( const RayPacket &raypacket, vec3* colors ) const
 	}
 }
 
+
 const vec3 RayTracer::shade( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const
 {
-	auto &surfacePointData = *intersection.surfacePointData;
+	auto &surfacePointData = intersection.surfacePointData;
 	const RTMaterial &material = intersection.object->getMaterial();
 	float distance = ( surfacePointData.position - scene.getCamera()->getEye() ).length();
 	const vec3 &albedo = material.getAlbedoAtPoint( surfacePointData.textureCoordinates.x, surfacePointData.textureCoordinates.y, distance );
-
 
 	//return 0x00ff0000;
 	if ( material.shadingType == DIFFUSE )
@@ -196,7 +196,7 @@ RTIntersection RayTracer::findNearestObjectIntersection( const RTRay &ray ) cons
 
 const Tmpl8::vec3 RayTracer::shade_diffuse( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const
 {
-	auto &surfacePointData = *intersection.surfacePointData;
+	auto &surfacePointData = intersection.surfacePointData;
 	const RTMaterial &material = intersection.object->getMaterial();
 	vec3 color( 0.0f );
 	if ( castedRay.dir.dot( surfacePointData.normal ) > 0 )
@@ -216,7 +216,7 @@ const Tmpl8::vec3 RayTracer::shade_diffuse( const RTRay &castedRay, const RTInte
 
 const Tmpl8::vec3 RayTracer::shade_reflective( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const
 {
-	auto &surfacePointData = *intersection.surfacePointData;
+	auto &surfacePointData = intersection.surfacePointData;
 	const RTMaterial &material = intersection.object->getMaterial();
 	vec3 nd = castedRay.dir - ( ( 2 * castedRay.dir.dot( surfacePointData.normal ) ) * surfacePointData.normal );
 	RTRay refRay = RTRay( surfacePointData.position + renderOptions.shadowBias * nd, nd, castedRay.distance_traveled+intersection.rayT );
@@ -227,7 +227,7 @@ const Tmpl8::vec3 RayTracer::shade_reflective( const RTRay &castedRay, const RTI
 
 const Tmpl8::vec3 RayTracer::shade_transmissive( const RTRay &castedRay, const RTIntersection &intersection, const int depth, RTIntersection &intersectionObj ) const
 {
-	auto &surfacePointData = *intersection.surfacePointData;
+	auto &surfacePointData = intersection.surfacePointData;
 	const RTMaterial &material = intersection.object->getMaterial();
 	const vec3 &normal = surfacePointData.normal; // normal texture later
 

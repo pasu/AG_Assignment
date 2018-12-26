@@ -12,7 +12,7 @@ class RTIntersection
 	const RTPrimitive *object;
 	float rayT;
 
-	const SurfacePointData *surfacePointData;
+	SurfacePointData surfacePointData;
 	const RTMaterial *material;
 
 	//Triangle Only
@@ -25,7 +25,7 @@ class RTIntersection
 		bool bResult = false;
 		if ( isIntersecting() )
 		{
-			bResult = dot( ray->dir, surfacePointData->normal ) > 0;
+			bResult = dot( ray->dir, surfacePointData.normal ) > 0;
 		}
 
 		return bResult;

@@ -1,23 +1,35 @@
+// Dynamic geometry
+// container of a static object and a rigid body transform
 #pragma once
-#ifndef __RT_OBJECT__
-#define __RT_OBJECT__
-
-#include "precomp.h"
-#include"RTPrimitive.h"
-#include"BVH.h"
+#ifndef __RT_RIGID_BODY__
+#define __RT_RIGID_BODY__
+#include "RTGeometry.h"
+#include "RTObject.h"
 class RTObject
 {
   public:
-	void BuildBVHTree();
+	RTObject( RTGeometry *g );
+
+	
+
+	void updateAABBbounds(); // update AABB bounds after rotation/translation
+	
+    bool getIntersection( const RTRay &ray, RTIntersection &nearestIntersection ) const;
+
+    const RTGeometry *getGeometry() const { return pGeometry; }
+    const AABB &getAABBBounds() const { return bounds; }
+
+
+    // rigid body transform
+	void resetTransform();
+	void translate(const vec3 v);
+
   private:
-	vector<RTPrimitive *> primitivecollection;
+	RTGeometry *pGeometry;
 
-	BVH *bvhTree;
-
-    // rigid transform
-    mat4 mViewRotate;
-	vec3 pos;
-
+	mat4 mViewRotate; // rotation part of view matrix
+	vec3 pos;		  // the coordinate of origin
+	AABB bounds;
 };
 
 #endif
