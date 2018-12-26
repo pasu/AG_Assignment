@@ -4,6 +4,7 @@
 #include "RTCamera.h"
 #include <vector>
 #include "BVH.h"
+#include "RayPacket.h"
 
 using namespace std;
 
@@ -29,6 +30,7 @@ public:
 	void BuildBVHTree();
 	bool getIntersection( const RTRay &ray, RTIntersection &nearestIntersection ) const;
 	RTIntersection findNearestObjectIntersection( const RTRay &ray ) const;
+	void findNearestObjectIntersection( const RayPacket &raypacket, RTIntersection *intersections ) const;
 
   private:
 	vector<RTPrimitive *> primitivecollection;

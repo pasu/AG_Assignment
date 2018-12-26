@@ -142,12 +142,14 @@
     <ClCompile Include="FXAA.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="quarticsolver.cpp" />
+    <ClCompile Include="RayPacket.cpp" />
     <ClCompile Include="RayTracer.cpp" />
     <ClCompile Include="RayTracerThread.cpp" />
     <ClCompile Include="RTBox.cpp" />
     <ClCompile Include="RTCameraController.cpp" />
     <ClCompile Include="RTChessBoardTexture.cpp" />
     <ClCompile Include="RTCone.cpp" />
+    <ClCompile Include="RTFrustum.cpp" />
     <ClCompile Include="RTIntersection.cpp" />
     <ClCompile Include="RTLight.cpp" />
     <ClCompile Include="RTMaterial.cpp" />
@@ -175,6 +177,7 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="precomp.h" />
     <ClInclude Include="quarticsolver.h" />
+    <ClInclude Include="RayPacket.h" />
     <ClInclude Include="RayTracer.h" />
     <ClInclude Include="RenderOptions.h" />
     <ClInclude Include="RTBox.h" />
@@ -182,6 +185,7 @@
     <ClInclude Include="RTCameraController.h" />
     <ClInclude Include="RTChessBoardTexture.h" />
     <ClInclude Include="RTCone.h" />
+    <ClInclude Include="RTFrustum.h" />
     <ClInclude Include="RTIntersection.h" />
     <ClInclude Include="RTLight.h" />
     <ClInclude Include="RTMaterial.h" />

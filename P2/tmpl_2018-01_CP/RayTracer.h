@@ -3,6 +3,7 @@
 #include "RTRay.h"
 #include "RenderOptions.h"
 #include "Scene.h"
+#include "RayPacket.h"
 
 class RayTracer
 {
@@ -15,6 +16,9 @@ class RayTracer
 	const RTRay &generatePrimaryRay( const int x, const int y ) const;
 
 	const vec3 castRay( const RTRay &ray, const int depth, RTIntersection& intersection ) const;
+
+	void castRayPacket( const RayPacket &ray, vec3* colors ) const;
+
 	const vec3 shade( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const;
 
 	RTIntersection findNearestObjectIntersection( const RTRay &ray ) const;

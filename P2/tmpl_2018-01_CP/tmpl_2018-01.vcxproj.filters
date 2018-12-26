@@ -81,6 +81,8 @@
     <ClCompile Include="RTTriangle.cpp">
       <Filter>Primitives</Filter>
     </ClCompile>
+    <ClCompile Include="RTFrustum.cpp" />
+    <ClCompile Include="RayPacket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -170,6 +172,8 @@
     <ClInclude Include="RTTriangle.h">
       <Filter>Primitives</Filter>
     </ClInclude>
+    <ClInclude Include="RTFrustum.h" />
+    <ClInclude Include="RayPacket.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">

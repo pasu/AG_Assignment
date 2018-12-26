@@ -3,6 +3,7 @@
 #include "RTPrimitive.h"
 #include "RTRay.h"
 #include "RTIntersection.h"
+#include "RayPacket.h"
 
 struct BVHNode_32
 {
@@ -32,6 +33,13 @@ class BVH
 	BVHNode_32 *bvhTree;
 
 	bool getIntersection( const RTRay &ray, RTIntersection *intersection, bool occlusion ) const;
+
+	int getFirstHit( const RayPacket &raypacket, const AABB &box, int ia )const;
+
+#ifdef BVH_RANGED_TRAVERSAL
+	int getLastHit( const RayPacket &raypacket, const AABB &box, int ia )const;
+	bool getIntersection( const RayPacket &raypacket, RTIntersection *intersections );
+#endif
 
 	void getSplitDimAndCoordBySAH( uint32_t &split_dim, float &split_coord, uint32_t binnedNum, AABB &bc, uint32_t &start, uint32_t &end );
 

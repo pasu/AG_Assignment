@@ -109,3 +109,11 @@ RTIntersection Scene::findNearestObjectIntersection( const RTRay &ray ) const
 	
 	return nearestIntersection;
 }
+
+void Scene::findNearestObjectIntersection( const RayPacket &raypacket, RTIntersection *intersections ) const
+{
+	if ( bInitializedBVH )
+	{
+		bvhTree->getIntersection( raypacket, intersections);
+	}
+}

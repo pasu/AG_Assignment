@@ -135,6 +135,207 @@ bool BVH::getIntersection( const RTRay &ray, RTIntersection *intersection, bool 
 	return intersection->object != NULL;
 }
 
+struct StackNode
+{
+	int cell;
+	unsigned int ia; // Index to the first alive ray
+};
+
+int BVH::getFirstHit( const RayPacket &raypacket, const AABB &box, int ia )const
+{
+	float bbhits[2];
+	const RTRay &ray = raypacket.m_ray[ia];
+	if ( box.intersect( ray, bbhits, bbhits +1) )
+	{
+		return ia;
+	}
+
+	if (!raypacket.m_Frustum.Intersect(box))
+	{
+		return RAYPACKET_RAYS_PER_PACKET;
+	}
+
+	for ( unsigned int i = ia + 1; i < RAYPACKET_RAYS_PER_PACKET; ++i )
+	{
+		if ( box.intersect( raypacket.m_ray[i], bbhits, bbhits + 1 ) )
+				return i;
+	}
+
+	return RAYPACKET_RAYS_PER_PACKET;
+}
+
+#ifdef BVH_RANGED_TRAVERSAL
+int BVH::getLastHit( const RayPacket &raypacket, const AABB &box, int ia )const
+{
+	for ( unsigned int ie = ( RAYPACKET_RAYS_PER_PACKET - 1 ); ie > ia; --ie )
+	{
+		float bbhits[2];
+
+		if ( box.intersect( raypacket.m_ray[ie], bbhits, bbhits + 1 ) )
+				return ie + 1;
+	}
+
+	return ia + 1;
+}
+
+bool BVH::getIntersection( const RayPacket &raypacket, RTIntersection *intersections )
+{
+	if (false)
+	{
+		unsigned int ia = 0;
+		ia = getFirstHit( raypacket, bvhTree[0].bounds, ia );
+		if ( ia < RAYPACKET_RAYS_PER_PACKET )
+		{
+			const unsigned int ie = getLastHit( raypacket,
+												bvhTree[0].bounds,
+												ia );
+
+			for ( unsigned int i = ia; i < ie; ++i )
+			{
+				getIntersection( raypacket.m_ray[i], &intersections[i], false );
+			}
+		}
+
+		return true;
+	}
+	else if (false)
+	{
+		unsigned int ia = 0;
+		ia = getFirstHit( raypacket, bvhTree[0].bounds, ia );
+		if ( ia < RAYPACKET_RAYS_PER_PACKET )
+		{
+			const unsigned int ie = getLastHit( raypacket,
+												bvhTree[0].bounds,
+												ia );
+
+			for ( unsigned int i = ia; i < ie; ++i )
+			{
+				StackNode todo[64];
+
+				bool anyHitted = false;
+				int todoOffset = 0, nodeNum = 0;
+				unsigned int ia = 0;
+
+				while ( true )
+				{
+					const BVHNode_32 *curCell = &bvhTree[nodeNum];
+					
+					if ( ( curCell->leftFirst & 0x1 ) == 1 )
+					{
+						StackNode &node = todo[todoOffset++];
+
+						uint32_t rightOffset = ( curCell->leftFirst >> 1 );
+						node.cell = nodeNum+rightOffset;
+						node.ia = ia;
+						nodeNum = nodeNum + 1;
+						continue;
+					}
+					else
+					{
+						uint32_t start = ( curCell->leftFirst >> 1 );
+						for ( uint32_t o = 0; o < curCell->count; ++o )
+						{
+							const RTPrimitive *obj = ( *build_prims )[start + o];
+
+							const RTIntersection &current = obj->intersect( raypacket.m_ray[i] );
+
+							if ( current.isIntersecting() )
+							{
+								anyHitted |= true;
+
+								if ( intersections[i].rayT < 0.0f || current.rayT < intersections[i].rayT )
+								{
+									( intersections[i] ) = current;
+								}
+							}
+						}
+					}
+
+					if ( todoOffset == 0 )
+						break;
+
+					const StackNode &node = todo[--todoOffset];
+
+					nodeNum = node.cell;
+					ia = node.ia;
+				}
+			}
+		}
+
+		return true;
+	}
+	else
+	{
+		StackNode todo[64];
+
+		bool anyHitted = false;
+		int todoOffset = 0, nodeNum = 0;
+		unsigned int ia = 0;
+
+		while ( true )
+		{
+			const BVHNode_32 *curCell = &bvhTree[nodeNum];
+			ia = getFirstHit( raypacket, curCell->bounds, ia );
+
+			if ( ia < RAYPACKET_RAYS_PER_PACKET )
+			{
+				// nodes
+				if ( ( curCell->leftFirst & 0x1 ) == 1 )
+				{
+					StackNode &node = todo[todoOffset++];
+
+					uint32_t rightOffset = ( curCell->leftFirst >> 1 );
+					node.cell = nodeNum + rightOffset;
+					node.ia = ia;
+					nodeNum = nodeNum + 1;
+					continue;
+				}
+				else
+				{
+					const unsigned int ie = getLastHit( raypacket,
+														curCell->bounds,
+														ia );
+
+					uint32_t start = ( curCell->leftFirst >> 1 );
+					for ( uint32_t o = 0; o < curCell->count; ++o )
+					{
+						const RTPrimitive *obj = ( *build_prims )[start + o];
+
+						if ( raypacket.m_Frustum.Intersect( obj->getAABB() ) )
+						{
+							for ( unsigned int i = ia; i < ie; ++i )
+							{
+								const RTIntersection &current = obj->intersect( raypacket.m_ray[i] );
+
+								if ( current.isIntersecting() )
+								{
+									anyHitted |= true;
+
+									if ( intersections[i].rayT < 0.0f || current.rayT < intersections[i].rayT )
+									{
+										( intersections[i] ) = current;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if ( todoOffset == 0 )
+				break;
+
+			const StackNode &node = todo[--todoOffset];
+
+			nodeNum = node.cell;
+			ia = node.ia;
+		}
+
+		return anyHitted;
+	}
+	
+}
+#endif
 struct BVHBuildEntry
 {
 	// If non-zero then this is the index of the parent. (used in offsets)
@@ -217,7 +418,7 @@ void BVH::build()
 		float split_coord = .5f * ( bc.min[split_dim] + bc.max[split_dim] );
 
 #ifdef SAH_ON
-		getSplitDimAndCoordBySAH( split_dim, split_coord, 20, bc, start, end );
+		getSplitDimAndCoordBySAH( split_dim, split_coord, BIN_NUM, bc, start, end );
 #endif
 
 		// Partition the list of objects on this split
@@ -291,24 +492,26 @@ void BVH::getSplitDimAndCoordBySAH( uint32_t &split_dim, float &split_coord, uin
 			for ( uint32_t i = start; i < end; ++i )
 			{
 				const AABB& box = ( *build_prims )[i]->getAABB();
+				float area = box.surfaceArea();
+
 				if ( box.min[split_dim_current] < split_coord_current && box.max[split_dim_current] > split_coord_current )
 				{
 					float ratio = ( split_coord_current - box.min[split_dim_current] ) / ( box.max[split_dim_current] - box.min[split_dim_current] );
-					float area = box.surfaceArea();
-					leftArea += area * ratio;
-					rightArea += area * ( 1 - ratio );
+					
+					leftArea += area;// * ratio;
+					rightArea += area; // * ( 1 - ratio );
 
 					leftNumber++;
 					rightNumber++;
 				}
 				else if ( ( *build_prims )[i]->getCentroid()[split_dim_current] < split_coord_current )
 				{
-					leftArea += ( *build_prims )[i]->getAABB().surfaceArea();
+					leftArea += area;
 					leftNumber++;
 				}
 				else
 				{
-					rightArea += ( *build_prims )[i]->getAABB().surfaceArea();
+					rightArea += area;
 					rightNumber++;
 				}
 			}

@@ -7,10 +7,17 @@
 // Prevent expansion clashes (when using std::min and std::max):
 #define NOMINMAX
 
-#define NUMBER_THREAD 8
+#define NUMBER_THREAD 1
 
 #define BVH_ON
-#define SAH_ON
+//#define SAH_ON
+#define  BIN_NUM 1024
+
+#define BVH_RANGED_TRAVERSAL
+#define BVH_PARTITION_TRAVERSAL
+
+#define RAYPACKET_DIM ( 1 << 3 )
+#define RAYPACKET_RAYS_PER_PACKET ( RAYPACKET_DIM * RAYPACKET_DIM )
 
 #define SCRWIDTH 512
 #define SCRHEIGHT 512

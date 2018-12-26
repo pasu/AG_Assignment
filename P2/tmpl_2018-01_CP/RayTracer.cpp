@@ -19,15 +19,37 @@ RayTracer::~RayTracer()
 
 void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 {
-	for ( int y = y_min; y <= y_max; ++y )
+#ifdef BVH_RANGED_TRAVERSAL
+	for ( int y = y_min; y <= y_max; y += RAYPACKET_DIM )
 	{
-		for ( int x = x_min; x <= x_max; ++x )
+		for ( int x = x_min; x <= x_max; x += RAYPACKET_DIM )
 		{
-			RTRay r = generatePrimaryRay( x, y );
-			RTIntersection intersection;
-			hdrPixels[y * renderOptions.width + x] = castRay( r, 0, intersection );
+			RayPacket rp(*this,vec2(x,y));
+
+			vec3 colors[RAYPACKET_RAYS_PER_PACKET];
+			this->castRayPacket( rp, colors );
+
+			for ( unsigned int y0 = 0; y0 < RAYPACKET_DIM; ++y0 )
+			{
+				for ( unsigned int x0 = 0; x0 < RAYPACKET_DIM; ++x0 )
+				{
+					hdrPixels[( y + y0 ) * renderOptions.width + ( x + x0 )] = colors[y0 * RAYPACKET_DIM + x0];
+				}
+			}
+			
 		}
 	}
+#else
+			for ( int y = y_min; y <= y_max; ++y )
+			{
+				for ( int x = x_min; x <= x_max; ++x )
+				{
+					RTRay r = generatePrimaryRay( x, y );
+					RTIntersection intersection;
+					hdrPixels[y * renderOptions.width + x] = castRay( r, 0, intersection );
+				}
+			}
+#endif
 }
 
 void RayTracer::render( Surface *screen )
@@ -88,6 +110,28 @@ const vec3 RayTracer::castRay( const RTRay &ray, const int depth, RTIntersection
 	}
 	else
 		return scene.backgroundColor;
+}
+
+void RayTracer::castRayPacket( const RayPacket &raypacket, vec3* colors ) const
+{
+	int depth = 0;
+	RTIntersection intersections[RAYPACKET_RAYS_PER_PACKET];
+
+	scene.findNearestObjectIntersection( raypacket,intersections);
+
+	for ( int i = 0; i < RAYPACKET_RAYS_PER_PACKET ;i++)
+	{
+		RTIntersection &current = intersections[i];
+
+		if ( current.isIntersecting() )
+		{
+			current.surfacePointData = &( current.object->getSurfacePointData( current ) );
+
+			colors[i] = shade( raypacket.m_ray[i], current, depth );
+		}
+		else
+			colors[i] = scene.backgroundColor;
+	}
 }
 
 const vec3 RayTracer::shade( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const
