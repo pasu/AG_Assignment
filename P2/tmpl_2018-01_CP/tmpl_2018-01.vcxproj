@@ -154,6 +154,7 @@
     <ClCompile Include="RTLight.cpp" />
     <ClCompile Include="RTMaterial.cpp" />
     <ClCompile Include="RTMaterialManager.cpp" />
+    <ClCompile Include="RTObject.cpp" />
     <ClCompile Include="RTObjMesh.cpp" />
     <ClCompile Include="RTPlane.cpp" />
     <ClCompile Include="RTPrimitive.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="RTLight.h" />
     <ClInclude Include="RTMaterial.h" />
     <ClInclude Include="RTMaterialManager.h" />
+    <ClInclude Include="RTObject.h" />
     <ClInclude Include="RTObjMesh.h" />
     <ClInclude Include="RTPlane.h" />
     <ClInclude Include="RTPrimitive.h" />
