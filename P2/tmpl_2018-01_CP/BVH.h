@@ -3,7 +3,8 @@
 #include "RTPrimitive.h"
 #include "RTRay.h"
 #include "RTIntersection.h"
-#include "RayPacket.h"
+
+class RayPacket;
 
 struct BVHNode_32
 {

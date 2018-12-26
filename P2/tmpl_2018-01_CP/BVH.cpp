@@ -1,6 +1,7 @@
 #include "BVH.h"
 #include "precomp.h"
 #include "Utils.h"
+#include "RayPacket.h"
 
 BVH::BVH( std::vector<RTPrimitive *> *objects, uint32_t leafSize /*= 4 */ )
 	: build_prims( objects ), leafSize( leafSize ), nNodes( 0 ), nLeafs( 0 ), bvhTree( NULL )
