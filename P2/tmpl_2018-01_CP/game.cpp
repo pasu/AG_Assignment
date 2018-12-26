@@ -106,7 +106,7 @@ void Tmpl8::Game::KeyDown( int key )
 		switch ( index % scenecount )
 		{
 		case 0:
-			scene_default();
+			scene_bvh();
 			break;
 		case 1:
 			scene_fresnel_beer();
@@ -118,7 +118,7 @@ void Tmpl8::Game::KeyDown( int key )
 			scene_tw();
 			break;
 		case 4:
-			scene_bvh();
+			scene_default();
 			break;
 		}
 #ifdef BVH_ON
