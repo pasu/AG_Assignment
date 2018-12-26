@@ -74,15 +74,21 @@
     <ClCompile Include="Utils.cpp">
       <Filter>Toolkit</Filter>
     </ClCompile>
-    <ClCompile Include="BVH.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="AABB.cpp" />
     <ClCompile Include="RTTriangle.cpp">
       <Filter>Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="RTFrustum.cpp" />
-    <ClCompile Include="RayPacket.cpp" />
+    <ClCompile Include="RTFrustum.cpp">
+      <Filter>BVH</Filter>
+    </ClCompile>
+    <ClCompile Include="RayPacket.cpp">
+      <Filter>BVH</Filter>
+    </ClCompile>
+    <ClCompile Include="AABB.cpp">
+      <Filter>BVH</Filter>
+    </ClCompile>
+    <ClCompile Include="BVH.cpp">
+      <Filter>BVH</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -165,15 +171,21 @@
     <ClInclude Include="Utils.h">
       <Filter>Toolkit</Filter>
     </ClInclude>
-    <ClInclude Include="BVH.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="AABB.h" />
     <ClInclude Include="RTTriangle.h">
       <Filter>Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="RTFrustum.h" />
-    <ClInclude Include="RayPacket.h" />
+    <ClInclude Include="RTFrustum.h">
+      <Filter>BVH</Filter>
+    </ClInclude>
+    <ClInclude Include="RayPacket.h">
+      <Filter>BVH</Filter>
+    </ClInclude>
+    <ClInclude Include="AABB.h">
+      <Filter>BVH</Filter>
+    </ClInclude>
+    <ClInclude Include="BVH.h">
+      <Filter>BVH</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">
@@ -199,6 +211,9 @@
     </Filter>
     <Filter Include="Scene">
       <UniqueIdentifier>{57b34069-c01a-4067-8ee5-eeedff56fdfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BVH">
+      <UniqueIdentifier>{4dc6d87f-125d-4cfd-a888-e0eff3db8245}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
