@@ -41,8 +41,14 @@ class BVH
 	bool getIntersection( const RayPacket &raypacket, RTIntersection *intersections );
 #endif
 
+#ifdef BVH_PARTITION_TRAVERSAL
+	int getLastHit( const RayPacket &raypacket, const AABB &box, int ia, const unsigned int *aRayIndex) const;
+	int partRays( const RayPacket &raypacket, const AABB &box, int ia, unsigned int *aRayIndex ) const;
+	bool getIntersection( const RayPacket &raypacket, RTIntersection *intersections );
+#endif
 	void getSplitDimAndCoordBySAH( uint32_t &split_dim, float &split_coord, uint32_t binnedNum, AABB &bc, uint32_t &start, uint32_t &end );
 
   private:
 	uint32_t nNodes, nLeafs, leafSize;
+	unsigned int m_I[RAYPACKET_RAYS_PER_PACKET];
 };

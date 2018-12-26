@@ -6,6 +6,12 @@ BVH::BVH( std::vector<RTPrimitive *> *objects, uint32_t leafSize /*= 4 */ )
 	: build_prims( objects ), leafSize( leafSize ), nNodes( 0 ), nLeafs( 0 ), bvhTree( NULL )
 {
 	build();
+
+	// Initialize the indexes of ray packet for partition traversal
+	for ( unsigned int i = 0; i < RAYPACKET_RAYS_PER_PACKET; ++i )
+	{
+		m_I[i] = i;
+	}
 }
 
 BVH::~BVH()
@@ -336,6 +342,114 @@ bool BVH::getIntersection( const RayPacket &raypacket, RTIntersection *intersect
 	
 }
 #endif
+
+#ifdef BVH_PARTITION_TRAVERSAL
+int BVH::getLastHit( const RayPacket &raypacket, const AABB &box, int ia, const unsigned int *aRayIndex) const
+{
+	for ( unsigned int ie = ( RAYPACKET_RAYS_PER_PACKET - 1 ); ie > ia; --ie )
+	{
+		float bbhits[2];
+
+		if ( box.intersect( raypacket.m_ray[aRayIndex[ie]], bbhits, bbhits+1 ) )
+				return ie + 1;
+	}
+
+	return ia + 1;
+}
+
+int BVH::partRays( const RayPacket &raypacket, const AABB &box, int ia, unsigned int *aRayIndex ) const
+{
+	if ( !raypacket.m_Frustum.Intersect( box ) )
+		return RAYPACKET_RAYS_PER_PACKET;
+
+	unsigned int ie = 0;
+
+	for ( unsigned int i = 0; i < ia; ++i )
+	{
+		float bbhits[2];
+		
+		if ( box.intersect( raypacket.m_ray[aRayIndex[i]], bbhits, bbhits+1 ) )
+				std::swap( aRayIndex[ie++], aRayIndex[i] );
+	}
+
+	return ie;
+}
+
+bool BVH::getIntersection( const RayPacket &raypacket, RTIntersection *intersections )
+{
+		StackNode todo[64];
+
+		bool anyHitted = false;
+		int todoOffset = 0, nodeNum = 0;
+		unsigned int ia = 0;
+
+		unsigned int I[RAYPACKET_RAYS_PER_PACKET];
+		memcpy( I, m_I, RAYPACKET_RAYS_PER_PACKET * sizeof( unsigned int ) );
+
+		while ( true )
+		{
+			const BVHNode_32 *curCell = &bvhTree[nodeNum];
+			ia = partRays( raypacket, curCell->bounds, ia, I );
+
+			if ( ia < RAYPACKET_RAYS_PER_PACKET )
+			{
+				// nodes
+				if ( ( curCell->leftFirst & 0x1 ) == 1 )
+				{
+					StackNode &node = todo[todoOffset++];
+
+					uint32_t rightOffset = ( curCell->leftFirst >> 1 );
+					node.cell = nodeNum + rightOffset;
+					node.ia = ia;
+					nodeNum = nodeNum + 1;
+					continue;
+				}
+				else
+				{
+					const unsigned int ie = getLastHit( raypacket,
+														curCell->bounds,
+														ia,
+														I);
+
+					uint32_t start = ( curCell->leftFirst >> 1 );
+					for ( uint32_t o = 0; o < curCell->count; ++o )
+					{
+						const RTPrimitive *obj = ( *build_prims )[start + o];
+
+						if ( raypacket.m_Frustum.Intersect( obj->getAABB() ) )
+						{
+							for ( unsigned int i = ia; i < ie; ++i )
+							{
+								const RTIntersection &current = obj->intersect( raypacket.m_ray[i] );
+
+								if ( current.isIntersecting() )
+								{
+									anyHitted |= true;
+
+									if ( intersections[i].rayT < 0.0f || current.rayT < intersections[i].rayT )
+									{
+										( intersections[i] ) = current;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if ( todoOffset == 0 )
+				break;
+
+			const StackNode &node = todo[--todoOffset];
+
+			nodeNum = node.cell;
+			ia = node.ia;
+		}
+
+		return anyHitted;
+}
+#endif // BVH_PARTITION_TRAVERSAL
+
 struct BVHBuildEntry
 {
 	// If non-zero then this is the index of the parent. (used in offsets)

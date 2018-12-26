@@ -13,7 +13,7 @@
 //#define SAH_ON
 #define  BIN_NUM 1024
 
-#define BVH_RANGED_TRAVERSAL
+//#define BVH_RANGED_TRAVERSAL
 #define BVH_PARTITION_TRAVERSAL
 
 #define RAYPACKET_DIM ( 1 << 3 )

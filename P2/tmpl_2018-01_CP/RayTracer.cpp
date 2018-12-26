@@ -19,7 +19,7 @@ RayTracer::~RayTracer()
 
 void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 {
-#ifdef BVH_RANGED_TRAVERSAL
+#ifdef BVH_PARTITION_TRAVERSAL
 	for ( int y = y_min; y <= y_max; y += RAYPACKET_DIM )
 	{
 		for ( int x = x_min; x <= x_max; x += RAYPACKET_DIM )
