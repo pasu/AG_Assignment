@@ -139,26 +139,26 @@ static void animateFunc( RTObject *object )
     object->translateGlobal( object->speed );
 
     if (object->pos.x > 300) {
-		object->pos.x = 300;
+		object->pos.x = 0;
     }
     if (object->pos.x < 0) {
-		object->pos.x = 0;
+		object->pos.x = 300;
     }
 	if ( object->pos.y > 300 )
 	{
-		object->pos.y = 300;
+		object->pos.y = 0;
 	}
 	if ( object->pos.y < 0 )
 	{
-		object->pos.y = 0;
+		object->pos.y = 300;
 	}
 	if ( object->pos.z < -300 )
 	{
-		object->pos.z = -300;
+		object->pos.z = 0;
 	}
 	if ( object->pos.z > 0 )
 	{
-		object->pos.z = 0;
+		object->pos.z = -300;
 	}
 }
 void Tmpl8::Game::scene_bvh()
