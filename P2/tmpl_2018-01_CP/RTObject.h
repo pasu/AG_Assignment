@@ -34,7 +34,7 @@ class RTObject
 
 	mat4 mModelRotate; // rotation part of view matrix
 	vec3 pos;		   // the coordinate of origin
-
+	vec3 speed;
   private:
 	RTGeometry *pGeometry;
 

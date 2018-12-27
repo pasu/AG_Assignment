@@ -134,15 +134,29 @@ void Tmpl8::Game::MouseWheel( int y )
 
 static void animateFunc( RTObject *object )
 {
-	object->translateGlobal( vec3( rand()/float(RAND_MAX),rand()/float(RAND_MAX),-rand()/float(RAND_MAX) ) );
+	object->speed = object->speed + vec3( rand()/float(RAND_MAX)-0.5,rand()/float(RAND_MAX)-0.5,-rand()/float(RAND_MAX)+0.5 );
+
+    object->translateGlobal( object->speed );
+
     if (object->pos.x > 300) {
+		object->pos.x = 300;
+    }
+    if (object->pos.x < 0) {
 		object->pos.x = 0;
     }
 	if ( object->pos.y > 300 )
 	{
+		object->pos.y = 300;
+	}
+	if ( object->pos.y < 0 )
+	{
 		object->pos.y = 0;
 	}
 	if ( object->pos.z < -300 )
+	{
+		object->pos.z = -300;
+	}
+	if ( object->pos.z > 0 )
 	{
 		object->pos.z = 0;
 	}

@@ -43,6 +43,7 @@ bool RTObject::getIntersection( const RTRay &ray, RTIntersection &nearestInterse
 void RTObject::resetTransform()
 {
 	pos = vec3( 0 );
+	speed = vec3( 0 );
 	mModelRotate = mat4::identity();
 }
 
