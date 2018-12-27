@@ -40,6 +40,12 @@ vec4 operator * ( const mat4& a, const vec4& b )
 		a.cell[8] * b.x + a.cell[9] * b.y + a.cell[10] * b.z + a.cell[11] * b.w,
 		a.cell[12] * b.x + a.cell[13] * b.y + a.cell[14] * b.z + a.cell[15] * b.w );
 }
+vec3 operator*( const mat4 &a, const vec3 &b )
+{
+	return vec3( a.cell[0] * b.x + a.cell[1] * b.y + a.cell[2] * b.z + a.cell[3],
+				 a.cell[4] * b.x + a.cell[5] * b.y + a.cell[6] * b.z + a.cell[7],
+				 a.cell[8] * b.x + a.cell[9] * b.y + a.cell[10] * b.z + a.cell[11] );
+}
 vec4 operator * ( const vec4& b, const mat4& a )
 {
 	return vec4( a.cell[0] * b.x + a.cell[1] * b.y + a.cell[2] * b.z + a.cell[3] * b.w,

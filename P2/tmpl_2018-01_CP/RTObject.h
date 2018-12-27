@@ -21,27 +21,27 @@ class RTObject
 	const RTGeometry *getGeometry() const { return pGeometry; }
 	const AABB &getAABBBounds() const { return bounds; }
 
+	typedef void ( *AnimateFunc )( RTObject * );
+	void animate();													// invoke animate callback
+	void setAnimateFunc( AnimateFunc func ) { animateFunc = func; } // set animate callback
+
 	// rigid body transform
 	void resetTransform();
 	void translateGlobal( const vec3 v );
 	void rotateLocal( vec3 axis, float angle );
 
-	typedef void ( *AnimateFunc )( RTObject* );
-    void animate();
-    void setAnimateFunc(AnimateFunc func) {
-		animateFunc = func;
-    }
-
 	mat4 mModelRotate; // rotation part of view matrix
-	vec3 pos;		   // the coordinate of origin
+	mat4 mViewRotate;
+	vec3 pos; // the coordinate of origin
 	vec3 speed;
+	vec3 rotateAxis;
+	float rotateSpeed;
   private:
 	RTGeometry *pGeometry;
 
-	
 	AABB bounds;
 
-	AnimateFunc animateFunc;
+	AnimateFunc animateFunc; // animate callback
 };
 
 #endif

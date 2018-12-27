@@ -159,6 +159,7 @@ static void animateFunc( RTObject *object )
 	{
 		object->pos.z = -300;
 	}
+	object->rotateLocal( vec3( 0, 0, 1 ), 0.1 );
 }
 void Tmpl8::Game::scene_bvh()
 {
@@ -171,8 +172,7 @@ void Tmpl8::Game::scene_bvh()
 	RTMaterial &redMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), manTexture, vec2( 1 ), DIFFUSE_AND_REFLECTIVE, 0.0f, 2.5f );
 
 	RTObjMesh *mesh = new RTObjMesh( "assets/Cesium_Man.dae", redMaterial );
-	mesh->setPosition( 0, -2, -3.5 );
-	mesh->setRotation( 180.0f, -90.0f, 0.0f );
+	mesh->setPosition( 0, 0, 0 );
 	mesh->setScale( 30.1f, 30.1f, 30.1f );
 	mesh->applyTransforms();
 //	scene.addObject( mesh );
@@ -198,7 +198,7 @@ void Tmpl8::Game::scene_bvh()
 
 	scene.ambientLight = 0.3f;
 
-	RTLight *pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 400.0f, vec3( 0.0f, -20.0f, -100.0f ) );
+	RTLight *pLight = RTLight::createParralleLight( vec3( 1.0f, 1.0f, 1.0f ),1.0f, vec3( -20.0f, -20.0f, 0.0f ) );
 	scene.addLight( pLight );
 
     scene.BuildBVHTree();

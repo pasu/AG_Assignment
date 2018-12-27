@@ -308,6 +308,7 @@ mat4 operator * ( const mat4& a, const mat4& b );
 bool operator == ( const mat4& a, const mat4& b );
 bool operator != ( const mat4& a, const mat4& b );
 vec4 operator * ( const mat4& a, const vec4& b );
+vec3 operator * ( const mat4& a, const vec3& b );
 vec4 operator * ( const vec4& a, const mat4& b );
 
 #define BADFLOAT(x) ((*(uint*)&x & 0x7f000000) == 0x7f000000)
