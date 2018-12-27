@@ -114,8 +114,9 @@ class AABB
 
 	bool intersect( const RTRay &ray, float *tnear, float *tfar ) const;
 	float surfaceArea() const;
-
+	Vector3 Offset( Vector3 point ) const;
   public:
 	alignas( 16 ) Vector3 min;
 	alignas( 16 ) Vector3 max;
+	bool bValid;
 };

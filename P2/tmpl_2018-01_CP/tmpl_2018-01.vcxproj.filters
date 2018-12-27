@@ -74,14 +74,8 @@
     <ClCompile Include="Utils.cpp">
       <Filter>Toolkit</Filter>
     </ClCompile>
-    <ClCompile Include="AABB.cpp" />
     <ClCompile Include="RTTriangle.cpp">
       <Filter>RTObject\Primitives</Filter>
-    </ClCompile>
-    <ClCompile Include="RTFrustum.cpp" />
-    <ClCompile Include="RayPacket.cpp" />
-    <ClCompile Include="BVH.cpp">
-      <Filter>RTObject</Filter>
     </ClCompile>
     <ClCompile Include="RTObject.cpp">
       <Filter>RTObject</Filter>
@@ -89,8 +83,23 @@
     <ClCompile Include="RTGeometry.cpp">
       <Filter>RTObject</Filter>
     </ClCompile>
+    <ClCompile Include="AABB.cpp">
+      <Filter>BVH</Filter>
+    </ClCompile>
+    <ClCompile Include="RayPacket.cpp">
+      <Filter>BVH</Filter>
+    </ClCompile>
+    <ClCompile Include="RTFrustum.cpp">
+      <Filter>BVH</Filter>
+    </ClCompile>
+    <ClCompile Include="BVH.cpp">
+      <Filter>BVH</Filter>
+    </ClCompile>
     <ClCompile Include="TopLevelBVH.cpp">
-      <Filter>Scene</Filter>
+      <Filter>BVH</Filter>
+    </ClCompile>
+    <ClCompile Include="SBVH.cpp">
+      <Filter>BVH</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -174,14 +183,8 @@
     <ClInclude Include="Utils.h">
       <Filter>Toolkit</Filter>
     </ClInclude>
-    <ClInclude Include="AABB.h" />
     <ClInclude Include="RTTriangle.h">
       <Filter>RTObject\Primitives</Filter>
-    </ClInclude>
-    <ClInclude Include="RTFrustum.h" />
-    <ClInclude Include="RayPacket.h" />
-    <ClInclude Include="BVH.h">
-      <Filter>RTObject</Filter>
     </ClInclude>
     <ClInclude Include="RTObject.h">
       <Filter>RTObject</Filter>
@@ -189,8 +192,23 @@
     <ClInclude Include="RTGeometry.h">
       <Filter>RTObject</Filter>
     </ClInclude>
+    <ClInclude Include="AABB.h">
+      <Filter>BVH</Filter>
+    </ClInclude>
+    <ClInclude Include="RayPacket.h">
+      <Filter>BVH</Filter>
+    </ClInclude>
+    <ClInclude Include="RTFrustum.h">
+      <Filter>BVH</Filter>
+    </ClInclude>
+    <ClInclude Include="BVH.h">
+      <Filter>BVH</Filter>
+    </ClInclude>
     <ClInclude Include="TopLevelBVH.h">
-      <Filter>Scene</Filter>
+      <Filter>BVH</Filter>
+    </ClInclude>
+    <ClInclude Include="SBVH.h">
+      <Filter>BVH</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +238,9 @@
     </Filter>
     <Filter Include="RTObject\Primitives">
       <UniqueIdentifier>{0f7571f4-a830-49e8-9e07-3ecd93c97bb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BVH">
+      <UniqueIdentifier>{bf9fe783-1cc2-4449-9abf-e0f39e64ac95}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

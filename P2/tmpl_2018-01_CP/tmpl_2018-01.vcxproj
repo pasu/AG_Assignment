@@ -165,6 +165,7 @@
     <ClCompile Include="RTTextureManager.cpp" />
     <ClCompile Include="RTTorus.cpp" />
     <ClCompile Include="RTTriangle.cpp" />
+    <ClCompile Include="SBVH.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="template.cpp">
@@ -205,6 +206,7 @@
     <ClInclude Include="RTTextureManager.h" />
     <ClInclude Include="RTTorus.h" />
     <ClInclude Include="RTTriangle.h" />
+    <ClInclude Include="SBVH.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="template.h" />

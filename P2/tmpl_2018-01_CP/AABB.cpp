@@ -4,6 +4,7 @@
 
 AABB::AABB()
 {
+	bValid = false;
 }
 
 AABB::AABB( const AABB &obj )
@@ -13,22 +14,27 @@ AABB::AABB( const AABB &obj )
 
 	this->min = obj.min;
 	this->max = obj.max;
+
+	bValid = true;
 }
 
  AABB::AABB( const Vector3 &min, const Vector3 &max )
 	: min( min ), max( max )
 {
-}
+	 bValid = true;
+ }
 
  AABB::AABB( const Vector3 &p )
 	: min( p ), max( p )
 {
-}
+	 bValid = true;
+ }
 
  AABB::AABB( const RTBox &box )
 	: min( box.min ), max( box.max )
 {
-}
+	 bValid = true;
+ }
 
 void AABB::expandToInclude( const Vector3 &p )
 {
@@ -70,6 +76,15 @@ float AABB::surfaceArea() const
 {
 	Vector3 extent = max - min;
 	return 2.f * ( extent.x * extent.z + extent.x * extent.y + extent.y * extent.z );
+}
+
+Vector3 AABB::Offset( Vector3 point ) const
+{
+	Vector3 out = point - min;
+	if ( min.x < max.x ) out.x /= ( max.x - min.x );
+	if ( min.y < max.y ) out.y /= ( max.y - min.y );
+	if ( min.z < max.z ) out.z /= ( max.z - min.z );
+	return out;
 }
 
 AABB::~AABB()

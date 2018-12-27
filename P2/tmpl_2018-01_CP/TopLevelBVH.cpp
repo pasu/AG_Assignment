@@ -44,9 +44,9 @@ void TopLevelBVH::rebuild()
 
 	// function to find the best match of a node
 	auto findBestMatch = [&]( int a ) {
-		assert( inner_ptr > 0 );
-		assert( inner_ptr <= a );
-		assert( a < leaf_ptr );
+// 		assert( inner_ptr > 0 );
+// 		assert( inner_ptr <= a );
+// 		assert( a < leaf_ptr );
 
 		int least_index = 0;
 		float least_surface = numeric_limits<float>::max();
