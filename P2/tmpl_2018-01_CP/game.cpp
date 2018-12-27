@@ -138,16 +138,16 @@ static void animateFunc( RTObject *object )
     object->translateGlobal( object->speed );
 
     if (object->pos.x > 300) {
-		object->pos.x = 0;
+		object->pos.x = -300;
     }
-    if (object->pos.x < 0) {
+    if (object->pos.x < -300) {
 		object->pos.x = 300;
     }
 	if ( object->pos.y > 300 )
 	{
-		object->pos.y = 0;
+		object->pos.y = -300;
 	}
-	if ( object->pos.y < 0 )
+	if ( object->pos.y < -300 )
 	{
 		object->pos.y = 300;
 	}
@@ -190,7 +190,7 @@ void Tmpl8::Game::scene_bvh()
 
     for (int i = 0; i < 100; i++) {
 		RTObject *pRobot = new RTObject( robotGeometry );
-		pRobot->translateGlobal(vec3(rand()/(RAND_MAX/300.0f),rand()/(RAND_MAX/300.0f),-rand()/(RAND_MAX/300.0f)));
+		pRobot->translateGlobal(vec3(rand()/(RAND_MAX/600.0f)-300,rand()/(RAND_MAX/600.0f)-300,-rand()/(RAND_MAX/600.0f)-100));
 		pRobot->speed = vec3( rand() / float( RAND_MAX ) - 0.5, rand() / float( RAND_MAX ) - 0.5, -rand() / float( RAND_MAX ) + 0.5 );
 
         pRobot->rotateAxis = vec3( rand() / float( RAND_MAX ) - 0.5, rand() / float( RAND_MAX ) - 0.5, -rand() / float( RAND_MAX ) + 0.5 );
