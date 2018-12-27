@@ -3,7 +3,7 @@
 #include "RTPrimitive.h"
 #include "RTCamera.h"
 #include <vector>
-#include "BVH.h"
+#include "TopLevelBVH.h"
 #include "RayPacket.h"
 #include"RTObject.h"
 
@@ -29,17 +29,18 @@ public:
 	unsigned int backgroundColorPixel;
 
 	void BuildBVHTree();
+	void rebuildTopLevelBVH();
 	bool getIntersection( const RTRay &ray, RTIntersection &nearestIntersection ) const;
 	RTIntersection findNearestObjectIntersection( const RTRay &ray ) const;
 	void findNearestObjectIntersection( const RayPacket &raypacket, RTIntersection *intersections ) const;
-
+	void animate();
   private:
 	vector<RTObject *> objectcollection;// objects in the scene
 	vector<RTLight *> lightcollection;
 	RTCamera* camera;
 
 	bool bInitializedBVH;
-	BVH *bvhTree;
+	TopLevelBVH *bvhTree;
 
 
 };

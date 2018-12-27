@@ -79,12 +79,19 @@ void Scene::BuildBVHTree()
 		delete bvhTree;
 	}
 
+    bvhTree = new TopLevelBVH( objectcollection );
+
 	bInitializedBVH = true;
+}
+
+void Scene::rebuildTopLevelBVH()
+{
+	bvhTree->rebuild();
 }
 
 bool Scene::getIntersection( const RTRay &ray, RTIntersection &nearestIntersection )const
 {
-	return bvhTree->getIntersection( ray, &nearestIntersection,false);
+	return bvhTree->getIntersection( ray, &nearestIntersection);
 }
 
 RTIntersection Scene::findNearestObjectIntersection( const RTRay &ray ) const
@@ -121,4 +128,11 @@ void Scene::findNearestObjectIntersection( const RayPacket &raypacket, RTInterse
 	{
 		//bvhTree->getIntersection( raypacket, intersections );
 	}
+}
+
+void Scene::animate()
+{
+    for (RTObject *object : objectcollection) {
+		object->animate();
+    }
 }

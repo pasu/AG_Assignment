@@ -1,13 +1,16 @@
 #include "precomp.h"
 #include "RTObject.h"
 
-RTObject::RTObject( RTGeometry *g ) : pGeometry( g )
+RTObject::RTObject( RTGeometry *g ) : pGeometry( g ), animateFunc(animateFuncDefault)
 {
 	resetTransform();
 }
 
 void RTObject::updateAABBbounds()
 {
+	const AABB &geoAABB = pGeometry->getAABBBounds();
+	bounds.min = geoAABB.min + pos;
+	bounds.max = geoAABB.max + pos;
 }
 
 bool RTObject::getIntersection( const RTRay &ray, RTIntersection &nearestIntersection ) const
@@ -40,10 +43,27 @@ bool RTObject::getIntersection( const RTRay &ray, RTIntersection &nearestInterse
 void RTObject::resetTransform()
 {
 	pos = vec3( 0 );
-	mViewRotate = mat4::identity();
+	mModelRotate = mat4::identity();
 }
 
-void RTObject::translate( const vec3 v )
+void RTObject::translateGlobal( const vec3 v )
 {
 	pos = pos + v;
+}
+
+void RTObject::rotateLocal( vec3 axis, float angle )
+{
+	mat4 mRotation = mat4::rotate( axis, angle );
+	mat4 temp = mRotation * mModelRotate;
+	mModelRotate = temp;
+
+}
+
+void RTObject::animate()
+{
+	animateFunc( this );
+}
+
+void RTObject::animateFuncDefault( RTObject * )
+{
 }

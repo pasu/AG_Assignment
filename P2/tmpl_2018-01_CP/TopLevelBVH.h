@@ -20,13 +20,15 @@ class TopLevelBVHNode {
 class TopLevelBVH
 {
   public:
-	TopLevelBVH( const std::vector<RTObject *> *objects );
+	TopLevelBVH( const std::vector<RTObject *> &objects );
 	~TopLevelBVH();
 
 	void rebuild();
-
+	bool getIntersection( const RTRay &ray, RTIntersection *intersection) const;
   private:
 	TopLevelBVHNode *nodes;
+	const std::vector<RTObject *> &objects;
+	int tree_size;// the size of bvh tree: 2n-1
 };
 
 #endif

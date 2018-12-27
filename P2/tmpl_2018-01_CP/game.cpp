@@ -25,6 +25,7 @@ RenderOptions renderOptions;
 RTCamera *pCamera = scene.getCamera();
 
 
+
 void Game::Init()
 {
 	renderOptions.width = SCRWIDTH;
@@ -70,6 +71,8 @@ void Game::Tick( float deltaTime )
 	// clear the graphics window
 //	screen->Clear( 0 );
 	// print something in the graphics window
+	scene.animate();
+	scene.rebuildTopLevelBVH();
 	pTracer->render( screen );
 	// print something to the text window
 // 	printf( "this goes to the console window.\n" );
@@ -129,7 +132,21 @@ void Tmpl8::Game::MouseWheel( int y )
 {
 }
 
-
+static void animateFunc( RTObject *object )
+{
+	object->translateGlobal( vec3( rand()/float(RAND_MAX),rand()/float(RAND_MAX),-rand()/float(RAND_MAX) ) );
+    if (object->pos.x > 300) {
+		object->pos.x = 0;
+    }
+	if ( object->pos.y > 300 )
+	{
+		object->pos.y = 0;
+	}
+	if ( object->pos.z < -300 )
+	{
+		object->pos.z = 0;
+	}
+}
 void Tmpl8::Game::scene_bvh()
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -149,26 +166,29 @@ void Tmpl8::Game::scene_bvh()
 	vector<RTTriangle *> tarray;
 	mesh->getTriangles( tarray );
 
-    RTGeometry* robot = new RTGeometry();
+    RTGeometry* robotGeometry = new RTGeometry();
 
 	for ( size_t i = 0; i < tarray.size(); i++ )
 	{
-		robot->addObject( tarray[i] );
+		robotGeometry->addObject( tarray[i] );
 	}
 
-	robot->BuildBVHTree();
+	robotGeometry->BuildBVHTree();
 
-    RTObject* robot01 = new RTObject(robot);
-    scene.addObject( robot01 );
-
-    RTObject *robot02 = new RTObject( robot );
-	robot02->translate( vec3( 0, 30, 0 ) );
-	scene.addObject( robot02 );
+    for (int i = 0; i < 50; i++) {
+		RTObject *pRobot = new RTObject( robotGeometry );
+		pRobot->translateGlobal(vec3(rand()/(RAND_MAX/300.0f),rand()/(RAND_MAX/300.0f),-rand()/(RAND_MAX/300.0f)));
+		pRobot->setAnimateFunc( animateFunc );
+        scene.addObject(pRobot);
+    }
 
 	scene.ambientLight = 0.3f;
 
 	RTLight *pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 400.0f, vec3( 0.0f, -20.0f, -100.0f ) );
 	scene.addLight( pLight );
+
+    scene.BuildBVHTree();
+
 }
 
 void Tmpl8::Game::scene_default()
