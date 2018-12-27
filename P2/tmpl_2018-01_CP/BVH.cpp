@@ -41,7 +41,7 @@ bool BVH::getIntersection( const RTRay &ray, RTIntersection *intersection, bool 
 	int32_t closer, other;
 
 	// Working set
-	BVHTraversal todo[64];
+	BVHTraversal todo[6400];
 	int32_t stackptr = 0;
 
 	// "Push" on the root node to the working set

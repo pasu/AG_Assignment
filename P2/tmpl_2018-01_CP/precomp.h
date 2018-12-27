@@ -20,8 +20,8 @@
 #define RAYPACKET_DIM ( 1 << 3 )
 #define RAYPACKET_RAYS_PER_PACKET ( RAYPACKET_DIM * RAYPACKET_DIM )
 
-#define SCRWIDTH 512
-#define SCRHEIGHT 512
+#define SCRWIDTH 640
+#define SCRHEIGHT 640
 // #define FULLSCREEN
 // #define ADVANCEDGL	// faster if your system supports it
 

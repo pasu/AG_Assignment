@@ -105,11 +105,9 @@ void Tmpl8::Game::KeyDown( int key )
 			scene_sbvh();
 			break;
 		}
-#ifdef BVH_ON
-		scene.BuildBVHTree();
-#endif
 	}
 
+	//scene.getCamera()->setEye( vec3( 0 ) );
 }
 
 void Tmpl8::Game::MouseWheel( int y )
@@ -155,13 +153,14 @@ void Tmpl8::Game::scene_bvh()
 	RTTexture *milkTexture = gTexManager.CreateTexture( "./assets/Wood_Tower_Col.jpg", true, 8, 20.0f );
 	RTTexture *carTexture = gTexManager.CreateTexture( "./assets/ambulance_red_d.tga", true, 8, 20.0f );
 
-	RTMaterial &redMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), manTexture, vec2( 1 ), DIFFUSE_AND_REFLECTIVE, 0.0f, 2.5f );
+	RTMaterial &redMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), NULL, vec2( 1 ), DIFFUSE, 0.0f, 2.5f );
 	RTMaterial &milkMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), milkTexture, vec2( 1 ), DIFFUSE_AND_REFLECTIVE, 0.0f, 2.5f );
 	RTMaterial &carMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), carTexture, vec2( 1 ), DIFFUSE_AND_REFLECTIVE, 0.0f, 2.5f );
 
-	RTObjMesh *mesh = new RTObjMesh( "assets/Cesium_Man.dae", redMaterial );
-	mesh->setPosition( 0, -3, -3.5 );
-	mesh->setRotation( 180.0f, -90.0f, 0.0f );
+	RTObjMesh *mesh = new RTObjMesh( "assets/Dragon.obj", redMaterial );
+	mesh->setPosition( 30, -30, -283.5 );
+	mesh->setRotation( 0, -30.0f, 0.0f );
+	mesh->setScale( 0.1f, 0.1f, 0.1f );
 	mesh->applyTransforms();
 //	scene.addObject( mesh );
 	vector<RTTriangle *> tarray;
@@ -195,7 +194,7 @@ void Tmpl8::Game::scene_bvh()
 	robotGeometry2->BuildBVHTree();
 
 	RTObjMesh *carmilk = new RTObjMesh( "assets/ambulance.dae", carMaterial );
-	carmilk->setPosition( 32, -2, -35.5 );
+	carmilk->setPosition( -6, -2, -35.5 );
 	carmilk->setRotation( 80.0f, 0.0f, 0.0f );
 	//meshmilk->setScale( 0.1f, 0.1f, 0.1f );
 	carmilk->applyTransforms();
@@ -224,9 +223,9 @@ void Tmpl8::Game::scene_bvh()
 		scene.addObject( pRobot3 );
     }
 
-	scene.ambientLight = 0.9f;
+	scene.ambientLight = 0.3f;
 
-	RTLight *pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 400.0f, vec3( 0.0f, 20.0f, -100.0f ) );
+	RTLight *pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 40.0f, vec3( -2.0f, 2.0f, -35.0f ) );
 	scene.addLight( pLight );
 
     scene.BuildBVHTree();
