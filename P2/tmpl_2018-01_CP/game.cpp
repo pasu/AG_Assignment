@@ -134,7 +134,6 @@ void Tmpl8::Game::MouseWheel( int y )
 
 static void animateFunc( RTObject *object )
 {
-	object->speed = object->speed + vec3( rand()/float(RAND_MAX)-0.5,rand()/float(RAND_MAX)-0.5,-rand()/float(RAND_MAX)+0.5 );
 
     object->translateGlobal( object->speed );
 
@@ -189,9 +188,10 @@ void Tmpl8::Game::scene_bvh()
 
 	robotGeometry->BuildBVHTree();
 
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 100; i++) {
 		RTObject *pRobot = new RTObject( robotGeometry );
 		pRobot->translateGlobal(vec3(rand()/(RAND_MAX/300.0f),rand()/(RAND_MAX/300.0f),-rand()/(RAND_MAX/300.0f)));
+		pRobot->speed = vec3( rand() / float( RAND_MAX ) - 0.5, rand() / float( RAND_MAX ) - 0.5, -rand() / float( RAND_MAX ) + 0.5 );
 		pRobot->setAnimateFunc( animateFunc );
         scene.addObject(pRobot);
     }
