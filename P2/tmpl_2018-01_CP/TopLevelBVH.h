@@ -26,7 +26,6 @@ class TopLevelBVH
 
 	void rebuild();
 	bool getIntersection( const RTRay &ray, RTIntersection *intersection) const;
-	bool getIntersection( const RayPacket &ray, RTIntersection *intersection ) const;
 
 	int getFirstHit( const RayPacket &raypacket, const AABB &box, int ia ) const
 	{
@@ -50,6 +49,8 @@ class TopLevelBVH
 
 		return RAYPACKET_RAYS_PER_PACKET;
 	}
+#ifdef BVH_RANGED_TRAVERSAL
+	bool getIntersection( const RayPacket &ray, RTIntersection *intersection ) const;
 
 	int getLastHit( const RayPacket &raypacket, const AABB &box, int ia ) const
 	{
@@ -63,10 +64,18 @@ class TopLevelBVH
 
 		return ia + 1;
 	}
+#endif
+#ifdef BVH_PARTITION_TRAVERSAL
+	int getLastHit( const RayPacket &raypacket, const AABB &box, int ia, const unsigned int *aRayIndex ) const;
+	int partRays( const RayPacket &raypacket, const AABB &box, int ia, unsigned int *aRayIndex ) const;
+	bool getIntersection( const RayPacket &raypacket, RTIntersection *intersections )const;
+#endif
   private:
 	TopLevelBVHNode *nodes;
 	const std::vector<RTObject *> &objects;
 	int tree_size;// the size of bvh tree: 2n-1
+
+	unsigned int m_I[RAYPACKET_RAYS_PER_PACKET];
 };
 
 #endif

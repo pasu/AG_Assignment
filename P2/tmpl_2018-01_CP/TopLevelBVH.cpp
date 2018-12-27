@@ -7,6 +7,11 @@ TopLevelBVH::TopLevelBVH( const std::vector<RTObject *> &objects ) : objects( ob
 	nodes = new TopLevelBVHNode[tree_size];
 
 	rebuild();
+
+	for ( unsigned int i = 0; i < RAYPACKET_RAYS_PER_PACKET; ++i )
+	{
+		m_I[i] = i;
+	}
 }
 
 TopLevelBVH::~TopLevelBVH()
@@ -171,29 +176,25 @@ struct StackNode
 	unsigned int ia; // Index to the first alive ray
 };
 
+#ifdef BVH_RANGED_TRAVERSAL
 bool TopLevelBVH::getIntersection( const RayPacket &raypacket, RTIntersection *intersection ) const
 {
-	assert( intersection->object == nullptr );
-	assert( !intersection->isIntersecting() );
+// 	assert( intersection->object == nullptr );
+// 	assert( !intersection->isIntersecting() );
 
 	// Working set
-	std::vector<int> todo;
-	todo.reserve( 100 );
-
-	todo.push_back( 0 );
-
-	StackNode todo2[64];
+	StackNode todo[64];
 
 	bool anyHitted = false;
 	int todoOffset = 0, nodeNum = 0;
 	unsigned int ia = 0;
 
-	while ( !todo.empty() )
+	while ( true )
 	{
 		// Pop off the next node to work on.
-		TopLevelBVHNode currentN = nodes[todo.back()];
-		todo.pop_back();
-
+		TopLevelBVHNode currentN = nodes[nodeNum];
+		
+		ia = 0;
 		ia = getFirstHit( raypacket, currentN.bounds, ia );
 
 		if ( ia < RAYPACKET_RAYS_PER_PACKET )
@@ -226,10 +227,22 @@ bool TopLevelBVH::getIntersection( const RayPacket &raypacket, RTIntersection *i
 			}
 			else // current is inner node
 			{
-				todo.push_back( currentN.son );
-				todo.push_back( currentN.son + 1 );
+				StackNode &node = todo[todoOffset++];
+
+				node.cell = currentN.son+1;
+				node.ia = ia;
+				nodeNum = currentN.son;
+				continue;
 			}
 		}
+
+		if ( todoOffset == 0 )
+			break;
+
+		const StackNode &node = todo[--todoOffset];
+
+		nodeNum = node.cell;
+		ia = node.ia;
 	}
 
 	// If we hit something,
@@ -241,3 +254,117 @@ bool TopLevelBVH::getIntersection( const RayPacket &raypacket, RTIntersection *i
 	}
 	return intersection->object != NULL;
 }
+#endif
+
+#ifdef BVH_PARTITION_TRAVERSAL
+bool TopLevelBVH::getIntersection( const RayPacket &raypacket, RTIntersection *intersection ) const
+{
+	// 	assert( intersection->object == nullptr );
+	// 	assert( !intersection->isIntersecting() );
+
+	// Working set
+	StackNode todo[64];
+
+	bool anyHitted = false;
+	int todoOffset = 0, nodeNum = 0;
+	unsigned int ia = 0;
+
+	unsigned int I[RAYPACKET_RAYS_PER_PACKET];
+	memcpy( I, m_I, RAYPACKET_RAYS_PER_PACKET * sizeof( unsigned int ) );
+
+	while ( true )
+	{
+		// Pop off the next node to work on.
+		TopLevelBVHNode currentN = nodes[nodeNum];
+
+		ia = partRays( raypacket, currentN.bounds, ia, I );
+
+		if ( ia < RAYPACKET_RAYS_PER_PACKET )
+		{
+			if ( currentN.object ) // current is leaf node
+			{
+				const unsigned int ie = getLastHit( raypacket,
+													currentN.bounds,
+													ia, I );
+
+				if ( raypacket.m_Frustum.Intersect( currentN.object->getAABBBounds() ) )
+				{
+					for ( unsigned int i = ia; i < ie; ++i )
+					{
+						RTIntersection current;
+
+						currentN.object->getIntersection( raypacket.m_ray[i], current );
+
+						if ( current.isIntersecting() )
+						{
+							anyHitted |= true;
+
+							if ( intersection[i].rayT < 0.0f || current.rayT < intersection[i].rayT )
+							{
+								( intersection[i] ) = current;
+							}
+						}
+					}
+				}
+			}
+			else // current is inner node
+			{
+				StackNode &node = todo[todoOffset++];
+
+				node.cell = currentN.son + 1;
+				node.ia = ia;
+				nodeNum = currentN.son;
+				continue;
+			}
+		}
+
+		if ( todoOffset == 0 )
+			break;
+
+		const StackNode &node = todo[--todoOffset];
+
+		nodeNum = node.cell;
+		ia = node.ia;
+	}
+
+	// If we hit something,
+	// 	if ( intersection->object != NULL )
+	// 		intersection->hit = ray.o + ray.d * intersection->t;
+	if ( intersection->object == nullptr )
+	{
+		intersection->rayT = -1;
+	}
+	return intersection->object != NULL;
+}
+
+int TopLevelBVH::getLastHit( const RayPacket &raypacket, const AABB &box, int ia, const unsigned int *aRayIndex ) const
+{
+	for ( unsigned int ie = ( RAYPACKET_RAYS_PER_PACKET - 1 ); ie > ia; --ie )
+	{
+		float bbhits[2];
+
+		if ( box.intersect( raypacket.m_ray[aRayIndex[ie]], bbhits, bbhits + 1 ) )
+			return ie + 1;
+	}
+
+	return ia + 1;
+}
+
+int TopLevelBVH::partRays( const RayPacket &raypacket, const AABB &box, int ia, unsigned int *aRayIndex ) const
+{
+	if ( !raypacket.m_Frustum.Intersect( box ) )
+		return RAYPACKET_RAYS_PER_PACKET;
+
+	unsigned int ie = 0;
+
+	for ( unsigned int i = 0; i < ia; ++i )
+	{
+		float bbhits[2];
+
+		if ( box.intersect( raypacket.m_ray[aRayIndex[i]], bbhits, bbhits + 1 ) )
+			std::swap( aRayIndex[ie++], aRayIndex[i] );
+	}
+
+	return ie;
+}
+#endif
