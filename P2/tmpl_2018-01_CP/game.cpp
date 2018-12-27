@@ -159,7 +159,7 @@ static void animateFunc( RTObject *object )
 	{
 		object->pos.z = -300;
 	}
-	object->rotateLocal( vec3( 0, 0, 1 ), 0.1 );
+	object->rotateLocal( object->rotateAxis, 0.02 );
 }
 void Tmpl8::Game::scene_bvh()
 {
@@ -192,6 +192,10 @@ void Tmpl8::Game::scene_bvh()
 		RTObject *pRobot = new RTObject( robotGeometry );
 		pRobot->translateGlobal(vec3(rand()/(RAND_MAX/300.0f),rand()/(RAND_MAX/300.0f),-rand()/(RAND_MAX/300.0f)));
 		pRobot->speed = vec3( rand() / float( RAND_MAX ) - 0.5, rand() / float( RAND_MAX ) - 0.5, -rand() / float( RAND_MAX ) + 0.5 );
+
+        pRobot->rotateAxis = vec3( rand() / float( RAND_MAX ) - 0.5, rand() / float( RAND_MAX ) - 0.5, -rand() / float( RAND_MAX ) + 0.5 );
+		pRobot->rotateAxis.normalize();
+
 		pRobot->setAnimateFunc( animateFunc );
         scene.addObject(pRobot);
     }
