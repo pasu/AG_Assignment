@@ -125,7 +125,6 @@ void RayTracer::castRayPacket( const RayPacket &raypacket, vec3* colors ) const
 
 		if ( current.isIntersecting() )
 		{
-			current.surfacePointData = current.object->getSurfacePointData( current );
 
 			colors[i] = shade( raypacket.m_ray[i], current, depth );
 		}
