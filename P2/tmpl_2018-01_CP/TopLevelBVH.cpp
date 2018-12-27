@@ -97,8 +97,6 @@ void TopLevelBVH::rebuild()
 	}
 }
 
-
-
 bool TopLevelBVH::getIntersection( const RTRay &ray, RTIntersection *intersection ) const
 {
 	assert( intersection->object == nullptr );
@@ -108,53 +106,130 @@ bool TopLevelBVH::getIntersection( const RTRay &ray, RTIntersection *intersectio
 	std::vector<int> todo;
 	todo.reserve( 100 );
 
-    // recursive code:
-    // intersection visitNode(node,ray){
-    //     static intersection;
-    //     intersect, fnear, ffar = findIntersection(node.aabb,ray)
-    //     if(!intersect) return;
-    //     if(fnear > intersection.rayT) return;
-    //     if(is leaf)
-    //         intersect = intersectleave(node, ray)
-    //     if(is not leaf)
-    //         visitNode(son,ray);
-    //         visitNode(son+1,ray);
-    // }
-    //
+	// recursive code:
+	// intersection visitNode(node,ray){
+	//     static intersection;
+	//     intersect, fnear, ffar = findIntersection(node.aabb,ray)
+	//     if(!intersect) return;
+	//     if(fnear > intersection.rayT) return;
+	//     if(is leaf)
+	//         intersect = intersectleave(node, ray)
+	//     if(is not leaf)
+	//         visitNode(son,ray);
+	//         visitNode(son+1,ray);
+	// }
+	//
 	// "Push" on the root node to the working set
 	todo.push_back( 0 );
 
-	while ( ! todo.empty() )
+	while ( !todo.empty() )
 	{
 		// Pop off the next node to work on.
 		TopLevelBVHNode current = nodes[todo.back()];
 		todo.pop_back();
 
-        float fNear, fFar;
+		float fNear, fFar;
 		bool intersect;
 		intersect = current.bounds.intersect( ray, &fNear, &fFar );
 
-        // early exit when not intersecting aabb
-        if ( !intersect ) continue;
+		// early exit when not intersecting aabb
+		if ( !intersect ) continue;
 
 		// If this node is further than the closest found intersection, continue
-		if ( intersection->isIntersecting() && (fNear>intersection->rayT) )
+		if ( intersection->isIntersecting() && ( fNear > intersection->rayT ) )
 			continue;
 
-        if (current.object) // current is leaf node
-        {
-			RTIntersection currentIntersection;// find the intersection with subBVH
-            if (current.object->getIntersection(ray, currentIntersection))
-            {
+		if ( current.object ) // current is leaf node
+		{
+			RTIntersection currentIntersection; // find the intersection with subBVH
+			if ( current.object->getIntersection( ray, currentIntersection ) )
+			{
 				if ( !( intersection->isIntersecting() ) || ( intersection->isIntersecting() && ( currentIntersection.rayT < intersection->rayT ) ) )
 					*intersection = currentIntersection;
-            }
-        }
-		else// current is inner node
+			}
+		}
+		else // current is inner node
 		{
 			todo.push_back( current.son );
 			todo.push_back( current.son + 1 );
-        }
+		}
+	}
+
+	// If we hit something,
+	// 	if ( intersection->object != NULL )
+	// 		intersection->hit = ray.o + ray.d * intersection->t;
+	if ( intersection->object == nullptr )
+	{
+		intersection->rayT = -1;
+	}
+	return intersection->object != NULL;
+}
+
+struct StackNode
+{
+	int cell;
+	unsigned int ia; // Index to the first alive ray
+};
+
+bool TopLevelBVH::getIntersection( const RayPacket &raypacket, RTIntersection *intersection ) const
+{
+	assert( intersection->object == nullptr );
+	assert( !intersection->isIntersecting() );
+
+	// Working set
+	std::vector<int> todo;
+	todo.reserve( 100 );
+
+	todo.push_back( 0 );
+
+	StackNode todo2[64];
+
+	bool anyHitted = false;
+	int todoOffset = 0, nodeNum = 0;
+	unsigned int ia = 0;
+
+	while ( !todo.empty() )
+	{
+		// Pop off the next node to work on.
+		TopLevelBVHNode currentN = nodes[todo.back()];
+		todo.pop_back();
+
+		ia = getFirstHit( raypacket, currentN.bounds, ia );
+
+		if ( ia < RAYPACKET_RAYS_PER_PACKET )
+		{
+			if ( currentN.object ) // current is leaf node
+			{
+				const unsigned int ie = getLastHit( raypacket,
+													currentN.bounds,
+													ia );
+
+				if ( raypacket.m_Frustum.Intersect( currentN.object->getAABBBounds() ) )
+				{
+					for ( unsigned int i = ia; i < ie; ++i )
+					{
+						RTIntersection current;
+
+						currentN.object->getIntersection( raypacket.m_ray[i], current );
+
+						if ( current.isIntersecting() )
+						{
+							anyHitted |= true;
+
+							if ( intersection[i].rayT < 0.0f || current.rayT < intersection[i].rayT )
+							{
+								( intersection[i] ) = current;
+							}
+						}
+					}
+				}
+			}
+			else // current is inner node
+			{
+				todo.push_back( currentN.son );
+				todo.push_back( currentN.son + 1 );
+			}
+		}
 	}
 
 	// If we hit something,

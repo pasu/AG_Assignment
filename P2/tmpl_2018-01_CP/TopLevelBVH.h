@@ -5,6 +5,7 @@
 #include "RTObject.h"
 #include "precomp.h"
 #include "AABB.h"
+#include "RayPacket.h"
 
 class TopLevelBVHNode {
   public:
@@ -25,6 +26,43 @@ class TopLevelBVH
 
 	void rebuild();
 	bool getIntersection( const RTRay &ray, RTIntersection *intersection) const;
+	bool getIntersection( const RayPacket &ray, RTIntersection *intersection ) const;
+
+	int getFirstHit( const RayPacket &raypacket, const AABB &box, int ia ) const
+	{
+		float bbhits[2];
+		const RTRay &ray = raypacket.m_ray[ia];
+		if ( box.intersect( ray, bbhits, bbhits + 1 ) )
+		{
+			return ia;
+		}
+
+		if ( !raypacket.m_Frustum.Intersect( box ) )
+		{
+			return RAYPACKET_RAYS_PER_PACKET;
+		}
+
+		for ( unsigned int i = ia + 1; i < RAYPACKET_RAYS_PER_PACKET; ++i )
+		{
+			if ( box.intersect( raypacket.m_ray[i], bbhits, bbhits + 1 ) )
+				return i;
+		}
+
+		return RAYPACKET_RAYS_PER_PACKET;
+	}
+
+	int getLastHit( const RayPacket &raypacket, const AABB &box, int ia ) const
+	{
+		for ( unsigned int ie = ( RAYPACKET_RAYS_PER_PACKET - 1 ); ie > ia; --ie )
+		{
+			float bbhits[2];
+
+			if ( box.intersect( raypacket.m_ray[ie], bbhits, bbhits + 1 ) )
+				return ie + 1;
+		}
+
+		return ia + 1;
+	}
   private:
 	TopLevelBVHNode *nodes;
 	const std::vector<RTObject *> &objects;

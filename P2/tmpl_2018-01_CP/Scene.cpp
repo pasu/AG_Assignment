@@ -126,7 +126,7 @@ void Scene::findNearestObjectIntersection( const RayPacket &raypacket, RTInterse
 {
 	if ( bInitializedBVH )
 	{
-		//bvhTree->getIntersection( raypacket, intersections );
+		bvhTree->getIntersection( raypacket, intersections );
 	}
 }
 
