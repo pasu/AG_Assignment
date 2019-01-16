@@ -141,6 +141,7 @@
     <ClCompile Include="BVH.cpp" />
     <ClCompile Include="FXAA.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="glad.cpp" />
     <ClCompile Include="quarticsolver.cpp" />
     <ClCompile Include="RayPacket.cpp" />
     <ClCompile Include="RayTracer.cpp" />

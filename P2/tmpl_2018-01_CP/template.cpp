@@ -108,11 +108,6 @@ using namespace std;
 
 #ifdef ADVANCEDGL
 
-PFNGLGENBUFFERSPROC glGenBuffers = 0;
-PFNGLBINDBUFFERPROC glBindBuffer = 0;
-PFNGLBUFFERDATAPROC glBufferData = 0;
-PFNGLMAPBUFFERPROC glMapBuffer = 0;
-PFNGLUNMAPBUFFERPROC glUnmapBuffer = 0;
 typedef BOOL (APIENTRY *PFNWGLSWAPINTERVALFARPROC)(int);
 PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = 0;
 unsigned int framebufferTexID[2];
@@ -172,14 +167,14 @@ bool createFBtexture()
 	}
 	const int sizeMemory = 4 * SCRWIDTH * SCRHEIGHT;
 	glGenBuffers( 2, fbPBO );
-	glBindBuffer( GL_PIXEL_UNPACK_BUFFER_ARB, fbPBO[0] );
-	glBufferData( GL_PIXEL_UNPACK_BUFFER_ARB, sizeMemory, NULL, GL_STREAM_DRAW_ARB );
-	glBindBuffer( GL_PIXEL_UNPACK_BUFFER_ARB, fbPBO[1] );
-	glBufferData( GL_PIXEL_UNPACK_BUFFER_ARB, sizeMemory, NULL, GL_STREAM_DRAW_ARB );
-	glBindBuffer( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
+	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, fbPBO[0] );
+	glBufferData( GL_PIXEL_UNPACK_BUFFER, sizeMemory, NULL, GL_STREAM_DRAW );
+	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, fbPBO[1] );
+	glBufferData( GL_PIXEL_UNPACK_BUFFER, sizeMemory, NULL, GL_STREAM_DRAW );
+	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
 	glBindTexture( GL_TEXTURE_2D, framebufferTexID[0] );
-	glBindBuffer( GL_PIXEL_UNPACK_BUFFER_ARB, fbPBO[0] );
-	framedata = (unsigned char*)glMapBuffer( GL_PIXEL_UNPACK_BUFFER_ARB, GL_WRITE_ONLY_ARB );
+	glBindBuffer( GL_PIXEL_UNPACK_BUFFER , fbPBO[0] );
+	framedata = (unsigned char*)glMapBuffer( GL_PIXEL_UNPACK_BUFFER , GL_WRITE_ONLY  );
 	if (!framedata) return false;
 	memset( framedata, 0, SCRWIDTH * SCRHEIGHT * 4 );
 	return (glGetError() == 0);
@@ -187,12 +182,9 @@ bool createFBtexture()
 
 bool init()
 {
+    
 	fbPBO[0] = fbPBO[1] = -1;
-	glGenBuffers =  (PFNGLGENBUFFERSPROC)wglGetProcAddress( "glGenBuffersARB" );
-	glBindBuffer =  (PFNGLBINDBUFFERPROC)wglGetProcAddress( "glBindBufferARB" );
-	glBufferData =  (PFNGLBUFFERDATAPROC)wglGetProcAddress( "glBufferDataARB" );
-	glMapBuffer  =  (PFNGLMAPBUFFERPROC)wglGetProcAddress( "glMapBufferARB" );
-	glUnmapBuffer = (PFNGLUNMAPBUFFERPROC)wglGetProcAddress( "glUnmapBufferARB" );
+    gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress);
 	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress( "wglSwapIntervalEXT" );
 	if ((!glGenBuffers) || (!glBindBuffer) || (!glBufferData) || (!glMapBuffer) || (!glUnmapBuffer)) return false;
 	if (glGetError()) return false;
@@ -218,14 +210,14 @@ void swap()
 {
 	static int index = 0;
 	int nextindex;
-	glUnmapBuffer( GL_PIXEL_UNPACK_BUFFER_ARB );
+	glUnmapBuffer( GL_PIXEL_UNPACK_BUFFER  );
 	glBindTexture( GL_TEXTURE_2D, framebufferTexID[index] );
-	glBindBuffer( GL_PIXEL_UNPACK_BUFFER_ARB, fbPBO[index] );
+	glBindBuffer( GL_PIXEL_UNPACK_BUFFER , fbPBO[index] );
 	glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, SCRWIDTH, SCRHEIGHT, GL_BGRA, GL_UNSIGNED_BYTE, 0 );
 	nextindex = (index + 1) % 2;
 	index = (index + 1) % 2;
-	glBindBuffer( GL_PIXEL_UNPACK_BUFFER_ARB, fbPBO[nextindex] );
-	framedata = (unsigned char*)glMapBuffer( GL_PIXEL_UNPACK_BUFFER_ARB, GL_WRITE_ONLY_ARB );
+	glBindBuffer( GL_PIXEL_UNPACK_BUFFER , fbPBO[nextindex] );
+	framedata = (unsigned char*)glMapBuffer( GL_PIXEL_UNPACK_BUFFER , GL_WRITE_ONLY  );
 	glColor3f( 1.0f, 1.0f, 1.0f );
 	glBegin( GL_QUADS );
 	glNormal3f( 0, 0, 1 );
@@ -259,7 +251,7 @@ int main( int argc, char **argv )
 #endif
 	SDL_GLContext glContext = SDL_GL_CreateContext( window);
 	init();
-	ShowCursor( false );
+	ShowCursor( true );
 #else
 #ifdef FULLSCREEN
 	window = SDL_CreateWindow( TEMPLATE_VERSION, 100, 100, SCRWIDTH, SCRHEIGHT, SDL_WINDOW_FULLSCREEN );

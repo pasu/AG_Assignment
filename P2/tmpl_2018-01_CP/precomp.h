@@ -5,6 +5,7 @@
 // do not include headers in header files (ever).
 
 // Prevent expansion clashes (when using std::min and std::max):
+#pragma comment(lib,"OpenGL32.lib")
 #define NOMINMAX
 
 #define NUMBER_THREAD 16
@@ -23,10 +24,12 @@
 #define SCRWIDTH 640
 #define SCRHEIGHT 640
 // #define FULLSCREEN
-// #define ADVANCEDGL	// faster if your system supports it
+#define ADVANCEDGL	// faster if your system supports it
 
 // Glew should be included first
-#include <GL/glew.h>
+//#include <GL/glew.h>
+#include"glad/glad.h"
+
 // Comment for autoformatters: prevent reordering these two.
 #include <GL/gl.h>
 
@@ -37,7 +40,6 @@
 // Then import wglext: This library tries to include the Windows
 // header WIN32_LEAN_AND_MEAN, unless it was already imported.
 #include <GL/wglext.h>
-
 // Extra definitions for redirectIO
 #include <fcntl.h>
 #include <io.h>

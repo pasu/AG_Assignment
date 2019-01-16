@@ -101,6 +101,9 @@
     <ClCompile Include="SBVH.cpp">
       <Filter>BVH</Filter>
     </ClCompile>
+    <ClCompile Include="glad.cpp">
+      <Filter>GLAD</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -241,6 +244,9 @@
     </Filter>
     <Filter Include="BVH">
       <UniqueIdentifier>{bf9fe783-1cc2-4449-9abf-e0f39e64ac95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GLAD">
+      <UniqueIdentifier>{533def92-7295-4932-b460-04ce7c5065a4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
