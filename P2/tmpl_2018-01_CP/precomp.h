@@ -24,7 +24,7 @@
 #define SCRWIDTH 640
 #define SCRHEIGHT 640
 // #define FULLSCREEN
-#define ADVANCEDGL	// faster if your system supports it
+//#define ADVANCEDGL	// faster if your system supports it
 
 // Glew should be included first
 //#include <GL/glew.h>
