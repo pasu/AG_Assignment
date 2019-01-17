@@ -104,6 +104,9 @@
     <ClCompile Include="glad.cpp">
       <Filter>GLAD</Filter>
     </ClCompile>
+    <ClCompile Include="GPURayTracer.cpp">
+      <Filter>GPURayTracer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -213,6 +216,9 @@
     <ClInclude Include="SBVH.h">
       <Filter>BVH</Filter>
     </ClInclude>
+    <ClInclude Include="GPURayTracer.h">
+      <Filter>GPURayTracer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">
@@ -245,8 +251,11 @@
     <Filter Include="BVH">
       <UniqueIdentifier>{bf9fe783-1cc2-4449-9abf-e0f39e64ac95}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GPURayTracer">
+      <UniqueIdentifier>{012afc27-e4eb-4fea-b451-024aab76f7e7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="GLAD">
-      <UniqueIdentifier>{533def92-7295-4932-b460-04ce7c5065a4}</UniqueIdentifier>
+      <UniqueIdentifier>{ed7874d1-c2c1-4284-867c-88d49a956737}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
