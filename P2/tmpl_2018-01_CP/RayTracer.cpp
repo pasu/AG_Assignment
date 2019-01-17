@@ -55,9 +55,6 @@ void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 void RayTracer::render( Surface *screen )
 {
 	scene.getCamera()->Update();
-
-    const char* version =(const char*) glGetString(GL_VERSION);
-    std::cout << version << std::endl;
 	
 #if NUMBER_THREAD==1
     traceChunk( 0, renderOptions.width - 1, 0, renderOptions.height - 1 );
