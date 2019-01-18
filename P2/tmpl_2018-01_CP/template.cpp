@@ -160,7 +160,13 @@ int main( int argc, char **argv )
 	
     surface = new Surface(SCRWIDTH, SCRHEIGHT);
     surface->Clear(0);
+
+#ifdef VSYNC
+
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+#else
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+#endif
     SDL_Texture* frameBuffer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, SCRWIDTH, SCRHEIGHT);
 	int exitapp = 0;
 	game = new Game();
@@ -204,6 +210,7 @@ int main( int argc, char **argv )
 			{
 			case SDL_QUIT:
 				exitapp = 1;
+
 				break;
 			case SDL_KEYDOWN:
 				if (event.key.keysym.sym == SDLK_ESCAPE)

@@ -14,6 +14,8 @@
 #include "RTTextureManager.h"
 #include "RTMaterialManager.h"
 #include "RTChessBoardTexture.h"
+
+#include"GPURayTracer.h"
 // -----------------------------------------------------------
 // Initialize the application
 // -----------------------------------------------------------
@@ -34,6 +36,10 @@ void Game::Init()
 	renderOptions.shadowBias = 0.01f;
 
 	pTracer = new RayTracer( scene, renderOptions );
+
+#ifdef ADVANCEDGL
+    gpurt::init();
+#endif
 
 	scene_bvh();
 	
@@ -58,22 +64,24 @@ void Game::Tick( float deltaTime )
 {
 	updateCamera(*(scene.getCamera()));
 	
-	// clear the graphics window
-//	screen->Clear( 0 );
-	// print something in the graphics window
 	scene.animate();
 	scene.rebuildTopLevelBVH();
 	pTracer->render( screen );
+
+#ifdef ADVANCEDGL
+    //gpurt::render(screen);
+#endif
+
 	// print something to the text window
 // 	printf( "this goes to the console window.\n" );
 // 	// draw a sprite
 // 	rotatingGun.SetFrame( frame );
 // 	rotatingGun.Draw( screen, 100, 100 );
-	if (++frame == 10) {
+	if (++frame == 30) {
 		DWORD nt = GetTickCount();
 
-		sprintf( buffer, "FPS: %.2f", 10000.0f / ( nt - tt ) );
-        printf( "FPS: %.2f\n", 10000.0f / (nt - tt));
+		sprintf( buffer, "FPS: %.2f", 30000.0f / ( nt - tt ) );
+        printf( "FPS: %.2f\n", 30000.0f / (nt - tt));
 		tt = nt;
 		frame = 0;
 	}
