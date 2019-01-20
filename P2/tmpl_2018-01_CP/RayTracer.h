@@ -17,6 +17,8 @@ class RayTracer
 
 	const vec3 castRay( const RTRay &ray, const int depth, RTIntersection& intersection ) const;
 
+	const vec3 pathtrace( const RTRay &ray, const int depth, RTIntersection &intersection ) const;
+
 	void castRayPacket( const RayPacket &ray, vec3* colors ) const;
 
 	const vec3 shade( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const;
@@ -24,7 +26,7 @@ class RayTracer
 	RTIntersection findNearestObjectIntersection( const RTRay &ray ) const;
 
 	const RenderOptions &getRenderOptions() const { return renderOptions; }
-
+	bool isOcclusion( const RTRay &ray, const float& distance ) const;
   private:
 	const vec3 shade_diffuse( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const;
 	const vec3 shade_reflective( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const;

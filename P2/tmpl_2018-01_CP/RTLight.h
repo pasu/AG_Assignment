@@ -1,7 +1,7 @@
 #pragma once
+#include "RTMaterial.h"
 #include "RTSurfacePointData.h"
 #include "template.h"
-#include"RTMaterial.h"
 
 #include "Utils.h"
 
@@ -34,11 +34,11 @@ class RTLight
 
 	static RTLight *createPointLight( vec3 _color, float _power, vec3 _pos );
 	static RTLight *createParralleLight( vec3 _color, float _power, vec3 _direction );
-	static RTLight *createSpotLight( vec3 _color, float _power, vec3 _pos,vec3 _direction );
+	static RTLight *createSpotLight( vec3 _color, float _power, vec3 _pos, vec3 _direction );
 
-	virtual vec3 shade( const SurfacePointData & pd, const RayTracer &rt, const vec3& texture) = 0; // shade a diffused surface
+	virtual vec3 shade( const SurfacePointData &pd, const RayTracer &rt, const vec3 &texture ) = 0; // shade a diffused surface
 
-	void setAttenuation( const float& constant,
+	void setAttenuation( const float &constant,
 						 const float &linear, const float &quadratic )
 	{
 		mConstantAttenutaionCoefficient = constant;
@@ -46,7 +46,7 @@ class RTLight
 		mQuadraticAttenutaionCoefficient = quadratic;
 	}
 
-	void setSpotlightRange( const float &innerAngle, const float &outerAngle, const float& falloff )
+	void setSpotlightRange( const float &innerAngle, const float &outerAngle, const float &falloff )
 	{
 		mFalloffFactor = falloff;
 
@@ -55,4 +55,7 @@ class RTLight
 		mHalfUmbraAngleCosine = cosf( mUmbraAngle / 2.0f );
 		mHalfPenumbraAngleCosine = cosf( mPenumbraAngle / 2.0f );
 	}
+
+	virtual vec3 illuminate( const SurfacePointData &pd, float &distance ) const = 0;
+	virtual vec3 radiance( const SurfacePointData &pd ) const = 0;
 };

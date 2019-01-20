@@ -167,6 +167,7 @@
     <ClCompile Include="RTTextureManager.cpp" />
     <ClCompile Include="RTTorus.cpp" />
     <ClCompile Include="RTTriangle.cpp" />
+    <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="SBVH.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="surface.cpp" />
@@ -174,6 +175,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TopLevelBVH.cpp" />
+    <ClCompile Include="uniform.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +186,7 @@
     <ClInclude Include="GPURayTracer.h" />
     <ClInclude Include="precomp.h" />
     <ClInclude Include="quarticsolver.h" />
+    <ClInclude Include="random.h" />
     <ClInclude Include="RayPacket.h" />
     <ClInclude Include="RayTracer.h" />
     <ClInclude Include="RenderOptions.h" />
@@ -209,11 +212,13 @@
     <ClInclude Include="RTTextureManager.h" />
     <ClInclude Include="RTTorus.h" />
     <ClInclude Include="RTTriangle.h" />
+    <ClInclude Include="Sampler.h" />
     <ClInclude Include="SBVH.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="template.h" />
     <ClInclude Include="TopLevelBVH.h" />
+    <ClInclude Include="uniform.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>

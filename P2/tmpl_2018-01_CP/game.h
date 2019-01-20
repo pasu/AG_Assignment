@@ -20,6 +20,7 @@ public:
 	void scene_bvh();
 	void scene_toplevel();
 	void scene_sbvh();
+	void scene_light();
 
   private:
 	Surface* screen;

@@ -8,7 +8,7 @@
 #pragma comment(lib,"OpenGL32.lib")
 #define NOMINMAX
 
-#define NUMBER_THREAD 16
+#define NUMBER_THREAD 1
 
 #define BVH_ON
 #define SAH_ON

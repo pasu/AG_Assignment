@@ -2,8 +2,17 @@
 #include "Scene.h"
 
 
-Scene::Scene( const vec3 &ambientLight, const vec3 &backgroundColor ) : ambientLight( ambientLight ), backgroundColor( backgroundColor )
+Scene::Scene( const vec3 &ambientLight, const vec3 &backgroundColor, Scene ::SampleType _type) : ambientLight( ambientLight ), backgroundColor( backgroundColor )
 {
+	switch ( _type )
+	{
+	case Scene::uniform:
+		sampler_ = createUniformSampler();
+		break;
+	default:
+		break;
+	}
+
 	camera = new RTCamera;
 
 	unsigned int r = backgroundColor.x * 255;
@@ -130,9 +139,27 @@ void Scene::findNearestObjectIntersection( const RayPacket &raypacket, RTInterse
 	}
 }
 
+bool Scene::isOcclusion( const RTRay &ray, const float &distance ) const
+{
+	RTIntersection nearestIntersection;
+	bool bOcclusion = false;
+	if ( bvhTree->getIntersection( ray, &nearestIntersection, true, distance ) 
+		&& nearestIntersection.rayT<distance)
+	{
+		bOcclusion = true;
+	}
+	
+	return bOcclusion;
+}
+
 void Scene::animate()
 {
     for (RTObject *object : objectcollection) {
 		object->animate();
     }
+}
+
+Sampler *Scene::sampler() const
+{
+	return sampler_.get();
 }

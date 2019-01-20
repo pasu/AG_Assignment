@@ -14,7 +14,7 @@ class RTGeometry
   public:
 	void BuildBVHTree();
 	void BuildSBVHTree();
-	bool getIntersection( const RTRay &ray, RTIntersection &nearestIntersection ) const;
+	bool getIntersection( const RTRay &ray, RTIntersection &nearestIntersection, bool occlusion = false, const float& distance = FLT_MAX ) const;
 	void addObject( RTPrimitive *object );
 	const AABB &getAABBBounds() const{
 		if (sbvhTree)

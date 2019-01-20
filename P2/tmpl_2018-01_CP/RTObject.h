@@ -16,7 +16,7 @@ class RTObject
 
 	void updateAABBbounds(); // update AABB bounds after rotation/translation
 
-	bool getIntersection( const RTRay &ray, RTIntersection &nearestIntersection ) const;
+	bool getIntersection( const RTRay &ray, RTIntersection &nearestIntersection, bool occlusion = false, const float& distance = FLT_MAX ) const;
 
 	const RTGeometry *getGeometry() const { return pGeometry; }
 	const AABB &getAABBBounds() const { return bounds; }

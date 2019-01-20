@@ -107,6 +107,12 @@
     <ClCompile Include="GPURayTracer.cpp">
       <Filter>GPURayTracer</Filter>
     </ClCompile>
+    <ClCompile Include="Sampler.cpp">
+      <Filter>Sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="uniform.cpp">
+      <Filter>Sampler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -219,6 +225,15 @@
     <ClInclude Include="GPURayTracer.h">
       <Filter>GPURayTracer</Filter>
     </ClInclude>
+    <ClInclude Include="random.h">
+      <Filter>Toolkit</Filter>
+    </ClInclude>
+    <ClInclude Include="Sampler.h">
+      <Filter>Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="uniform.h">
+      <Filter>Sampler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">
@@ -256,6 +271,9 @@
     </Filter>
     <Filter Include="GLAD">
       <UniqueIdentifier>{ed7874d1-c2c1-4284-867c-88d49a956737}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sampler">
+      <UniqueIdentifier>{524b8874-1fb6-4176-af86-e1def978793e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

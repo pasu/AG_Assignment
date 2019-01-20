@@ -6,13 +6,20 @@
 #include "TopLevelBVH.h"
 #include "RayPacket.h"
 #include"RTObject.h"
+#include "Sampler.h"
+#include "uniform.h"
 
 using namespace std;
 
 class Scene
 {
-public:
-	Scene( const vec3 &ambientLight, const vec3 &backgroundColor );
+  public:
+	enum SampleType
+	{
+		uniform = 1
+	};
+  public:
+	Scene( const vec3 &ambientLight, const vec3 &backgroundColor, Scene ::SampleType _type = Scene::uniform);
 	~Scene();
 
     void addObject(RTPrimitive * primitive);
@@ -33,7 +40,11 @@ public:
 	bool getIntersection( const RTRay &ray, RTIntersection &nearestIntersection ) const;
 	RTIntersection findNearestObjectIntersection( const RTRay &ray ) const;
 	void findNearestObjectIntersection( const RayPacket &raypacket, RTIntersection *intersections ) const;
+
+	bool isOcclusion( const RTRay &ray, const float &distance ) const;
 	void animate();
+
+	Sampler *sampler()const;
   private:
 	vector<RTObject *> objectcollection;// objects in the scene
 	vector<RTLight *> lightcollection;
@@ -42,5 +53,5 @@ public:
 	bool bInitializedBVH;
 	TopLevelBVH *bvhTree;
 
-
+	std::shared_ptr<Sampler> sampler_;
 };
