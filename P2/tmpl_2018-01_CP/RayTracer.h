@@ -13,7 +13,7 @@ class RayTracer
 	void render( Surface *screen );
 	
 
-	const RTRay &generatePrimaryRay( const int x, const int y ) const;
+	const RTRay &generatePrimaryRay( const int x, const int y, const int& sampleIds = 0 ) const;
 
 	const vec3 castRay( const RTRay &ray, const int depth, RTIntersection& intersection ) const;
 
@@ -55,4 +55,8 @@ class RayTracer
 	std::vector<RenderThread> threads;
 	void traceChunk( int x_min, int x_max, int y_min, int y_max );
 	friend int threadFunc( void *threadInfo );
+
+	float fOnePixelSize;
+	float fStratificationSize;
+	int sample_count;
 };

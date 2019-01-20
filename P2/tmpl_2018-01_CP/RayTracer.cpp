@@ -6,6 +6,10 @@ RayTracer::RayTracer( const Scene &scene, const RenderOptions &renderOptions ) :
 	size = renderOptions.width * renderOptions.height;
 	pPixels = new unsigned int[size];
 	hdrPixels = new vec3[size];
+
+	fOnePixelSize = 2.0f / renderOptions.width;
+	fStratificationSize = fOnePixelSize / SAMPLE_NUM;
+	sample_count = 0;
 }
 
 RayTracer::~RayTracer()
@@ -39,23 +43,23 @@ void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 		}
 	}
 #else
+	// path tracer
+#pragma omp parallel for
 	for ( int y = y_min; y <= y_max; ++y )
 	{
+#pragma omp parallel for
 		for ( int x = x_min; x <= x_max; ++x )
 		{
-			RTRay r = generatePrimaryRay( x, y );
-			RTIntersection intersection;
-
-			int nS = 16;
-			float fS = 1.0f / nS;
-
-			hdrPixels[y * renderOptions.width + x] = 0;
-			for (int k=0;k<nS;k++)
+			if ( sample_count < SAMPLE_NUM2 )
 			{
-				hdrPixels[y * renderOptions.width + x] += pathtrace( r, 0, intersection ) * fS;
+				RTRay r = generatePrimaryRay( x, y, sample_count );
+				RTIntersection intersection;
+
+				hdrPixels[y * renderOptions.width + x] += pathtrace( r, 0, intersection );
 			}
 		}
 	}
+	sample_count++;
 #endif
 }
 
@@ -82,7 +86,7 @@ void RayTracer::render( Surface *screen )
 	{
 		for ( int x = 0; x < renderOptions.width; ++x )
 		{
-			auto &color = hdrPixels[y * renderOptions.width + x];
+			auto color = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f/(float)sample_count );
 #define lmt( x ) ( ( x ) < 255 ? ( x ) : 255 )
 			unsigned int colorf = 0xff000000 | lmt( (unsigned int)( color.z * 255 ) ) | lmt( (unsigned int)( color.y * 255 ) ) << 8 | lmt( (unsigned int)( color.x * 255 ) ) << 16;
 #undef lmt
@@ -93,10 +97,20 @@ void RayTracer::render( Surface *screen )
 	memcpy( screen->GetBuffer(), pPixels, size * 4 );
 }
 
-const RTRay &RayTracer::generatePrimaryRay( const int x, const int y ) const
+const RTRay &RayTracer::generatePrimaryRay( const int x, const int y, const int &sampleIds ) const
 {
 	vec3 origin = scene.getCamera()->getEye();
 	vec2 ndcPixelCentre( ( 2.0f * x - renderOptions.width ) / renderOptions.width, ( renderOptions.height - 2.0f * y ) / renderOptions.height );
+
+	// Stratification
+	int u = sampleIds % SAMPLE_NUM;
+	int v = sampleIds / SAMPLE_NUM;
+
+	float deltaX = ( u + (float)rand() / RAND_MAX ) * fStratificationSize;
+	float deltaY = ( v + (float)rand() / RAND_MAX ) * fStratificationSize;
+	
+	ndcPixelCentre += vec2( deltaX, -deltaY );
+
 	vec3 dir = scene.getCamera()->rayDirFromNdc( ndcPixelCentre );
 	return RTRay( origin, dir );
 }

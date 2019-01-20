@@ -22,7 +22,8 @@
 RTTextureManager gTexManager;
 RTMaterialManager gMaterialManager;
 
-Scene scene( vec3( 0.1f ), vec3( 43.0f/255.0f, 203.0f / 255.0f, 246.0f/255.0f ) );
+//Scene scene( vec3( 0.1f ), vec3( 43.0f/255.0f, 203.0f / 255.0f, 246.0f/255.0f ) );
+Scene scene( vec3( 0.1f ), vec3( 0.0f ) );
 RenderOptions renderOptions;
 RTCamera *pCamera = scene.getCamera();
 

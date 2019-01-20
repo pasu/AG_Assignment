@@ -27,6 +27,8 @@
 #define VSYNC
 #define ADVANCEDGL	// faster if your system supports it
 
+#define  SAMPLE_NUM 16
+#define SAMPLE_NUM2 SAMPLE_NUM *SAMPLE_NUM
 // Glew should be included first
 //#include <GL/glew.h>
 #include"glad/glad.h"
