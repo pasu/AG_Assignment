@@ -25,6 +25,7 @@ class Scene
     void addObject(RTPrimitive * primitive);
 	void addObject( RTObject *object );
 	void addLight( RTLight *light );
+	void updateLightsWeight( );
 	RTCamera* getCamera()const;
 
 	inline const vector<RTLight *> &getLights() const { return lightcollection; }
@@ -45,9 +46,14 @@ class Scene
 	void animate();
 
 	Sampler *sampler()const;
+
+	int getluckylight() const;
+
+	vec3 RandomPointOnLight(RTLight*& pL)const;
   private:
 	vector<RTObject *> objectcollection;// objects in the scene
 	vector<RTLight *> lightcollection;
+	vector<float> lightImportances;
 	RTCamera* camera;
 
 	bool bInitializedBVH;

@@ -8,6 +8,8 @@ const float Utils::MAX_FLOAT = numeric_limits<float>::max();
 const float Utils::MIN_FLOAT = numeric_limits<float>::min();
 const float Utils::RT_PI = 3.1415926535897f;
 const float Utils::EPSILON_FLOAT = 1e-6f;
+const float Utils::INV_PI = 1.0f / Utils::RT_PI;
+
 
 bool Utils::solveQuadratic(const float a, const float b, const float c, float &r0, float &r1)
 {

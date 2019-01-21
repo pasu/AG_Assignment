@@ -10,6 +10,7 @@ public:
 	static const float MIN_FLOAT;
 	static const float RT_PI;
 	static const float EPSILON_FLOAT;
+	static const float INV_PI;
 
 	static bool solveQuadratic(const float a, const float b, const float c, float &r0, float &r1);
 

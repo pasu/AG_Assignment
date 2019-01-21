@@ -159,14 +159,14 @@ void Tmpl8::Game::scene_light()
 	//////////////////////////////////////////////////////////////////////////
 	vec3 lightBlue( 190. / 255., 237. / 255., 1. );
 	vec3 lightRed( 248. / 255., 192. / 255., 196. / 255 );
-	RTChessBoardTexture *chessboardTexture = gTexManager.CreateChessBoardTexture( vec3( 1 ), vec3( 0 ) );
+	RTChessBoardTexture *chessboardTexture = gTexManager.CreateChessBoardTexture( vec3( 0.9 ), vec3( 0 ) );
 
-	RTMaterial &brownCheckerBoardMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), chessboardTexture, vec2( 0.2f ), DIFFUSE, 0.8f, 2.5f );
-	RTMaterial &whiteMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), 0, vec2( 0.1f ), DIFFUSE, 0.8f, 2.5f );
-	RTMaterial &redMaterial = gMaterialManager.CreateMaterial( vec3( 1, 0, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
-	RTMaterial &greenMaterial = gMaterialManager.CreateMaterial( vec3( 0, 1, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
+	RTMaterial &brownCheckerBoardMaterial = gMaterialManager.CreateMaterial( vec3( 0.9 ), chessboardTexture, vec2( 0.2f ), DIFFUSE, 0.8f, 2.5f );
+	RTMaterial &whiteMaterial = gMaterialManager.CreateMaterial( vec3( 0.9 ), 0, vec2( 0.1f ), DIFFUSE, 0.8f, 2.5f );
+	RTMaterial &redMaterial = gMaterialManager.CreateMaterial( vec3( 0.9, 0, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
+	RTMaterial &greenMaterial = gMaterialManager.CreateMaterial( vec3( 0, 0.9, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
 	RTMaterial &blueGlassMaterial = gMaterialManager.CreateMaterial( lightBlue, 0, vec2( 1.0f ), DIFFUSE, 0.95f, 1.5f );
-	RTMaterial &mirrorMaterial = gMaterialManager.CreateMaterial( vec3( 1 ), 0, vec2( 1.0f ), DIFFUSE, 0.8f, 2.5f );
+	RTMaterial &mirrorMaterial = gMaterialManager.CreateMaterial( vec3( 0.9 ), 0, vec2( 1.0f ), DIFFUSE, 0.8f, 2.5f );
 
 	vector<RTPrimitive *> arrObjs;
 	arrObjs.push_back( new RTPlane( vec3( -10.0f, 0.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, -1.0f ), redMaterial ) );
@@ -189,6 +189,9 @@ void Tmpl8::Game::scene_light()
 
 	arrObjs.push_back( new RTBox( vec3( -0.0f, 9.0f, -30.0f ), vec3( 21.0f, 2.0f, 3.0f ), blueGlassMaterial ) );
 
+	RTMaterial &lightM = gMaterialManager.CreateMaterial( vec3( 1 ), vec3( 100 ), DIFFUSE);
+	RTPlane *plane = new RTPlane( vec3( 0.0f, 7.0f, -18.0f ), vec3( 0.0f, -1.0f, 0.0f ), vec3( 0.0f, 0.0f, -1.0f ), lightM,vec2(2) );
+	arrObjs.push_back( plane );
 	RTGeometry *robotGeometry = new RTGeometry();
 
 	for ( size_t i = 0; i < arrObjs.size(); i++ )
@@ -205,7 +208,7 @@ void Tmpl8::Game::scene_light()
 	scene.ambientLight = 0.3f;
 
 	//RTLight *pLight = RTLight::createSpotLight( vec3( 1.0f, 1.0f, 1.0f ), 200.0f, vec3( 0.0f, 7.0f, -18.0f ), vec3( 0.0f, -1.0f, 0.0f ) );
-	RTLight *pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 40.0f, vec3( 0.0f, 7.0f, -18.0f ) );
+	RTLight *pLight = RTLight::createAreaLight( vec3( 1.0f, 1.0f, 1.0f ), 40.0f, vec3( 0.0f, 7.0f, -18.0f ),plane );
 	//RTLight *pLight = RTLight::createParralleLight( vec3( 1.0f, 1.0f, 1.0f ), 3000.0f, vec3( 0.0f, -1.0f, 0.0f ) );
 	scene.addLight( pLight );
 	///////////////////////////////////////////////////////////////////////////////

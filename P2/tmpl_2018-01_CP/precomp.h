@@ -29,6 +29,8 @@
 
 #define  SAMPLE_NUM 16
 #define SAMPLE_NUM2 SAMPLE_NUM *SAMPLE_NUM
+
+#define NEE
 // Glew should be included first
 //#include <GL/glew.h>
 #include"glad/glad.h"

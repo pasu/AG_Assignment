@@ -17,7 +17,7 @@ class RayTracer
 
 	const vec3 castRay( const RTRay &ray, const int depth, RTIntersection& intersection ) const;
 
-	const vec3 pathtrace( const RTRay &ray, const int depth, RTIntersection &intersection ) const;
+	const vec3 sample( const RTRay &ray, const int depth, RTIntersection &intersection, bool lastSpecular ) const;
 
 	void castRayPacket( const RayPacket &ray, vec3* colors ) const;
 
@@ -27,6 +27,7 @@ class RayTracer
 
 	const RenderOptions &getRenderOptions() const { return renderOptions; }
 	bool isOcclusion( const RTRay &ray, const float& distance ) const;
+	float calculateMISWeight( float &pdf1, float &pdf2 )const;
   private:
 	const vec3 shade_diffuse( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const;
 	const vec3 shade_reflective( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const;
@@ -34,7 +35,6 @@ class RayTracer
 
 	float fresnel( const vec3 &I, const vec3 &N, const float refractionIndex ) const; //return ratio of reflected light
 	const vec3 refract( const vec3 &I, const vec3 &N, const float refractionIndex ) const;
-
   private:
 	const RenderOptions &renderOptions;
 	const Scene &scene;

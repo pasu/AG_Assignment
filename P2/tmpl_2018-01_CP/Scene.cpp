@@ -54,6 +54,25 @@ void Scene::addObject( RTObject *object )
 void Scene::addLight( RTLight *light )
 {
 	lightcollection.push_back( light );
+
+	float _power = light->getPower();
+	float _area = light->getArea();
+
+	lightImportances.push_back( _power * _area );
+}
+
+void Scene::updateLightsWeight()
+{
+	float sum = 0.0;
+	for (int i=0;i<lightImportances.size();i++)
+	{
+		sum += lightImportances[i];
+	}
+
+	for ( int i = 0; i < lightImportances.size(); i++ )
+	{
+		lightImportances[i] = lightImportances[i] / sum;
+	}
 }
 
 RTCamera *Scene::getCamera()const
@@ -162,4 +181,29 @@ void Scene::animate()
 Sampler *Scene::sampler() const
 {
 	return sampler_.get();
+}
+
+int Scene::getluckylight() const
+{
+	float sum = 0.0f;
+	float pivot = (float)rand() / RAND_MAX;
+	int index = 0;
+
+	for ( int i = 0; i < lightImportances.size(); i++ )
+	{
+		sum += lightImportances[i];
+		if ( pivot <= sum )
+		{
+			index = i;
+			break;
+		}
+	}
+	return index;
+}
+
+Tmpl8::vec3 Scene::RandomPointOnLight( RTLight *&pL ) const
+{
+	int luckyL = getluckylight();
+	pL = lightcollection[luckyL];
+	return pL->getRandomPnt();
 }

@@ -55,7 +55,7 @@ void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 				RTRay r = generatePrimaryRay( x, y, sample_count );
 				RTIntersection intersection;
 
-				hdrPixels[y * renderOptions.width + x] += pathtrace( r, 0, intersection );
+				hdrPixels[y * renderOptions.width + x] += sample( r, 0, intersection, true );
 			}
 		}
 	}
@@ -130,74 +130,112 @@ const vec3 RayTracer::castRay( const RTRay &ray, const int depth, RTIntersection
 		return scene.backgroundColor;
 }
 
-const vec3 RayTracer::pathtrace( const RTRay &ray, const int depth, RTIntersection &intersection ) const
+const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection &intersection, bool lastSpecular ) const
 {
+	vec3 color_scene = scene.backgroundColor;
+
 	intersection = findNearestObjectIntersection( ray );
 
 	if ( !intersection.isIntersecting() )
 	{
-		return scene.backgroundColor;
+		return color_scene;
 	}
-
-	double pdf;
-	vec3 refl_dir;
 
 	const RTMaterial &material = intersection.object->getMaterial();
-	vec3 color = material.brdf( intersection, ray.dir, refl_dir, pdf, scene.getCamera()->getEye() );
-
-	int cDepth = depth;
-	
-	if (++cDepth > renderOptions.maxRecursionDepth)
+	if (material.isLight())
 	{
-		return scene.backgroundColor;			
-	}
-
-	// Russian roulette 
-	double max = std::max( color.x, std::max( color.y, color.z ) );
-	if ( scene.sampler()->get1D() < max )
-		color *= ( 1.0 / max );
-
-	auto &surfacePointData = intersection.surfacePointData;
-	
-	vec3 pos = surfacePointData.position + surfacePointData.normal * renderOptions.shadowBias;
-	intersection.surfacePointData.position = pos;
-
-	// Hit the light
-	if (material.shadingType == ShadingType::EMITTANCE)
-	{
-		return scene.backgroundColor;
-	}
-
-	// Should be next event estimation to the light
-	vec3 emission = vec3(0);
-	if ( material.shadingType & ShadingType::DIFFUSE )
-	{
-		static auto &light_list = scene.getLights();
-		for ( RTLight *light : light_list )
+		if (lastSpecular)
 		{
+			return material.getEmission();
+		}
+		else
+		{
+			return color_scene;
+		}		
+	}
+
+	float cosine = intersection.surfacePointData.normal.dot( -1.0f * ray.dir );
+	if ( cosine < 0.0f )
+	{
+		cosine = 0.0f;
+	}
+	float pdf_obj, pdf_light = 0.0f;
+	float weight_obj = 1.0f, weight_light = 0.0f;
+
+	vec3 random_dir, albedo;
+	bool bContinue = material.evaluate( ray, intersection.surfacePointData, scene.getCamera()->getEye(), random_dir, pdf_obj, albedo );
+	if ( !bContinue )
+	{
+		return albedo;
+	}
+	
+	vec3 finalColor = vec3( 0 );
+	RTRay ray_random( intersection.surfacePointData.position + renderOptions.shadowBias * random_dir, random_dir );
+		// NEE
+	if (material.shadingType == DIFFUSE || material.shadingType == MICROFACET)
+	{
+		RTLight *pL = NULL;
+		vec3 pos = scene.RandomPointOnLight( pL );
+		
+		vec3 Pnt2light = pos - intersection.surfacePointData.position;
+		float distance2 = Pnt2light.sqrLentgh();
+		Pnt2light.normalize();
+
+		if ( Pnt2light.dot( pL->mPlane->normal ) <= 0.0f )
+		{
+			float area = pL->getArea();
+
+			vec3 org = intersection.surfacePointData.position + renderOptions.shadowBias * Pnt2light;
+			RTRay lightSample = RTRay( org, Pnt2light );
+			
+
 			bool flag = true;
-			float distance;
-			vec3 light_dir = light->illuminate( surfacePointData, distance );
+			float distance = sqrtf( distance2 );
 
-			if ( /*light_dir == vec3( 0 ) ||*/ dot( light_dir, surfacePointData.normal ) < 0 ) continue;
-
-			//RTIntersection intersectionL = findNearestObjectIntersection( ray );
-			if ( isOcclusion( RTRay( pos, light_dir ), distance ) )
+			if ( isOcclusion( lightSample, distance-3 ) )
 			{
 				flag = false;
 			}
-			
+
 			if ( flag )
 			{
-				emission += light->radiance( surfacePointData ) 
-					* material.evaluate( intersection, ray.dir, light_dir, scene.getCamera()->getEye() );
+				pdf_light = distance2 / area;
+				float inv_pdf_light = area / distance2;
+
+				vec3 color = material.brdf( ray, intersection.surfacePointData, lightSample ) * 
+					pL->mPlane->getMaterial().getEmission() * inv_pdf_light * albedo;
+
+				weight_light = calculateMISWeight( pdf_light, pdf_obj );
+				weight_obj = calculateMISWeight( pdf_obj, pdf_light );
+
+				finalColor += weight_light * color;
 			}
 		}
 	}
 
+	// Russian roulette
+	double max = std::max( albedo.x, std::max( albedo.y, albedo.z ) );
+	if ( depth > renderOptions.maxRecursionDepth )
+	{
+		//float v = (float)rand() / RAND_MAX;
+		if ( scene.sampler()->get1D() < max )
+		{
+			// Make up for the loss
+			albedo *= ( 1.0 / max );
+		}
+		else
+		{
+			return color_scene;
+		}
+	}
+
 	RTIntersection intersection2;
-	// IS pdf = cos/Pi
-	return emission + color * pathtrace( RTRay( pos, refl_dir ), cDepth, intersection2 );
+	vec3 color_obj = albedo * material.brdf( ray, intersection.surfacePointData, ray_random ) 
+		* sample( ray_random, depth + 1, intersection2, false ) * ( 1.0f / pdf_obj );
+
+	finalColor += weight_obj * color_obj * cosine;
+
+	return finalColor;
 }
 
 void RayTracer::castRayPacket( const RayPacket &raypacket, vec3 *colors ) const
@@ -284,6 +322,11 @@ RTIntersection RayTracer::findNearestObjectIntersection( const RTRay &ray ) cons
 bool RayTracer::isOcclusion( const RTRay &ray, const float &distance ) const
 {
 	return scene.isOcclusion(ray,distance);
+}
+
+float RayTracer::calculateMISWeight( float &pdf1, float &pdf2 )const
+{
+	return ( pdf1 ) / ( pdf1 + pdf2 );
 }
 
 const Tmpl8::vec3 RayTracer::shade_diffuse( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const
