@@ -54,8 +54,11 @@ void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 			{
 				RTRay r = generatePrimaryRay( x, y, sample_count );
 				RTIntersection intersection;
-
-				hdrPixels[y * renderOptions.width + x] += sample( r, 0, intersection, true );
+				vec3 color = sample( r, 0, intersection, true );
+				color.x = sqrtf( color.x );
+				color.y = sqrtf( color.y );
+				color.z = sqrtf( color.z );
+				hdrPixels[y * renderOptions.width + x] += color;
 			}
 		}
 	}
@@ -86,7 +89,7 @@ void RayTracer::render( Surface *screen )
 	{
 		for ( int x = 0; x < renderOptions.width; ++x )
 		{
-			auto color = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f/(float)sample_count );
+			auto color = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f / (float)( sample_count >SAMPLE_NUM2?SAMPLE_NUM2:sample_count) );
 #define lmt( x ) ( ( x ) < 255 ? ( x ) : 255 )
 			unsigned int colorf = 0xff000000 | lmt( (unsigned int)( color.z * 255 ) ) | lmt( (unsigned int)( color.y * 255 ) ) << 8 | lmt( (unsigned int)( color.x * 255 ) ) << 16;
 #undef lmt
@@ -192,7 +195,7 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 			bool flag = true;
 			float distance = sqrtf( distance2 );
 
-			if ( isOcclusion( lightSample, distance-3 ) )
+			if ( isOcclusion( lightSample, distance-0.1 ) )
 			{
 				flag = false;
 			}
