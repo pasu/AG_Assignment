@@ -10,12 +10,9 @@ enum ShadingType
 	TRANSMISSIVE = 4,
 	Phong = DIFFUSE | 8,
 	Glossy = DIFFUSE | 16,
-	Retro = DIFFUSE | 32,
-	Halton = 64,
-	TRANSMISSIVE_AND_REFLECTIVE = 128,
-	DIFFUSE_AND_REFLECTIVE = 256,
-	EMITTANCE = 512,
-	MICROFACET = 1024
+	TRANSMISSIVE_AND_REFLECTIVE = 32,
+	DIFFUSE_AND_REFLECTIVE = 64,
+	MICROFACET = 128
 };
 
 class RTIntersection;
@@ -53,5 +50,9 @@ private:
   vec3 emission;
   bool bLight;
 
-  int pow_;
+public:
+
+  float pow_;
+  float k_;
+
 };

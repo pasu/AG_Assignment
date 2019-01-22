@@ -43,6 +43,7 @@ void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 		}
 	}
 #else
+#ifdef PATH_TRACER	
 	// path tracer
 #pragma omp parallel for
 	for ( int y = y_min; y <= y_max; ++y )
@@ -63,6 +64,19 @@ void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 		}
 	}
 	sample_count++;
+#else
+	for ( int y = y_min; y <= y_max; ++y )
+	{
+		for ( int x = x_min; x <= x_max; ++x )
+		{
+			RTRay r = generatePrimaryRay( x, y);
+			RTIntersection intersection;
+			vec3 color = castRay( r, 0, intersection);
+			hdrPixels[y * renderOptions.width + x] = color;
+		}
+	}
+#endif // PATH_TRACER
+
 #endif
 }
 
@@ -89,7 +103,11 @@ void RayTracer::render( Surface *screen )
 	{
 		for ( int x = 0; x < renderOptions.width; ++x )
 		{
-			auto color = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f / (float)( sample_count >SAMPLE_NUM2?SAMPLE_NUM2:sample_count) );
+#ifdef PATH_TRACER
+			auto color = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f / (float)( sample_count > SAMPLE_NUM2 ? SAMPLE_NUM2 : sample_count ) );
+#else
+			auto color = hdrPixels[y * renderOptions.width + x];
+#endif // PATH_TRACER
 #define lmt( x ) ( ( x ) < 255 ? ( x ) : 255 )
 			unsigned int colorf = 0xff000000 | lmt( (unsigned int)( color.z * 255 ) ) | lmt( (unsigned int)( color.y * 255 ) ) << 8 | lmt( (unsigned int)( color.x * 255 ) ) << 16;
 #undef lmt
@@ -157,14 +175,10 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 		}		
 	}
 
-	float cosine = intersection.surfacePointData.normal.dot( -1.0f * ray.dir );
-	if ( cosine < 0.0f )
-	{
-		cosine = 0.0f;
-	}
 	float pdf_obj, pdf_light = 0.0f;
 	float weight_obj = 1.0f, weight_light = 0.0f;
 
+	// random walk ray cos weight
 	vec3 random_dir, albedo;
 	bool bContinue = material.evaluate( ray, intersection.surfacePointData, scene.getCamera()->getEye(), random_dir, pdf_obj, albedo );
 	if ( !bContinue )
@@ -174,7 +188,7 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 	
 	vec3 finalColor = vec3( 0 );
 	RTRay ray_random( intersection.surfacePointData.position + renderOptions.shadowBias * random_dir, random_dir );
-		// NEE
+	// NEE
 	if (material.shadingType == DIFFUSE || material.shadingType == MICROFACET)
 	{
 		RTLight *pL = NULL;
@@ -184,29 +198,22 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 		float distance2 = Pnt2light.sqrLentgh();
 		Pnt2light.normalize();
 
-		if ( Pnt2light.dot( pL->mPlane->normal ) <= 0.0f )
+		if ( Pnt2light.dot( intersection.surfacePointData.normal )>0.0f && Pnt2light.dot( pL->mPlane->normal ) <= 0.0f )
 		{
 			float area = pL->getArea();
 
 			vec3 org = intersection.surfacePointData.position + renderOptions.shadowBias * Pnt2light;
 			RTRay lightSample = RTRay( org, Pnt2light );
 			
-
-			bool flag = true;
 			float distance = sqrtf( distance2 );
 
-			if ( isOcclusion( lightSample, distance-0.1 ) )
+			if ( !isOcclusion( lightSample, distance-0.1 ) )
 			{
-				flag = false;
-			}
+				pdf_light = 1.0f / area;
+				float solidAngle = Pnt2light.dot( pL->mPlane->normal ) * -1.0f * area / distance2;
 
-			if ( flag )
-			{
-				pdf_light = distance2 / area;
-				float inv_pdf_light = area / distance2;
-
-				vec3 color = material.brdf( ray, intersection.surfacePointData, lightSample ) * 
-					pL->mPlane->getMaterial().getEmission() * inv_pdf_light * albedo;
+				vec3 color = pL->mPlane->getMaterial().getEmission() * solidAngle * albedo 
+					* material.brdf( ray, intersection.surfacePointData, lightSample ) * Utils::INV_PI;
 
 				weight_light = calculateMISWeight( pdf_light, pdf_obj );
 				weight_obj = calculateMISWeight( pdf_obj, pdf_light );
@@ -220,7 +227,6 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 	double max = std::max( albedo.x, std::max( albedo.y, albedo.z ) );
 	if ( depth > renderOptions.maxRecursionDepth )
 	{
-		//float v = (float)rand() / RAND_MAX;
 		if ( scene.sampler()->get1D() < max )
 		{
 			// Make up for the loss
@@ -233,10 +239,10 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 	}
 
 	RTIntersection intersection2;
-	vec3 color_obj = albedo * material.brdf( ray, intersection.surfacePointData, ray_random ) 
-		* sample( ray_random, depth + 1, intersection2, false ) * ( 1.0f / pdf_obj );
+	vec3 colo_reflect = sample( ray_random, depth + 1, intersection2, false ) * material.brdf( ray, intersection.surfacePointData, ray_random ) * ( 1.0f / pdf_obj );
+	vec3 color_obj = albedo * colo_reflect * Utils::INV_PI;
 
-	finalColor += weight_obj * color_obj * cosine;
+	finalColor += weight_obj * color_obj;
 
 	return finalColor;
 }
