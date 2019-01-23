@@ -208,6 +208,11 @@ int main( int argc, char **argv )
 		{
 			switch (event.type)
 			{
+            case SDL_WINDOWEVENT:
+                if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
+                    exitapp = 1;
+                }
+                break;
 			case SDL_QUIT:
 				exitapp = 1;
 
