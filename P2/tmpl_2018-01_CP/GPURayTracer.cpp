@@ -28,6 +28,8 @@ void gpurt::init() {
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
     glBufferData(GL_PIXEL_UNPACK_BUFFER, sizeof(b), b, GL_STREAM_READ);
 
+    initScene();
+
 }
 
 void gpurt::render(Surface *screen) {

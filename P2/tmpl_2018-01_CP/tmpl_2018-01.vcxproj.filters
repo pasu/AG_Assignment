@@ -110,7 +110,9 @@
     <ClCompile Include="GPURT_Scene.cpp">
       <Filter>GPURayTracer\scene</Filter>
     </ClCompile>
-    <ClCompile Include="GPURT_GeometryGroup.cpp" />
+    <ClCompile Include="GPURT_GeometryGroup.cpp">
+      <Filter>GPURayTracer\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
