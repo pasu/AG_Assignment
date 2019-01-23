@@ -116,7 +116,7 @@ float RTMaterial::brdf( const RTRay &ray, const SurfacePointData &hitPnt, const 
 
 		// Within the lobe, give cosine/solidAngleMax (sum up to 1.0f)
 		if ( cosine >= ( cosineExt - Utils::EPSILON_FLOAT ) && cosine <= ( 1.0f + Utils::EPSILON_FLOAT ) )
-			return 1.0f / ( 2.0f * Utils::RT_PI * sqrtf( 1 - pow_ * pow_ ) );
+			return 1.0f / ( 2.0f * sqrtf( 1 - pow_ * pow_ ) );
 
 		return 0.0f;
 	}
@@ -217,6 +217,15 @@ bool RTMaterial::evaluate( const RTRay &ray, const SurfacePointData &hitPnt, vec
 		random_dir = ray.dir - ( ( 2 * ray.dir.dot( hitPnt.normal ) ) * hitPnt.normal );
 		pdf = 1.0f;
 		break;
+	case Glossy:
+	{
+		vec3 reflectDir = ray.dir - ( ( 2 * ray.dir.dot( hitPnt.normal ) ) * hitPnt.normal );
+		vec3 samplePoint = hitPnt.position + reflectDir + pow_ * random_in_unit_sphere();
+		random_dir = samplePoint - hitPnt.position;
+		pdf = 1.0f / ( 2.0f * Utils::RT_PI * sqrtf( 1 - pow_ * pow_ ) );
+		return true;
+	}
+	break;
 	case TRANSMISSIVE_AND_REFLECTIVE:
 		pdf = 1.0f;
 
@@ -261,15 +270,6 @@ bool RTMaterial::evaluate( const RTRay &ray, const SurfacePointData &hitPnt, vec
 
 		return true;
 	}		
-		break;
-	case Glossy:
-	{
-		vec3 reflectDir = ray.dir - ( ( 2 * ray.dir.dot( hitPnt.normal ) ) * hitPnt.normal );
-		vec3 samplePoint = hitPnt.position + reflectDir + pow_ * random_in_unit_sphere();
-		random_dir = samplePoint - hitPnt.position;
-		pdf = 1.0f / ( 2.0f * Utils::RT_PI * sqrtf( 1 - pow_ * pow_) );
-		return true;
-	}
 		break;
 	case MICROFACET:
 	{

@@ -50,6 +50,10 @@ class Scene
 	int getluckylight() const;
 
 	vec3 RandomPointOnLight(RTLight*& pL)const;
+
+	void AttachSkyDome(RTTexture* pTexture);
+
+	vec3 getColor( const RTRay &ray )const;
   private:
 	vector<RTObject *> objectcollection;// objects in the scene
 	vector<RTLight *> lightcollection;
@@ -60,4 +64,6 @@ class Scene
 	TopLevelBVH *bvhTree;
 
 	std::shared_ptr<Sampler> sampler_;
+
+	RTTexture *pSkyDome;
 };

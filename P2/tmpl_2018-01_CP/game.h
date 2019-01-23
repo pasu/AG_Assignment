@@ -17,6 +17,8 @@ public:
 	void KeyDown( int key );
 	void MouseWheel( int y );
 
+	void scene_outdoor();
+	void scene_indoor();
 	void scene_bvh();
 	void scene_toplevel();
 	void scene_sbvh();

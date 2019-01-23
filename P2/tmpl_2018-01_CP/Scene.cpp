@@ -25,6 +25,7 @@ Scene::Scene( const vec3 &ambientLight, const vec3 &backgroundColor, Scene ::Sam
 
 	bInitializedBVH = false;
 	bvhTree = NULL;
+	pSkyDome = NULL;
 }
 
 Scene::~Scene()
@@ -206,4 +207,21 @@ Tmpl8::vec3 Scene::RandomPointOnLight( RTLight *&pL ) const
 	int luckyL = getluckylight();
 	pL = lightcollection[luckyL];
 	return pL->getRandomPnt();
+}
+
+void Scene::AttachSkyDome( RTTexture *pTexture )
+{
+	pSkyDome = pTexture;
+}
+
+Tmpl8::vec3 Scene::getColor( const RTRay &ray )const
+{
+	if (pSkyDome)
+	{
+		float u = (0.5f + Utils::INV_PI * 0.5f * atan2(ray.dir.z, ray.dir.x));
+		float v = 1.0f - (0.5f - Utils::INV_PI * asinf(ray.dir.y));
+		return pSkyDome->getTexel( u, v, 2 );
+	}
+
+	return backgroundColor;
 }

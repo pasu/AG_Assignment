@@ -115,6 +115,11 @@ class RTCamera
 		}
 	}
 
+	bool bNeedUpdate() const
+	{
+		return bUpdate;
+	}
+
   private:
 	vec3 eye;
 	vec3 ahead;
@@ -129,4 +134,5 @@ class RTCamera
 	float pitch;
 	mat4 mRotation;
 	vec4 position;
+
 };

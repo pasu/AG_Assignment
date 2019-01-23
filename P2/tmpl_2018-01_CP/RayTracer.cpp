@@ -139,7 +139,7 @@ const RTRay &RayTracer::generatePrimaryRay( const int x, const int y, const int 
 const vec3 RayTracer::castRay( const RTRay &ray, const int depth, RTIntersection &intersection ) const
 {
 	if ( depth > renderOptions.maxRecursionDepth )
-		return scene.backgroundColor;
+		return scene.getColor(ray);
 
 	intersection = findNearestObjectIntersection( ray );
 
@@ -148,12 +148,12 @@ const vec3 RayTracer::castRay( const RTRay &ray, const int depth, RTIntersection
 		return shade( ray, intersection, depth );
 	}
 	else
-		return scene.backgroundColor;
+		return scene.getColor( ray );
 }
 
 const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection &intersection, bool lastSpecular ) const
 {
-	vec3 color_scene = scene.backgroundColor;
+	vec3 color_scene = scene.getColor(ray);
 
 	intersection = findNearestObjectIntersection( ray );
 
@@ -268,7 +268,7 @@ void RayTracer::castRayPacket( const RayPacket &raypacket, vec3 *colors ) const
 			colors[i] = shade( raypacket.m_ray[i], current, depth );
 		}
 		else
-			colors[i] = scene.backgroundColor;
+			colors[i] = scene.getColor( raypacket.m_ray[i] );
 	}
 }
 
@@ -340,6 +340,12 @@ bool RayTracer::isOcclusion( const RTRay &ray, const float &distance ) const
 float RayTracer::calculateMISWeight( float &pdf1, float &pdf2 )const
 {
 	return ( pdf1 ) / ( pdf1 + pdf2 );
+}
+
+void RayTracer::Reset()
+{
+	this->sample_count = 0;
+	memset( hdrPixels, 0, renderOptions.width * renderOptions.height * sizeof( vec3 ) );
 }
 
 const Tmpl8::vec3 RayTracer::shade_diffuse( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const

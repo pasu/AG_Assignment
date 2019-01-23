@@ -28,6 +28,8 @@ class RayTracer
 	const RenderOptions &getRenderOptions() const { return renderOptions; }
 	bool isOcclusion( const RTRay &ray, const float& distance ) const;
 	float calculateMISWeight( float &pdf1, float &pdf2 )const;
+
+	void Reset();
   private:
 	const vec3 shade_diffuse( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const;
 	const vec3 shade_reflective( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const;
