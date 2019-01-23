@@ -208,6 +208,8 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 			float distance = sqrtf( distance2 );
 
 			if ( !isOcclusion( lightSample, distance-0.1 ) )
+			//RTIntersection it = findNearestObjectIntersection( lightSample );
+			//if ( it.isIntersecting() && it.object->getMaterial().isLight() )
 			{
 				pdf_light = 1.0f / area;
 				float solidAngle = Pnt2light.dot( pL->mPlane->normal ) * -1.0f * area / distance2;
@@ -215,8 +217,10 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 				vec3 color = pL->mPlane->getMaterial().getEmission() * solidAngle * albedo 
 					* material.brdf( ray, intersection.surfacePointData, lightSample ) * Utils::INV_PI;
 
-				weight_light = calculateMISWeight( pdf_light, pdf_obj );
-				weight_obj = calculateMISWeight( pdf_obj, pdf_light );
+				weight_light = 1;
+				//calculateMISWeight( pdf_light, pdf_obj );
+				weight_obj = 1;
+				//calculateMISWeight( pdf_obj, pdf_light );
 
 				finalColor += weight_light * color;
 			}

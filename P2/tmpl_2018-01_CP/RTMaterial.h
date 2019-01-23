@@ -7,7 +7,6 @@ enum ShadingType
 {
 	DIFFUSE = 1,
 	REFLECTIVE = 2,
-	TRANSMISSIVE = 4,
 	Phong = DIFFUSE | 8,
 	Glossy = DIFFUSE | 16,
 	TRANSMISSIVE_AND_REFLECTIVE = 32,

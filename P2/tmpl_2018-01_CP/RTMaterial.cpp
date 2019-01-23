@@ -115,7 +115,7 @@ float RTMaterial::brdf( const RTRay &ray, const SurfacePointData &hitPnt, const 
 		float cosineExt = sqrtf( 1.0f - pow_ * pow_ );
 
 		// Within the lobe, give cosine/solidAngleMax (sum up to 1.0f)
-		if ( Utils::floatEquals(cosine,cosineExt) )
+		if ( cosine >= ( cosineExt - Utils::EPSILON_FLOAT ) && cosine <= ( 1.0f + Utils::EPSILON_FLOAT ) )
 			return 1.0f / ( 2.0f * Utils::RT_PI * sqrtf( 1 - pow_ * pow_ ) );
 
 		return 0.0f;
