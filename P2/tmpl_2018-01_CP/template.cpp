@@ -147,7 +147,7 @@ int main( int argc, char **argv )
 	printf( "application started.\n" );
 	SDL_Init( SDL_INIT_VIDEO );
 #ifdef ADVANCEDGL
-    auto OpenGLwindow = SDL_CreateWindow(TEMPLATE_VERSION, 100, 100, SCRWIDTH, SCRHEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+    auto OpenGLwindow = SDL_CreateWindow("OpenGLWindow", 100, 100, SCRWIDTH, SCRHEIGHT, SDL_WINDOW_OPENGL);
     SDL_GLContext glContext = SDL_GL_CreateContext(OpenGLwindow);
     gladLoadGLLoader(SDL_GL_GetProcAddress);
     SDL_HideWindow(OpenGLwindow);
@@ -164,10 +164,12 @@ int main( int argc, char **argv )
 #ifdef VSYNC
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    
 #else
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 #endif
     SDL_Texture* frameBuffer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, SCRWIDTH, SCRHEIGHT);
+    
 	int exitapp = 0;
 	game = new Game();
 	game->SetTarget( surface );
@@ -206,6 +208,13 @@ int main( int argc, char **argv )
 		SDL_Event event;
 		while (SDL_PollEvent( &event ))
 		{
+            std::cout << "event!" <<event.type<< std::endl;
+            if (event.type == SDL_WINDOWEVENT) {
+                if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
+                    exitapp = 1;
+                }
+
+            }
 			switch (event.type)
 			{
 			case SDL_QUIT:
