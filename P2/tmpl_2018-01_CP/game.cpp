@@ -35,13 +35,13 @@ void Game::Init()
 	renderOptions.maxRecursionDepth = 5;
 	renderOptions.shadowBias = 0.01f;
 
-	pTracer = new RayTracer( scene, renderOptions );
+	//pTracer = new RayTracer( scene, renderOptions );
 
 #ifdef ADVANCEDGL
     gpurt::init();
 #endif
 
-	scene_bvh();
+	//scene_bvh();
 	
 }
 
@@ -62,14 +62,8 @@ static DWORD tt = 0;
 // -----------------------------------------------------------
 void Game::Tick( float deltaTime )
 {
-	updateCamera(*(scene.getCamera()));
-	
-	scene.animate();
-	scene.rebuildTopLevelBVH();
-	pTracer->render( screen );
-
 #ifdef ADVANCEDGL
-    //gpurt::render(screen);
+    gpurt::render(screen);
 #endif
 
 	// print something to the text window

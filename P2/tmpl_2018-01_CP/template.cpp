@@ -208,15 +208,13 @@ int main( int argc, char **argv )
 		SDL_Event event;
 		while (SDL_PollEvent( &event ))
 		{
-            std::cout << "event!" <<event.type<< std::endl;
-            if (event.type == SDL_WINDOWEVENT) {
+			switch (event.type)
+			{
+            case SDL_WINDOWEVENT:
                 if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
                     exitapp = 1;
                 }
-
-            }
-			switch (event.type)
-			{
+                break;
 			case SDL_QUIT:
 				exitapp = 1;
 

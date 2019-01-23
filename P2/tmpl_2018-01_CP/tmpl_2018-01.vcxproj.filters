@@ -107,6 +107,10 @@
     <ClCompile Include="GPURayTracer.cpp">
       <Filter>GPURayTracer</Filter>
     </ClCompile>
+    <ClCompile Include="GPURT_Scene.cpp">
+      <Filter>GPURayTracer\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="GPURT_GeometryGroup.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -219,6 +223,18 @@
     <ClInclude Include="GPURayTracer.h">
       <Filter>GPURayTracer</Filter>
     </ClInclude>
+    <ClInclude Include="GPURT_Scene.h">
+      <Filter>GPURayTracer\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="GPURT_GeometryGroup.h">
+      <Filter>GPURayTracer\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="GPURT_Geometry.h">
+      <Filter>GPURayTracer\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="GPURT_Triangle.h">
+      <Filter>GPURayTracer\scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">
@@ -256,6 +272,9 @@
     </Filter>
     <Filter Include="GLAD">
       <UniqueIdentifier>{ed7874d1-c2c1-4284-867c-88d49a956737}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GPURayTracer\scene">
+      <UniqueIdentifier>{c31b921f-b5e7-4bc4-8150-e5ff4ae3a03a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
