@@ -43,10 +43,11 @@ void Game::Init()
 #endif
 
 	//scene_bvh();
+//#undef PHOTON_MAPPING
 	//scene_outdoor();
 	scene_indoor();
 	
-#ifdef PHOTO_MAPPING
+#ifdef PHOTON_MAPPING
 	pTracer->emit_photons();
 #endif
 }

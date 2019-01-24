@@ -27,7 +27,7 @@ class RayTracer
 
 	const RenderOptions &getRenderOptions() const { return renderOptions; }
 	bool isOcclusion( const RTRay &ray, const float& distance ) const;
-	float calculateMISWeight( float &pdf1, float &pdf2 )const;
+	float BalanceHeuristicWeight( float &pdf1, float &pdf2 ) const;
 
 	void Reset();
 
@@ -74,7 +74,4 @@ class RayTracer
 	std::vector<Photon> caustic_map;
 	// map to store global illumination photons
 	std::vector<Photon> global_illum_map;
-#ifdef PHOTO_MAPPING
-	//Neighbor neighbors[NUM_PHOTON_RADIANCE];
-#endif // PHOTO_MAPPING	
 };

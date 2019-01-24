@@ -164,24 +164,26 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 	}
 
 	const RTMaterial &material = intersection.object->getMaterial();
+	// MIS
 	if (material.isLight())
 	{
-		if (lastSpecular)
-		{
-			return material.getEmission();
-		}
-		else
-		{
-			return color_scene;
-		}		
+		return material.getEmission();
+		// 		if (lastSpecular)
+// 		{
+// 			return material.getEmission();
+// 		}
+// 		else
+// 		{
+// 			return color_scene;
+// 		}		
 	}
 
-	float pdf_obj, pdf_light = 0.0f;
-	float weight_obj = 1.0f, weight_light = 0.0f;
+	float pdf_hemi_brdf, pdf_light_nee = 0.0f;
+	float weight_indirect = 1.0f, weight_direct = 0.0f;
 
 	// random walk ray cos weight
 	vec3 random_dir, albedo;
-	bool bContinue = material.evaluate( ray, intersection.surfacePointData, scene.getCamera()->getEye(), random_dir, pdf_obj, albedo );
+	bool bContinue = material.evaluate( ray, intersection.surfacePointData, scene.getCamera()->getEye(), random_dir, pdf_hemi_brdf, albedo );
 	if ( !bContinue )
 	{
 		return albedo;
@@ -211,19 +213,23 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 			if ( !isOcclusion( lightSample, distance-0.1 ) )
 			//RTIntersection it = findNearestObjectIntersection( lightSample );
 			//if ( it.isIntersecting() && it.object->getMaterial().isLight() )
-			{
-				pdf_light = 1.0f / area;
+			{				
 				float solidAngle = Pnt2light.dot( pL->mPlane->normal ) * -1.0f * area / distance2;
+				pdf_light_nee = 1.0f / solidAngle;
 
-				vec3 color = pL->mPlane->getMaterial().getEmission() * solidAngle * albedo 
+				float pdf_brdf = Pnt2light.dot( intersection.surfacePointData.normal) * Utils::INV_PI;
+
+				float w1 = BalanceHeuristicWeight( pdf_brdf, pdf_light_nee );
+				float w2 = 1.0f - w1;
+
+				float pdf_mis_nee = w1 * pdf_brdf + w2 * pdf_light_nee;
+
+				vec3 color = pL->mPlane->getMaterial().getEmission() * ( 1.0 / pdf_mis_nee ) * albedo 
 					* material.brdf( ray, intersection.surfacePointData, lightSample ) * Utils::INV_PI;
 
-				weight_light = calculateMISWeight( pdf_light, pdf_obj );
-				weight_obj = calculateMISWeight( pdf_obj, pdf_light );
-
-				finalColor += weight_light * color;
+				finalColor += color;
 			}
-#ifdef PHOTO_MAPPING
+#ifdef PHOTON_MAPPING
 			else if (depth == 0)
 			{
 				Neighbor neighbors[NUM_PHOTON_RADIANCE];
@@ -231,11 +237,8 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 											 intersection.surfacePointData.normal );
 
 				finalColor += global_color * Utils::INV_PI * 0.5 * material.brdf( ray, intersection.surfacePointData, ray_random );
-				;
 			}
-#endif // PHOTO_MAPPING
-
-			
+#endif // PHOTON_MAPPING
 		}
 	}
 
@@ -255,22 +258,41 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 	}
 
 	RTIntersection intersection2;
-	vec3 colo_reflect = sample( ray_random, depth + 1, intersection2, false ) * material.brdf( ray, intersection.surfacePointData, ray_random ) * ( 1.0f / pdf_obj );
+	vec3 diffuse_color = sample( ray_random, depth + 1, intersection2, false );
+	// direct illumination adjust the pdf_mis
+	if ( intersection2.isIntersecting() && intersection2.object->getMaterial().isLight() )
+	{
+		RTPlane *plane = (RTPlane *)( intersection2.object );
+		SurfacePointData &sp = intersection2.surfacePointData;
+		float distance2 = intersection2.rayT * intersection2.rayT;
+		vec2 bounds = plane->boundaryxy;
+		float area = bounds.x *bounds.y * 4;
+		
+		float solidAngle = ray_random.dir.dot( sp.normal ) * -1.0f * area / distance2;
+
+		float pdf_hemi_nee = 1.0f / solidAngle;
+
+		float w1 = BalanceHeuristicWeight( pdf_hemi_brdf, pdf_hemi_nee );
+		float w2 = 1.0f - w1;
+
+		pdf_hemi_brdf = w1 * pdf_hemi_brdf + w2 * pdf_hemi_nee;
+	}
+	vec3 colo_reflect = diffuse_color * material.brdf( ray, intersection.surfacePointData, ray_random ) * ( 1.0f / pdf_hemi_brdf );
 	vec3 color_obj = albedo * colo_reflect * Utils::INV_PI;
 
-	finalColor += weight_obj * color_obj;
+	finalColor += color_obj;
 
-#ifdef PHOTO_MAPPING_
-	if (depth == 0)
-	{
-		Neighbor neighbors[NUM_PHOTON_RADIANCE];
-		vec3 caustic_color = caustic( neighbors, intersection.surfacePointData.position,
-									  intersection.surfacePointData.normal );
-
-		finalColor += caustic_color * 0.5 * Utils::INV_PI * material.brdf( ray, intersection.surfacePointData, ray_random );
-		//*Utils::INV_PI;
-	}	
-#endif // PHOTO_MAPPING
+#ifdef PHOTON_MAPPING
+// 	if (depth == 0)
+// 	{
+// 		Neighbor neighbors[NUM_PHOTON_RADIANCE];
+// 		vec3 caustic_color = caustic( neighbors, intersection.surfacePointData.position,
+// 									  intersection.surfacePointData.normal );
+// 
+// 		finalColor += caustic_color * 0.5 * Utils::INV_PI * material.brdf( ray, intersection.surfacePointData, ray_random );
+// 		//*Utils::INV_PI;
+// 	}	
+#endif // PHOTON_MAPPING
 
 	return finalColor;
 }
@@ -361,7 +383,7 @@ bool RayTracer::isOcclusion( const RTRay &ray, const float &distance ) const
 	return scene.isOcclusion(ray,distance);
 }
 
-float RayTracer::calculateMISWeight( float &pdf1, float &pdf2 )const
+float RayTracer::BalanceHeuristicWeight( float &pdf1, float &pdf2 ) const
 {
 	return ( pdf1 ) / ( pdf1 + pdf2 );
 }

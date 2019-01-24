@@ -33,7 +33,7 @@
 #define PATH_TRACER
 #define NEE
 
-#define PHOTO_MAPPING
+#define PHOTON_MAPPING
 #define NUM_PHOTON 10000
 
 #define X_AXIS 0
