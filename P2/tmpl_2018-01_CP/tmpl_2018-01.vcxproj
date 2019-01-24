@@ -144,6 +144,7 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="glad.cpp" />
     <ClCompile Include="GPURayTracer.cpp" />
+    <ClCompile Include="ImgToolkit.cpp" />
     <ClCompile Include="LocalSpace.cpp" />
     <ClCompile Include="quarticsolver.cpp" />
     <ClCompile Include="RayPacket.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="FXAA.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GPURayTracer.h" />
+    <ClInclude Include="ImgToolkit.h" />
     <ClInclude Include="LocalSpace.h" />
     <ClInclude Include="precomp.h" />
     <ClInclude Include="quarticsolver.h" />

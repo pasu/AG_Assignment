@@ -39,6 +39,7 @@ class RayTracer
 
 	vec3 global_illumination( Neighbor *neighbors, vec3 p, vec3 norm );
 	vec3 caustic( Neighbor *neighbors, vec3 p, vec3 norm );
+	void SetFilterMethod(int nType);
   private:
 	const vec3 shade_diffuse( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const;
 	const vec3 shade_reflective( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const;
@@ -51,6 +52,7 @@ class RayTracer
 	const Scene &scene;
 	int size;
 	unsigned int *pPixels;
+	vec3 *pImgPixels;
 	vec3 *hdrPixels;
 
 	void startRenderThread( int x_min, int x_max, int y_min, int y_max );
@@ -74,4 +76,8 @@ class RayTracer
 	std::vector<Photon> caustic_map;
 	// map to store global illumination photons
 	std::vector<Photon> global_illum_map;
+
+	bool bFilter;
+	int nFilterType;
+	bool bProcessed;
 };

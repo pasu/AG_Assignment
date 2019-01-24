@@ -113,7 +113,10 @@
     <ClCompile Include="uniform.cpp">
       <Filter>Sampler</Filter>
     </ClCompile>
-    <ClCompile Include="LocalSpace.cpp" />
+    <ClCompile Include="LocalSpace.cpp">
+      <Filter>Toolkit</Filter>
+    </ClCompile>
+    <ClCompile Include="ImgToolkit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -235,7 +238,10 @@
     <ClInclude Include="uniform.h">
       <Filter>Sampler</Filter>
     </ClInclude>
-    <ClInclude Include="LocalSpace.h" />
+    <ClInclude Include="LocalSpace.h">
+      <Filter>Toolkit</Filter>
+    </ClInclude>
+    <ClInclude Include="ImgToolkit.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">

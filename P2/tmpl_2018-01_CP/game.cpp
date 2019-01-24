@@ -74,9 +74,7 @@ void Game::Tick( float deltaTime )
 	if ( bUpdate )
 	{
 		pTracer->Reset();
-	}
-
-	
+	}	
 	
 	scene.animate();
 	scene.rebuildTopLevelBVH();
@@ -130,6 +128,16 @@ void Tmpl8::Game::KeyDown( int key )
 			scene_sbvh();
 			break;
 		}
+	}
+
+	if (key == 30)
+	{
+		pTracer->SetFilterMethod( 1 );
+	}
+
+	if ( key == 31 )
+	{
+		pTracer->SetFilterMethod( 2 );
 	}
 
 	//scene.getCamera()->setEye( vec3( 0 ) );

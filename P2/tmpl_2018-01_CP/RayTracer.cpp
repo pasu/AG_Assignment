@@ -1,16 +1,22 @@
 #include "RayTracer.h"
+#include "ImgToolkit.h"
+#include "Sampler.h"
 #include "fxaa.h"
 #include "precomp.h"
-#include "Sampler.h"
+#include "ImgToolkit.h"
 RayTracer::RayTracer( const Scene &scene, const RenderOptions &renderOptions ) : renderOptions( renderOptions ), scene( scene )
 {
 	size = renderOptions.width * renderOptions.height;
 	pPixels = new unsigned int[size];
+	pImgPixels = new vec3[size];
 	hdrPixels = new vec3[size];
 
 	fOnePixelSize = 2.0f / renderOptions.width;
 	fStratificationSize = fOnePixelSize / SAMPLE_NUM;
 	sample_count = 0;
+	bFilter = false;
+	nFilterType = 0;
+	bProcessed = false;
 }
 
 RayTracer::~RayTracer()
@@ -19,6 +25,18 @@ RayTracer::~RayTracer()
 	{
 		delete[] pPixels;
 		pPixels = NULL;
+	}
+
+	if ( pImgPixels )
+	{
+		delete[] pImgPixels;
+		pImgPixels = NULL;
+	}
+
+	if ( hdrPixels )
+	{
+		delete[] hdrPixels;
+		hdrPixels = NULL;
 	}
 }
 
@@ -44,7 +62,7 @@ void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 		}
 	}
 #else
-#ifdef PATH_TRACER	
+#ifdef PATH_TRACER
 	// path tracer
 #pragma omp parallel for
 	for ( int y = y_min; y <= y_max; ++y )
@@ -70,9 +88,9 @@ void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 	{
 		for ( int x = x_min; x <= x_max; ++x )
 		{
-			RTRay r = generatePrimaryRay( x, y);
+			RTRay r = generatePrimaryRay( x, y );
 			RTIntersection intersection;
-			vec3 color = castRay( r, 0, intersection);
+			vec3 color = castRay( r, 0, intersection );
 			hdrPixels[y * renderOptions.width + x] = color;
 		}
 	}
@@ -84,6 +102,8 @@ void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 void RayTracer::render( Surface *screen )
 {
 	scene.getCamera()->Update();
+
+	//ImgToolkit::recursive_bilateral_filter( 0.03f, 0.1f, renderOptions.width, renderOptions.height, hdrPixels, pImgPixels );
 
 #if NUMBER_THREAD == 1
 	traceChunk( 0, renderOptions.width - 1, 0, renderOptions.height - 1 );
@@ -100,23 +120,70 @@ void RayTracer::render( Surface *screen )
 #endif
 	//runFXAA( hdrPixels, renderOptions.width, renderOptions.height );
 
-	for ( int y = 0; y < renderOptions.height; ++y )
+	if ( bFilter )
 	{
-		for ( int x = 0; x < renderOptions.width; ++x )
+		if ( !bProcessed )
 		{
+			for ( int y = 0; y < renderOptions.height; ++y )
+			{
+				for ( int x = 0; x < renderOptions.width; ++x )
+				{
 #ifdef PATH_TRACER
-			auto color = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f / (float)( sample_count > SAMPLE_NUM2 ? SAMPLE_NUM2 : sample_count ) );
+					hdrPixels[y * renderOptions.width + x] = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f / (float)( sample_count > SAMPLE_NUM2 ? SAMPLE_NUM2 : sample_count ) );
+#endif // PATH_TRACER
+				}
+			}
+
+			switch ( nFilterType )
+			{
+			case 1:
+				ImgToolkit::recursive_bilateral_filter(0.03f,0.1f, renderOptions.width, renderOptions.height, hdrPixels, pImgPixels );
+				break;
+			case 2:
+				ImgToolkit::median_filter( renderOptions.width, renderOptions.height, hdrPixels, pImgPixels );
+				break;
+			default:
+				break;
+			}
+			
+
+			for ( int y = 0; y < renderOptions.height; ++y )
+			{
+				for ( int x = 0; x < renderOptions.width; ++x )
+				{
+					auto color = pImgPixels[y * renderOptions.width + x];
+#define lmt( x ) ( ( x ) < 255 ? ( x ) : 255 )
+					unsigned int colorf = 0xff000000 | lmt( (unsigned int)( color.z * 255 ) ) | lmt( (unsigned int)( color.y * 255 ) ) << 8 | lmt( (unsigned int)( color.x * 255 ) ) << 16;
+#undef lmt
+					pPixels[y * renderOptions.width + x] = colorf;
+				}
+			}
+
+			bProcessed = true;
+		}		
+
+		memcpy( screen->GetBuffer(), pPixels, size * 4 );
+	}
+	else
+	{
+		for ( int y = 0; y < renderOptions.height; ++y )
+		{
+			for ( int x = 0; x < renderOptions.width; ++x )
+			{
+#ifdef PATH_TRACER
+				auto color = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f / (float)( sample_count > SAMPLE_NUM2 ? SAMPLE_NUM2 : sample_count ) );
 #else
-			auto color = hdrPixels[y * renderOptions.width + x];
+				auto color = hdrPixels[y * renderOptions.width + x];
 #endif // PATH_TRACER
 #define lmt( x ) ( ( x ) < 255 ? ( x ) : 255 )
-			unsigned int colorf = 0xff000000 | lmt( (unsigned int)( color.z * 255 ) ) | lmt( (unsigned int)( color.y * 255 ) ) << 8 | lmt( (unsigned int)( color.x * 255 ) ) << 16;
+				unsigned int colorf = 0xff000000 | lmt( (unsigned int)( color.z * 255 ) ) | lmt( (unsigned int)( color.y * 255 ) ) << 8 | lmt( (unsigned int)( color.x * 255 ) ) << 16;
 #undef lmt
-			pPixels[y * renderOptions.width + x] = colorf;
+				pPixels[y * renderOptions.width + x] = colorf;
+			}
 		}
-	}
 
-	memcpy( screen->GetBuffer(), pPixels, size * 4 );
+		memcpy( screen->GetBuffer(), pPixels, size * 4 );
+	}	
 }
 
 const RTRay &RayTracer::generatePrimaryRay( const int x, const int y, const int &sampleIds ) const
@@ -130,7 +197,7 @@ const RTRay &RayTracer::generatePrimaryRay( const int x, const int y, const int 
 
 	float deltaX = ( u + (float)rand() / RAND_MAX ) * fStratificationSize;
 	float deltaY = ( v + (float)rand() / RAND_MAX ) * fStratificationSize;
-	
+
 	ndcPixelCentre += vec2( deltaX, -deltaY );
 
 	vec3 dir = scene.getCamera()->rayDirFromNdc( ndcPixelCentre );
@@ -140,7 +207,7 @@ const RTRay &RayTracer::generatePrimaryRay( const int x, const int y, const int 
 const vec3 RayTracer::castRay( const RTRay &ray, const int depth, RTIntersection &intersection ) const
 {
 	if ( depth > renderOptions.maxRecursionDepth )
-		return scene.getColor(ray);
+		return scene.getColor( ray );
 
 	intersection = findNearestObjectIntersection( ray );
 
@@ -152,9 +219,9 @@ const vec3 RayTracer::castRay( const RTRay &ray, const int depth, RTIntersection
 		return scene.getColor( ray );
 }
 
-const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection &intersection, bool lastSpecular ) 
+const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection &intersection, bool lastSpecular )
 {
-	vec3 color_scene = scene.getColor(ray);
+	vec3 color_scene = scene.getColor( ray );
 
 	intersection = findNearestObjectIntersection( ray );
 
@@ -165,17 +232,17 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 
 	const RTMaterial &material = intersection.object->getMaterial();
 	// MIS
-	if (material.isLight())
+	if ( material.isLight() )
 	{
 		return material.getEmission();
 		// 		if (lastSpecular)
-// 		{
-// 			return material.getEmission();
-// 		}
-// 		else
-// 		{
-// 			return color_scene;
-// 		}		
+		// 		{
+		// 			return material.getEmission();
+		// 		}
+		// 		else
+		// 		{
+		// 			return color_scene;
+		// 		}
 	}
 
 	float pdf_hemi_brdf, pdf_light_nee = 0.0f;
@@ -188,7 +255,7 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 	{
 		return albedo;
 	}
-	
+
 	vec3 finalColor = vec3( 0 );
 	RTRay ray_random( intersection.surfacePointData.position + renderOptions.shadowBias * random_dir, random_dir );
 	// NEE
@@ -196,41 +263,40 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 	{
 		RTLight *pL = NULL;
 		vec3 pos = scene.RandomPointOnLight( pL );
-		
+
 		vec3 Pnt2light = pos - intersection.surfacePointData.position;
 		float distance2 = Pnt2light.sqrLentgh();
 		Pnt2light.normalize();
 
-		if ( Pnt2light.dot( intersection.surfacePointData.normal )>0.0f && Pnt2light.dot( pL->mPlane->normal ) <= 0.0f )
+		if ( Pnt2light.dot( intersection.surfacePointData.normal ) > 0.0f && Pnt2light.dot( pL->mPlane->normal ) <= 0.0f )
 		{
 			float area = pL->getArea();
 
 			vec3 org = intersection.surfacePointData.position + renderOptions.shadowBias * Pnt2light;
 			RTRay lightSample = RTRay( org, Pnt2light );
-			
+
 			float distance = sqrtf( distance2 );
 
-			if ( !isOcclusion( lightSample, distance-0.1 ) )
+			if ( !isOcclusion( lightSample, distance - 0.1 ) )
 			//RTIntersection it = findNearestObjectIntersection( lightSample );
 			//if ( it.isIntersecting() && it.object->getMaterial().isLight() )
-			{				
+			{
 				float solidAngle = Pnt2light.dot( pL->mPlane->normal ) * -1.0f * area / distance2;
 				pdf_light_nee = 1.0f / solidAngle;
 
-				float pdf_brdf = Pnt2light.dot( intersection.surfacePointData.normal) * Utils::INV_PI;
+				float pdf_brdf = Pnt2light.dot( intersection.surfacePointData.normal ) * Utils::INV_PI;
 
 				float w1 = BalanceHeuristicWeight( pdf_brdf, pdf_light_nee );
 				float w2 = 1.0f - w1;
 
 				float pdf_mis_nee = w1 * pdf_brdf + w2 * pdf_light_nee;
 
-				vec3 color = pL->mPlane->getMaterial().getEmission() * ( 1.0 / pdf_mis_nee ) * albedo 
-					* material.brdf( ray, intersection.surfacePointData, lightSample ) * Utils::INV_PI;
+				vec3 color = pL->mPlane->getMaterial().getEmission() * ( 1.0 / pdf_mis_nee ) * albedo * material.brdf( ray, intersection.surfacePointData, lightSample ) * Utils::INV_PI;
 
 				finalColor += color;
 			}
 #ifdef PHOTON_MAPPING
-			else if (depth == 0)
+			else if ( depth == 0 )
 			{
 				Neighbor neighbors[NUM_PHOTON_RADIANCE];
 				vec3 global_color = caustic( neighbors, intersection.surfacePointData.position,
@@ -266,8 +332,8 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 		SurfacePointData &sp = intersection2.surfacePointData;
 		float distance2 = intersection2.rayT * intersection2.rayT;
 		vec2 bounds = plane->boundaryxy;
-		float area = bounds.x *bounds.y * 4;
-		
+		float area = bounds.x * bounds.y * 4;
+
 		float solidAngle = ray_random.dir.dot( sp.normal ) * -1.0f * area / distance2;
 
 		float pdf_hemi_nee = 1.0f / solidAngle;
@@ -288,10 +354,10 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 // 		Neighbor neighbors[NUM_PHOTON_RADIANCE];
 // 		vec3 caustic_color = caustic( neighbors, intersection.surfacePointData.position,
 // 									  intersection.surfacePointData.normal );
-// 
+//
 // 		finalColor += caustic_color * 0.5 * Utils::INV_PI * material.brdf( ray, intersection.surfacePointData, ray_random );
 // 		//*Utils::INV_PI;
-// 	}	
+// 	}
 #endif // PHOTON_MAPPING
 
 	return finalColor;
@@ -376,11 +442,9 @@ RTIntersection RayTracer::findNearestObjectIntersection( const RTRay &ray ) cons
 	return scene.findNearestObjectIntersection( ray );
 }
 
-
-
 bool RayTracer::isOcclusion( const RTRay &ray, const float &distance ) const
 {
-	return scene.isOcclusion(ray,distance);
+	return scene.isOcclusion( ray, distance );
 }
 
 float RayTracer::BalanceHeuristicWeight( float &pdf1, float &pdf2 ) const
@@ -392,6 +456,10 @@ void RayTracer::Reset()
 {
 	this->sample_count = 0;
 	memset( hdrPixels, 0, renderOptions.width * renderOptions.height * sizeof( vec3 ) );
+
+	nFilterType = 0;
+	bFilter = false;
+	bProcessed = false;
 }
 
 inline bool compare_x( Photon i, Photon j )
@@ -626,7 +694,7 @@ inline void add_neighbor( vec3 p, vec3 norm, Neighbor *neighbors,
 		return;
 	}
 
-	float e_dis = ( p-( L[e] ).p ).sqrLentgh();
+	float e_dis = ( p - ( L[e] ).p ).sqrLentgh();
 	if ( *size < NUM_PHOTON_RADIANCE || e_dis < *D )
 	{
 		// maintain the size of the max heap
@@ -751,14 +819,14 @@ void RayTracer::emit_photons()
 		p.normalize();
 
 		vec3 dir = sampleCosHemisphere( pL->mPlane->normal );
-		if (NUM_PHOTON == 500)
+		if ( NUM_PHOTON == 500 )
 		{
-			dir = pL->mPlane->normal;// numbers of samples are too slow
+			dir = pL->mPlane->normal; // numbers of samples are too slow
 		}
 		RTRay ray( pos, dir );
 
 		// scale the intensity of the photon ray
-		Photon ph = Photon( vec3(1) );
+		Photon ph = Photon( vec3( 1 ) );
 		// do photon tracing
 		trace_photon( ray, ph, 0, 0 );
 	}
@@ -795,7 +863,7 @@ vec3 RayTracer::global_illumination( Neighbor *neighbors, vec3 p, vec3 norm )
  */
 vec3 RayTracer::caustic( Neighbor *neighbors, vec3 p, vec3 norm )
 {
-	vec3 result = vec3(0);
+	vec3 result = vec3( 0 );
 	// D is the furthest photon squared distance to p in neighbors
 	float D = Utils::MAX_FLOAT;
 	int size = 0;
@@ -810,6 +878,15 @@ vec3 RayTracer::caustic( Neighbor *neighbors, vec3 p, vec3 norm )
 		result += ph.c * std::max( dot( norm, ph.dir ), 0.0f );
 	}
 	return result * ( 1.0 / ( D * PI ) );
+}
+
+void RayTracer::SetFilterMethod( int nType )
+{
+	if ( nType != 0 )
+	{
+		nFilterType = nType;
+		bFilter = true;
+	}
 }
 
 inline bool refract2( vec3 d, vec3 norm, float n, float nt, vec3 *t )
@@ -836,7 +913,7 @@ inline bool refract2( vec3 d, vec3 norm, float n, float nt, vec3 *t )
 }
 void RayTracer::trace_photon( const RTRay &ray, Photon &ph, int depth, int previous_bounce )
 {
-	if (depth>renderOptions.maxRecursionDepth)
+	if ( depth > renderOptions.maxRecursionDepth )
 	{
 		return;
 	}
@@ -855,7 +932,7 @@ void RayTracer::trace_photon( const RTRay &ray, Photon &ph, int depth, int previ
 	float distance = ( hitPnt.position - scene.getCamera()->getEye() ).length();
 	const vec3 &albedo = material.getAlbedoAtPoint( hitPnt.textureCoordinates.x, hitPnt.textureCoordinates.y, distance );
 
-	if ( material.shadingType  == TRANSMISSIVE_AND_REFLECTIVE )
+	if ( material.shadingType == TRANSMISSIVE_AND_REFLECTIVE )
 	{
 		float c, n, nt;
 		vec3 t;
@@ -864,7 +941,7 @@ void RayTracer::trace_photon( const RTRay &ray, Photon &ph, int depth, int previ
 		// compute the reflected ray
 		vec3 nd = ray.dir - ( ( 2 * ray.dir.dot( hitPnt.normal ) ) * hitPnt.normal );
 		nd.normalize();
-		RTRay reflect_r(hitPnt.position+nd*renderOptions.shadowBias,nd);
+		RTRay reflect_r( hitPnt.position + nd * renderOptions.shadowBias, nd );
 
 		// adjust photon power
 		ph.c = ph.c * std::max( albedo.x, std::max( albedo.y, albedo.z ) );
@@ -900,7 +977,7 @@ void RayTracer::trace_photon( const RTRay &ray, Photon &ph, int depth, int previ
 		float R0 = (float)pow( (double)( ( nt - 1.0 ) / ( nt + 1.0 ) ), 2.0 );
 		float R = R0 + ( 1.0 - R0 ) * (float)pow( 1.0 - c, 5.0 );
 		t.normalize();
-		RTRay refract_r( hitPnt.position + t * renderOptions.shadowBias, t);
+		RTRay refract_r( hitPnt.position + t * renderOptions.shadowBias, t );
 
 		if ( entering )
 		{
@@ -928,34 +1005,34 @@ void RayTracer::trace_photon( const RTRay &ray, Photon &ph, int depth, int previ
 		}
 
 		// 		int bounce = DIFFUSE;
-// 		vec3 random_dir;
-// 		float reflectionFactor;
-// 		reflectionFactor = Utils::fresnel( ray.dir, hitPnt.normal, material.indexOfRefraction );
-// 
-// 		ph.c = ph.c * std::max( albedo.x, std::max( albedo.y, albedo.z ) );
-// 		
-// 		if (false && (float)rand() / RAND_MAX < reflectionFactor )
-// 		{
-// 			random_dir = ray.dir - ( ( 2 * ray.dir.dot( hitPnt.normal ) ) * hitPnt.normal );
-// 		}
-// 		else
-// 		{
-// 			bool bOut = true;
-// 			random_dir = Utils::refract( ray.dir, hitPnt.normal, material.indexOfRefraction,bOut );
-// 			if (bOut == false)
-// 			{
-// 				bounce = REFLECTIVE;
-// 			}
-// 		}
-// 		RTRay ray_ref( hitPnt.position + random_dir * renderOptions.shadowBias, random_dir );
-// 
-// 		return trace_photon( ray_ref, ph, depth + 1, bounce );
+		// 		vec3 random_dir;
+		// 		float reflectionFactor;
+		// 		reflectionFactor = Utils::fresnel( ray.dir, hitPnt.normal, material.indexOfRefraction );
+		//
+		// 		ph.c = ph.c * std::max( albedo.x, std::max( albedo.y, albedo.z ) );
+		//
+		// 		if (false && (float)rand() / RAND_MAX < reflectionFactor )
+		// 		{
+		// 			random_dir = ray.dir - ( ( 2 * ray.dir.dot( hitPnt.normal ) ) * hitPnt.normal );
+		// 		}
+		// 		else
+		// 		{
+		// 			bool bOut = true;
+		// 			random_dir = Utils::refract( ray.dir, hitPnt.normal, material.indexOfRefraction,bOut );
+		// 			if (bOut == false)
+		// 			{
+		// 				bounce = REFLECTIVE;
+		// 			}
+		// 		}
+		// 		RTRay ray_ref( hitPnt.position + random_dir * renderOptions.shadowBias, random_dir );
+		//
+		// 		return trace_photon( ray_ref, ph, depth + 1, bounce );
 	}
 	else
 	{
 		int bounce = material.shadingType;
 		vec3 random_dir;
-		if ( material.shadingType == DIFFUSE_AND_REFLECTIVE)
+		if ( material.shadingType == DIFFUSE_AND_REFLECTIVE )
 		{
 			if ( (float)rand() / RAND_MAX < material.reflectionFactor )
 			{
@@ -968,7 +1045,7 @@ void RayTracer::trace_photon( const RTRay &ray, Photon &ph, int depth, int previ
 				bounce = DIFFUSE;
 			}
 		}
-		else if ( material.shadingType == DIFFUSE)
+		else if ( material.shadingType == DIFFUSE )
 		{
 			random_dir = sampleCosHemisphere( hitPnt.normal );
 			bounce = DIFFUSE;
@@ -995,14 +1072,14 @@ void RayTracer::trace_photon( const RTRay &ray, Photon &ph, int depth, int previ
 			bAbsorb = true;
 		}
 
-		 if ( bAbsorb )
+		if ( bAbsorb )
 			return;
-		 else
-		 {
-			 Photon reflected_ph = Photon( ph.c * albedo );
-			 RTRay ray_ref( hitPnt.position + random_dir * renderOptions.shadowBias, random_dir );
-			 return trace_photon( ray_ref, reflected_ph, depth + 1, bounce );
-		 }			 
+		else
+		{
+			Photon reflected_ph = Photon( ph.c * albedo );
+			RTRay ray_ref( hitPnt.position + random_dir * renderOptions.shadowBias, random_dir );
+			return trace_photon( ray_ref, reflected_ph, depth + 1, bounce );
+		}
 	}
 }
 
