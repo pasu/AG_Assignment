@@ -1,6 +1,7 @@
 #include "RayTracer.h"
 #include "fxaa.h"
 #include "precomp.h"
+#include "Sampler.h"
 RayTracer::RayTracer( const Scene &scene, const RenderOptions &renderOptions ) : renderOptions( renderOptions ), scene( scene )
 {
 	size = renderOptions.width * renderOptions.height;
@@ -151,7 +152,7 @@ const vec3 RayTracer::castRay( const RTRay &ray, const int depth, RTIntersection
 		return scene.getColor( ray );
 }
 
-const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection &intersection, bool lastSpecular ) const
+const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection &intersection, bool lastSpecular ) 
 {
 	vec3 color_scene = scene.getColor(ray);
 
@@ -189,7 +190,7 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 	vec3 finalColor = vec3( 0 );
 	RTRay ray_random( intersection.surfacePointData.position + renderOptions.shadowBias * random_dir, random_dir );
 	// NEE
-	if (material.shadingType == DIFFUSE || material.shadingType == MICROFACET)
+	if ( ( material.shadingType & DIFFUSE ) == true )
 	{
 		RTLight *pL = NULL;
 		vec3 pos = scene.RandomPointOnLight( pL );
@@ -217,18 +218,27 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 				vec3 color = pL->mPlane->getMaterial().getEmission() * solidAngle * albedo 
 					* material.brdf( ray, intersection.surfacePointData, lightSample ) * Utils::INV_PI;
 
-				weight_light = 1;
-				//calculateMISWeight( pdf_light, pdf_obj );
-				weight_obj = 1;
-				//calculateMISWeight( pdf_obj, pdf_light );
+				weight_light = calculateMISWeight( pdf_light, pdf_obj );
+				weight_obj = calculateMISWeight( pdf_obj, pdf_light );
 
 				finalColor += weight_light * color;
 			}
+#ifdef PHOTO_MAPPING
+// 			else
+// 			{
+// 				vec3 global_color = global_illumination( neighbors, intersection.surfacePointData.position,
+// 											 intersection.surfacePointData.normal );
+// 
+// 				finalColor += global_color * albedo * Utils::INV_PI;
+// 			}
+#endif // PHOTO_MAPPING
+
+			
 		}
 	}
 
 	// Russian roulette
-	double max = std::max( albedo.x, std::max( albedo.y, albedo.z ) );
+	float max = std::max( albedo.x, std::max( albedo.y, albedo.z ) );
 	if ( depth > renderOptions.maxRecursionDepth )
 	{
 		if ( scene.sampler()->get1D() < max )
@@ -247,6 +257,15 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 	vec3 color_obj = albedo * colo_reflect * Utils::INV_PI;
 
 	finalColor += weight_obj * color_obj;
+
+#ifdef PHOTO_MAPPING
+	Neighbor neighbors[NUM_PHOTON_RADIANCE];
+	vec3 caustic_color = caustic( neighbors, intersection.surfacePointData.position,
+											 intersection.surfacePointData.normal );
+
+	finalColor += caustic_color * 0.5 * Utils::INV_PI * material.brdf( ray, intersection.surfacePointData, ray_random );
+	//*Utils::INV_PI;
+#endif // PHOTO_MAPPING
 
 	return finalColor;
 }
@@ -346,6 +365,619 @@ void RayTracer::Reset()
 {
 	this->sample_count = 0;
 	memset( hdrPixels, 0, renderOptions.width * renderOptions.height * sizeof( vec3 ) );
+}
+
+inline bool compare_x( Photon i, Photon j )
+{
+	return i.p.x < j.p.x;
+}
+
+/**
+ * Compare the y coordinates of two photons.
+ * @param i The first photon.
+ * @param j The second photon.
+ * @return true if i smaller than j, false otherwise.
+ */
+inline bool compare_y( Photon i, Photon j )
+{
+	return i.p.y < j.p.y;
+}
+
+/**
+ * Compare the z coordinates of two photons.
+ * @param i The first photon.
+ * @param j The second photon.
+ * @return true if i smaller than j, false otherwise.
+ */
+inline bool compare_z( Photon i, Photon j )
+{
+	return i.p.z < j.p.z;
+}
+
+void construct_kdtree( std::vector<Photon> &L, unsigned begin, unsigned end )
+{
+	if ( end - begin == 0 )
+	{
+		return;
+	}
+	if ( end - begin == 1 )
+	{
+		// indicate the leaf node
+		L[begin].flag = LEAF;
+		return;
+	}
+
+	// calculate the variance
+	unsigned median = begin + ( end - begin ) / 2;
+	float x_avg = 0.0, y_avg = 0.0, z_avg = 0.0;
+	float x_var = 0.0, y_var = 0.0, z_var = 0.0;
+	float n = end - begin;
+	std::vector<Photon>::iterator a = L.begin() + begin;
+	std::vector<Photon>::iterator b = L.begin() + end;
+	std::vector<Photon>::iterator it;
+	for ( it = a; it != b; ++it )
+	{
+		x_avg += ( *it ).p.x;
+		y_avg += ( *it ).p.y;
+		z_avg += ( *it ).p.z;
+	}
+	for ( it = a; it != b; ++it )
+	{
+		x_var += ( ( *it ).p.x - x_avg ) * ( ( *it ).p.x - x_avg );
+		y_var += ( ( *it ).p.y - y_avg ) * ( ( *it ).p.y - y_avg );
+		z_var += ( ( *it ).p.z - z_avg ) * ( ( *it ).p.z - z_avg );
+	}
+	x_var /= n;
+	y_var /= n;
+	z_var /= n;
+
+	// find the dimension with maximum variance
+	float max_var = std::max( x_var, std::max( y_var, z_var ) );
+
+	// split the dimension and indicate the splitting axis
+	if ( max_var == x_var )
+	{
+		std::sort( L.begin() + begin, L.begin() + end, compare_x );
+		L[median].flag = X_AXIS;
+	}
+	if ( max_var == y_var )
+	{
+		std::sort( L.begin() + begin, L.begin() + end, compare_y );
+		L[median].flag = Y_AXIS;
+	}
+	if ( max_var == z_var )
+	{
+		std::sort( L.begin() + begin, L.begin() + end, compare_z );
+		L[median].flag = Z_AXIS;
+	}
+
+	// recurse on left and right children
+	construct_kdtree( L, begin, median );
+	construct_kdtree( L, median + 1, end );
+	return;
+}
+
+/**
+ * Swap two elements in a max heap.
+ * @param neighbors The max heap array.
+ * @param a The index of first element.
+ * @param b The index of second element.
+ * @return void.
+ */
+inline void heap_swap( Neighbor *neighbors, int a, int b )
+{
+	unsigned a_i = ( neighbors[a] ).i;
+	float a_s = ( neighbors[a] ).sq_dis;
+
+	( neighbors[a] ).i = ( neighbors[b] ).i;
+	( neighbors[a] ).sq_dis = ( neighbors[b] ).sq_dis;
+	( neighbors[b] ).i = a_i;
+	( neighbors[b] ).sq_dis = a_s;
+}
+
+/**
+ * Remove an element in a max heap.
+ * @param neighbors The max heap array.
+ * @param size The size of the max heap.
+ * @return void.
+ */
+void heap_remove( Neighbor *neighbors, int *size )
+{
+	// move the last element to the root node so that
+	// the max element is replaced
+	( neighbors[0] ).i = ( neighbors[*size - 1] ).i;
+	( neighbors[0] ).sq_dis = ( neighbors[*size - 1] ).sq_dis;
+	*size = *size - 1;
+
+	int i = 0;
+	int left, right, bigger;
+	float i_val, left_val, right_val;
+	// swap the root node element downward until it has no children
+	// or both children have smaller values
+	while ( 1 )
+	{
+		left = 2 * i + 1;
+		right = 2 * i + 2;
+		if ( left >= *size && right >= *size )
+		{
+			// i is a leaf node (has no child)
+			return;
+		}
+		i_val = ( neighbors[i] ).sq_dis;
+		left_val = ( left < *size ) ? ( neighbors[left] ).sq_dis : -1.0;
+		right_val = ( right < *size ) ? ( neighbors[right] ).sq_dis : -1.0;
+		if ( i_val >= left_val && i_val >= right_val )
+		{
+			// i is bigger than both children
+			return;
+		}
+		if ( left_val == -1.0 && right_val != -1.0 )
+		{
+			// i is smaller than right child
+			heap_swap( neighbors, i, right );
+			i = right;
+		}
+		if ( left_val != -1.0 && right_val == -1.0 )
+		{
+			// i is smaller than left child
+			heap_swap( neighbors, i, left );
+			i = left;
+		}
+		else
+		{
+			// i is smaller than at least one of the child
+			bigger = ( left_val > right_val ) ? left : right;
+			heap_swap( neighbors, i, bigger );
+			i = bigger;
+		}
+	}
+
+	return;
+}
+
+/**
+ * Insert an element in a max heap.
+ * @param neighbors The max heap array.
+ * @param size The size of the max heap.
+ * @param e The index of photon in map.
+ * @param e_dis The square distance of photon and intersection.
+ * @return void.
+ */
+inline void heap_add( Neighbor *neighbors, int *size,
+					  unsigned e, float e_dis )
+{
+	// insert a new element to the last element of max heap
+	int i = *size;
+	( neighbors[i] ).i = e;
+	( neighbors[i] ).sq_dis = e_dis;
+	*size = *size + 1;
+
+	int parent;
+	float i_val, parent_val;
+	// swap the last element upward unitl it reaches the root node
+	// or has a larger parent
+	while ( 1 )
+	{
+		if ( i == 0 )
+		{
+			// reached root node
+			return;
+		}
+		parent = ( i - 1 ) / 2;
+		i_val = ( neighbors[i] ).sq_dis;
+		parent_val = ( neighbors[parent] ).sq_dis;
+		if ( parent_val >= i_val )
+		{
+			// parent is bigger than i
+			return;
+		}
+
+		heap_swap( neighbors, i, parent );
+		i = parent;
+	}
+
+	return;
+}
+
+/**
+ * Add a new neighbor to the nearest neighbor max heap.
+ * @param p The interection position.
+ * @param norm The interection normal.
+ * @param neighbors The max heap array.
+ * @param L The photon map.
+ * @param e The photon index of the map.
+ * @param D The maximum square distance of photon in neighor heap.
+ * @param size The size of the max heap.
+ * @return void.
+ */
+inline void add_neighbor( vec3 p, vec3 norm, Neighbor *neighbors,
+						  std::vector<Photon> &L, unsigned e, float *D, int *size )
+{
+	// disk check
+	if ( abs( dot( norm, normalize( p - L[e].p ) ) ) > Utils::EPSILON_FLOAT )
+	{
+		return;
+	}
+
+	float e_dis = ( p-( L[e] ).p ).sqrLentgh();
+	if ( *size < NUM_PHOTON_RADIANCE || e_dis < *D )
+	{
+		// maintain the size of the max heap
+		if ( *size == NUM_PHOTON_RADIANCE )
+		{
+			heap_remove( neighbors, size );
+		}
+
+		heap_add( neighbors, size, e, e_dis );
+
+		// update the maximum square distance
+		*D = ( neighbors[0] ).sq_dis;
+	}
+}
+
+/**
+ * Get the split value.
+ * @param L The photon map.
+ * @param i The photon index of the map.
+ * @param axis The splitting axis.
+ * @return The split value.
+ */
+inline float get_split( std::vector<Photon> &L, unsigned i, int axis )
+{
+	if ( axis == X_AXIS )
+		return ( L[i] ).p.x;
+	if ( axis == Y_AXIS )
+		return ( L[i] ).p.y;
+	if ( axis == Z_AXIS )
+		return ( L[i] ).p.z;
+	return 0.0;
+}
+
+/**
+ * Get the coordinate of intersection of the splitting dimension.
+ * @param p The interection position.
+ * @param axis The splitting axis.
+ * @return The coordinate of the splitting dimension.
+ */
+inline float get_p( Vector3 p, int axis )
+{
+	if ( axis == X_AXIS )
+		return p.x;
+	if ( axis == Y_AXIS )
+		return p.y;
+	if ( axis == Z_AXIS )
+		return p.z;
+	return 0.0;
+}
+
+/**
+ * Get the nearest photon neighbors of a position.
+ * @param p The interection position.
+ * @param norm The interection normal.
+ * @param neighbors The max heap array.
+ * @param L The photon map.
+ * @param e The photon index of the map.
+ * @param D The maximum square distance of photon in neighor heap.
+ * @param size The size of the max heap.
+ * @return void.
+ */
+void lookup( vec3 p, vec3 norm, Neighbor *neighbors, std::vector<Photon> &L,
+			 unsigned begin, unsigned end, float *D, int *size )
+{
+	if ( begin == end )
+		return;
+	if ( begin + 1 == end )
+		// add photon at leaf node to neighbors heap
+		return add_neighbor( p, norm, neighbors, L, begin, D, size );
+
+	unsigned median = begin + ( end - begin ) / 2;
+	// get splitting axis
+	int flag = ( L[median] ).flag;
+	float split_value = get_split( L, median, flag );
+	float p_value = get_p( p, flag );
+	// check which side of the splitting axis to traverse
+	if ( p_value <= split_value )
+	{
+		// traverse left sub-tree first
+		lookup( p, norm, neighbors, L, begin, median, D, size );
+		// add the current node
+		add_neighbor( p, norm, neighbors, L, median, D, size );
+		// return if neighbors heap is full and all nodes in the
+		// right sub-tree is further than those in neighbors heap
+		if ( *size >= NUM_PHOTON_RADIANCE &&
+			 ( p_value - split_value ) * ( p_value - split_value ) > *D )
+		{
+			return;
+		}
+		// traverse right sub-tree
+		return lookup( p, norm, neighbors, L, median + 1, end, D, size );
+	}
+	else
+	{
+		// traverse right sub-tree first
+		lookup( p, norm, neighbors, L, median + 1, end, D, size );
+		// add the current node
+		add_neighbor( p, norm, neighbors, L, median, D, size );
+		// return if neighbors heap is full and all nodes in the
+		// left sub-tree is further than those in neighbors heap
+		if ( *size >= NUM_PHOTON_RADIANCE &&
+			 ( p_value - split_value ) * ( p_value - split_value ) > *D )
+		{
+			return;
+		}
+		// traverse left sub-tree
+		return lookup( p, norm, neighbors, L, begin, median, D, size );
+	}
+}
+
+void RayTracer::emit_photons()
+{
+	for ( int i = 0; i < NUM_PHOTON; i++ )
+	{
+		RTLight *pL = NULL;
+		vec3 pos = scene.RandomPointOnLight( pL );
+
+		vec3 p;
+		p.x = 2.0 * float( rand() ) / RAND_MAX - 1.0;
+		p.y = 2.0 * float( rand() ) / RAND_MAX - 1.0;
+		p.z = 2.0 * float( rand() ) / RAND_MAX - 1.0;
+		p.normalize();
+
+		vec3 dir = sampleCosHemisphere( pL->mPlane->normal );
+		RTRay ray( pos, dir );
+
+		// scale the intensity of the photon ray
+		Photon ph = Photon( vec3(1) );
+		// do photon tracing
+		trace_photon( ray, ph, 0, 0 );
+	}
+
+	construct_kdtree( global_illum_map, 0, global_illum_map.size() );
+	construct_kdtree( caustic_map, 0, caustic_map.size() );
+}
+
+vec3 RayTracer::global_illumination( Neighbor *neighbors, vec3 p, vec3 norm )
+{
+	vec3 result = vec3( 0 );
+	// D is the furthest photon squared distance to p in neighbors
+	float D = Utils::MAX_FLOAT;
+	int size = 0;
+	// find the nearest photons
+	lookup( p, norm, neighbors, global_illum_map,
+			0, global_illum_map.size(), &D, &size );
+	if ( size == 0 )
+		return result;
+	for ( int i = 0; i < size; i++ )
+	{
+		Photon ph = global_illum_map[( neighbors[i] ).i];
+		result += ph.c * std::max( dot( norm, ph.dir ), 0.0f );
+	}
+	return result * ( 1.0 / ( D * PI ) );
+}
+
+/**
+ * Get the color from caustic.
+ * @param p The interection position.
+ * @param norm The interection normal.
+ * @param neighbors The max heap array.
+ * @return The caustic color at intersection.
+ */
+vec3 RayTracer::caustic( Neighbor *neighbors, vec3 p, vec3 norm )
+{
+	vec3 result = vec3(0);
+	// D is the furthest photon squared distance to p in neighbors
+	float D = Utils::MAX_FLOAT;
+	int size = 0;
+	// find the nearest photons
+	lookup( p, norm, neighbors, caustic_map,
+			0, caustic_map.size(), &D, &size );
+	if ( size == 0 )
+		return result;
+	for ( int i = 0; i < size; i++ )
+	{
+		Photon ph = caustic_map[( neighbors[i] ).i];
+		result += ph.c * std::max( dot( norm, ph.dir ), 0.0f );
+	}
+	return result * ( 1.0 / ( D * PI ) );
+}
+
+inline bool refract2( vec3 d, vec3 norm, float n, float nt, vec3 *t )
+{
+	// if the number under the square root is negative, there is no
+	// refracted ray and all of the energy is reflected, which is
+	// known as total internal reflection.
+	float d_n = dot( d, norm );
+	float sq_rt = 1.0 - ( n * n * ( 1.0 - ( d_n * d_n ) ) ) / ( nt * nt );
+
+	if ( sq_rt < 0.0 )
+	{
+		return false;
+	}
+	else
+	{
+		vec3 tmp =
+			( n * ( d - norm * d_n ) ) * ( 1.0f / nt ) - norm * sqrt( sq_rt );
+		t->x = tmp.x;
+		t->y = tmp.y;
+		t->z = tmp.z;
+		return true;
+	}
+}
+void RayTracer::trace_photon( const RTRay &ray, Photon &ph, int depth, int previous_bounce )
+{
+	if (depth>renderOptions.maxRecursionDepth)
+	{
+		return;
+	}
+
+	RTIntersection intersection;
+	intersection = findNearestObjectIntersection( ray );
+
+	if ( !intersection.isIntersecting() )
+	{
+		return;
+	}
+	SurfacePointData &hitPnt = intersection.surfacePointData;
+	ph.p = hitPnt.position;
+
+	const RTMaterial &material = intersection.object->getMaterial();
+	float distance = ( hitPnt.position - scene.getCamera()->getEye() ).length();
+	const vec3 &albedo = material.getAlbedoAtPoint( hitPnt.textureCoordinates.x, hitPnt.textureCoordinates.y, distance );
+
+	if ( material.shadingType  == TRANSMISSIVE_AND_REFLECTIVE )
+	{
+		float c, n, nt;
+		vec3 t;
+		bool entering;
+
+		// compute the reflected ray
+		vec3 nd = ray.dir - ( ( 2 * ray.dir.dot( hitPnt.normal ) ) * hitPnt.normal );
+		nd.normalize();
+		RTRay reflect_r(hitPnt.position+nd*renderOptions.shadowBias,nd);
+
+		// adjust photon power
+		ph.c = ph.c * std::max( albedo.x, std::max( albedo.y, albedo.z ) );
+
+		// entering the dielectric
+		if ( dot( ray.dir, hitPnt.normal ) < 0.0 )
+		{
+			entering = true;
+			n = 1;
+			nt = material.indexOfRefraction;
+			refract2( ray.dir.normalized(), hitPnt.normal, n, nt, &t );
+			c = dot( -ray.dir.normalized(), hitPnt.normal );
+		}
+		// leaving the dialectric
+		else
+		{
+			entering = false;
+			n = material.indexOfRefraction;
+			nt = 1;
+			if ( refract2( ray.dir.normalized(), -hitPnt.normal, n, nt, &t ) )
+			{
+				c = dot( t.normalized(), hitPnt.normal );
+			}
+			// total internal reflection
+			else
+			{
+				// R = 1 for total internal reflection
+				return trace_photon( reflect_r, ph, depth + 1, REFLECTIVE );
+			}
+		}
+
+		// compute Fresnel coefficient R
+		float R0 = (float)pow( (double)( ( nt - 1.0 ) / ( nt + 1.0 ) ), 2.0 );
+		float R = R0 + ( 1.0 - R0 ) * (float)pow( 1.0 - c, 5.0 );
+		t.normalize();
+		RTRay refract_r( hitPnt.position + t * renderOptions.shadowBias, t);
+
+		if ( entering )
+		{
+			// Russian Roulette sampling
+			if ( float( rand() ) / RAND_MAX < R )
+			{
+				return trace_photon( reflect_r, ph, depth + 1, REFLECTIVE );
+			}
+			else
+			{
+				return trace_photon( refract_r, ph, depth + 1, REFLECTIVE );
+			}
+		}
+		else
+		{
+			// Russian Roulette sampling
+			if ( float( rand() ) / RAND_MAX < R )
+			{
+				return trace_photon( reflect_r, ph, depth + 1, REFLECTIVE );
+			}
+			else
+			{
+				return trace_photon( refract_r, ph, depth + 1, REFLECTIVE );
+			}
+		}
+
+		// 		int bounce = DIFFUSE;
+// 		vec3 random_dir;
+// 		float reflectionFactor;
+// 		reflectionFactor = Utils::fresnel( ray.dir, hitPnt.normal, material.indexOfRefraction );
+// 
+// 		ph.c = ph.c * std::max( albedo.x, std::max( albedo.y, albedo.z ) );
+// 		
+// 		if (false && (float)rand() / RAND_MAX < reflectionFactor )
+// 		{
+// 			random_dir = ray.dir - ( ( 2 * ray.dir.dot( hitPnt.normal ) ) * hitPnt.normal );
+// 		}
+// 		else
+// 		{
+// 			bool bOut = true;
+// 			random_dir = Utils::refract( ray.dir, hitPnt.normal, material.indexOfRefraction,bOut );
+// 			if (bOut == false)
+// 			{
+// 				bounce = REFLECTIVE;
+// 			}
+// 		}
+// 		RTRay ray_ref( hitPnt.position + random_dir * renderOptions.shadowBias, random_dir );
+// 
+// 		return trace_photon( ray_ref, ph, depth + 1, bounce );
+	}
+	else
+	{
+		int bounce = material.shadingType;
+		vec3 random_dir;
+		if ( material.shadingType == DIFFUSE_AND_REFLECTIVE)
+		{
+			if ( (float)rand() / RAND_MAX < material.reflectionFactor )
+			{
+				random_dir = ray.dir - ( ( 2 * ray.dir.dot( hitPnt.normal ) ) * hitPnt.normal );
+				bounce = DIFFUSE;
+			}
+			else
+			{
+				random_dir = sampleCosHemisphere( hitPnt.normal );
+				bounce = DIFFUSE;
+			}
+		}
+		else if ( material.shadingType == DIFFUSE)
+		{
+			random_dir = sampleCosHemisphere( hitPnt.normal );
+			bounce = DIFFUSE;
+		}
+		else
+		{
+			random_dir = ray.dir - ( ( 2 * ray.dir.dot( hitPnt.normal ) ) * hitPnt.normal );
+			bounce = DIFFUSE;
+		}
+
+		if ( depth != 0 )
+		{
+			ph.dir = -normalize( ray.dir );
+			if ( previous_bounce == DIFFUSE )
+				global_illum_map.push_back( ph );
+			if ( previous_bounce == REFLECTIVE )
+				caustic_map.push_back( ph );
+		}
+
+		bool bAbsorb = false;
+		float max = std::max( ph.c.x, std::max( ph.c.y, ph.c.z ) );
+		if ( scene.sampler()->get1D() > max )
+		{
+			bAbsorb = true;
+		}
+
+		 if ( bAbsorb )
+			return;
+		 else
+		 {
+			 Photon reflected_ph = Photon( ph.c * albedo );
+			 RTRay ray_ref( hitPnt.position + random_dir * renderOptions.shadowBias, random_dir );
+			 return trace_photon( ray_ref, reflected_ph, depth + 1, bounce );
+		 }			 
+	}
+}
+
+int RayTracer::getSCount()
+{
+	return sample_count;
 }
 
 const Tmpl8::vec3 RayTracer::shade_diffuse( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const

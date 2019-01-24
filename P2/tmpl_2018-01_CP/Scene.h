@@ -10,6 +10,44 @@
 #include "uniform.h"
 
 using namespace std;
+struct Neighbor
+{
+	Neighbor()
+	{
+		sq_dis = -1.0;
+		i = 0;
+	};
+	Neighbor( float s, unsigned e )
+	{
+		sq_dis = s;
+		i = e;
+	};
+	// squared distance from photon to intersection
+	float sq_dis;
+	// index of photon in map
+	unsigned i;
+};
+
+struct Photon
+{
+	Photon(){};
+	Photon( char f )
+	{
+		flag = f;
+	};
+	Photon( vec3 i )
+	{
+		c = i;
+	};
+	// indicate the splitting axis or leaf node
+	char flag;
+	// position of photon
+	vec3 p;
+	// incident direction of photon ray
+	vec3 dir;
+	// intensity of photon
+	vec3 c;
+};
 
 class Scene
 {

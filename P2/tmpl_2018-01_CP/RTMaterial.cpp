@@ -238,7 +238,8 @@ bool RTMaterial::evaluate( const RTRay &ray, const SurfacePointData &hitPnt, vec
 		}
 		else
 		{
-			random_dir = Utils::refract( ray.dir, hitPnt.normal, indexOfRefraction );
+			bool bOut = true;
+			random_dir = Utils::refract( ray.dir, hitPnt.normal, indexOfRefraction, bOut );
 		}
 		break;
 	case DIFFUSE_AND_REFLECTIVE:

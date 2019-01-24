@@ -37,7 +37,7 @@ public:
 		}
 	}
 
-	static vec3 refract(const vec3 &I, const vec3 &N, const float refractionIndex) 
+	static vec3 refract( const vec3 &I, const vec3 &N, const float refractionIndex, bool& bOut) 
 	{
 		float cosi = Utils::clamp_rt( dot( I, N ), -1.0f, 1.0f );
 		float etai = 1, etat = refractionIndex;
@@ -46,6 +46,7 @@ public:
 			cosi = -cosi;
 		else
 		{
+			bOut = false;
 			std::swap( etai, etat );
 			n = -N;
 		}

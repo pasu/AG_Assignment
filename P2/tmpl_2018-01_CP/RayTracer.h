@@ -17,7 +17,7 @@ class RayTracer
 
 	const vec3 castRay( const RTRay &ray, const int depth, RTIntersection& intersection ) const;
 
-	const vec3 sample( const RTRay &ray, const int depth, RTIntersection &intersection, bool lastSpecular ) const;
+	const vec3 sample( const RTRay &ray, const int depth, RTIntersection &intersection, bool lastSpecular ) ;
 
 	void castRayPacket( const RayPacket &ray, vec3* colors ) const;
 
@@ -30,6 +30,15 @@ class RayTracer
 	float calculateMISWeight( float &pdf1, float &pdf2 )const;
 
 	void Reset();
+
+	void emit_photons();
+	void trace_photon( const RTRay &ray,
+					   Photon &ph, int depth, int previous_bounce );
+
+	int getSCount();
+
+	vec3 global_illumination( Neighbor *neighbors, vec3 p, vec3 norm );
+	vec3 caustic( Neighbor *neighbors, vec3 p, vec3 norm );
   private:
 	const vec3 shade_diffuse( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const;
 	const vec3 shade_reflective( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const;
@@ -61,4 +70,11 @@ class RayTracer
 	float fOnePixelSize;
 	float fStratificationSize;
 	int sample_count;
+
+	std::vector<Photon> caustic_map;
+	// map to store global illumination photons
+	std::vector<Photon> global_illum_map;
+#ifdef PHOTO_MAPPING
+	//Neighbor neighbors[NUM_PHOTON_RADIANCE];
+#endif // PHOTO_MAPPING	
 };

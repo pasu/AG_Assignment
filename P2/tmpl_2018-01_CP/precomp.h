@@ -33,6 +33,15 @@
 #define PATH_TRACER
 #define NEE
 
+#define PHOTO_MAPPING
+#define NUM_PHOTON 10000
+
+#define X_AXIS 0
+#define Y_AXIS 1
+#define Z_AXIS 2
+#define LEAF 3
+#define NUM_PHOTON_RADIANCE 500
+
 // Glew should be included first
 //#include <GL/glew.h>
 #include "glad/glad.h"
