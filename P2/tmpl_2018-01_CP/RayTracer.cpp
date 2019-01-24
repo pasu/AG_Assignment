@@ -224,13 +224,15 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 				finalColor += weight_light * color;
 			}
 #ifdef PHOTO_MAPPING
-// 			else
-// 			{
-// 				vec3 global_color = global_illumination( neighbors, intersection.surfacePointData.position,
-// 											 intersection.surfacePointData.normal );
-// 
-// 				finalColor += global_color * albedo * Utils::INV_PI;
-// 			}
+			else if (depth == 0)
+			{
+				Neighbor neighbors[NUM_PHOTON_RADIANCE];
+				vec3 global_color = caustic( neighbors, intersection.surfacePointData.position,
+											 intersection.surfacePointData.normal );
+
+				finalColor += global_color * Utils::INV_PI * 0.5 * material.brdf( ray, intersection.surfacePointData, ray_random );
+				;
+			}
 #endif // PHOTO_MAPPING
 
 			
@@ -258,13 +260,16 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 
 	finalColor += weight_obj * color_obj;
 
-#ifdef PHOTO_MAPPING
-	Neighbor neighbors[NUM_PHOTON_RADIANCE];
-	vec3 caustic_color = caustic( neighbors, intersection.surfacePointData.position,
-											 intersection.surfacePointData.normal );
+#ifdef PHOTO_MAPPING_
+	if (depth == 0)
+	{
+		Neighbor neighbors[NUM_PHOTON_RADIANCE];
+		vec3 caustic_color = caustic( neighbors, intersection.surfacePointData.position,
+									  intersection.surfacePointData.normal );
 
-	finalColor += caustic_color * 0.5 * Utils::INV_PI * material.brdf( ray, intersection.surfacePointData, ray_random );
-	//*Utils::INV_PI;
+		finalColor += caustic_color * 0.5 * Utils::INV_PI * material.brdf( ray, intersection.surfacePointData, ray_random );
+		//*Utils::INV_PI;
+	}	
 #endif // PHOTO_MAPPING
 
 	return finalColor;
@@ -724,6 +729,10 @@ void RayTracer::emit_photons()
 		p.normalize();
 
 		vec3 dir = sampleCosHemisphere( pL->mPlane->normal );
+		if (NUM_PHOTON == 500)
+		{
+			dir = pL->mPlane->normal;// numbers of samples are too slow
+		}
 		RTRay ray( pos, dir );
 
 		// scale the intensity of the photon ray
