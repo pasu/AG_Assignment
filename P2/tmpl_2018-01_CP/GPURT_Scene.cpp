@@ -5,4 +5,6 @@ using namespace gpurt;
 
 void gpurt::initScene() {
     loadGeometryGroup();
+
+
 }

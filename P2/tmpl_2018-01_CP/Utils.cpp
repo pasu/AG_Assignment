@@ -27,3 +27,35 @@ bool Utils::solveQuadratic(const float a, const float b, const float c, float &r
 		swap(r0, r1);
 	return true;
 }
+
+GLuint Utils::createShader(const char* source, GLenum type, const char* errinfo) {
+    int len = std::strlen(source);
+
+    GLuint shader = glCreateShader(type);
+    glShaderSource(shader, 1, &source, &len);
+    glCompileShader(shader);
+    GLint testVal = GL_FALSE;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &testVal);
+    if (testVal == GL_FALSE)
+    {
+        char infoLog[1024];
+        glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+        glDeleteShader(shader);
+        printf("shader error (%s) : %s\n", errinfo, infoLog);
+        return 0;
+    }
+    return shader;
+}
+
+void Utils::linkProgram(GLuint program, const char* errinfo) {
+    GLint testVal;
+    glLinkProgram(program);
+    glGetProgramiv(program, GL_LINK_STATUS, &testVal);
+    if (testVal == GL_FALSE) {
+        char infoLog[1024];
+        glGetProgramInfoLog(program, 1024, NULL, infoLog);
+        glDeleteProgram(program);
+
+        printf("link error (%s) : %s\n", errinfo, infoLog);
+    }
+}

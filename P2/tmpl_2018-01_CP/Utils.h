@@ -24,4 +24,7 @@ public:
 	inline static bool floatEquals(const float value, const float comp, const float epsilon = EPSILON_FLOAT) {
 		return abs(value - comp) <= epsilon;
 	}
+
+    static void linkProgram(GLuint program, const char* errinfo="");
+    static GLuint createShader(const char* source, GLenum type, const char* errinfo="");
 };
