@@ -72,7 +72,7 @@ void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 		{
 			if ( sample_count < SAMPLE_NUM2 )
 			{
-				RTRay r = generatePrimaryRay( x, y, sample_count );
+				RTRay r = generatePrimaryRayD( x, y, sample_count );
 				RTIntersection intersection;
 				vec3 color = sample( r, 0, intersection, true );
 				color.x = sqrtf( color.x );
@@ -202,6 +202,27 @@ const RTRay &RayTracer::generatePrimaryRay( const int x, const int y, const int 
 
 	vec3 dir = scene.getCamera()->rayDirFromNdc( ndcPixelCentre );
 	return RTRay( origin, dir );
+}
+
+const RTRay &RayTracer::generatePrimaryRayD( const int x, const int y, const int &sampleIds ) const
+{
+	RTCamera *camera = scene.getCamera();
+	// Stratification
+	int u = sampleIds % SAMPLE_NUM;
+	int v = sampleIds / SAMPLE_NUM;
+
+	vec3 pixelPoint = camera->left_up_corner +
+					  vec3( (float)x * camera->pixel_size, 0.0f, 0.0f ) +
+					  vec3( 0.0f, (float)y * -1.0f * camera->pixel_size, 0.0f ) +
+					  vec3( ( (float)v + (float)rand() / RAND_MAX ) * camera->strata_size, 0.0f, 0.0f ) +
+					  vec3( 0.0f, ( (float)u + (float)rand() / RAND_MAX ) * -camera->strata_size, 0.0f );
+
+	vec2 lensSample = scene.sampler()->get2D() * camera->aperture;
+	vec3 lensPoint = camera->getEye() + lensSample.x * camera->right + lensSample.y * camera->up;
+	vec3 dir = ( pixelPoint - lensPoint ).normalized();
+
+	
+	return RTRay( lensPoint, dir );
 }
 
 const vec3 RayTracer::castRay( const RTRay &ray, const int depth, RTIntersection &intersection ) const

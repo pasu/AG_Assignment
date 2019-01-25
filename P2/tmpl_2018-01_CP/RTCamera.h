@@ -36,8 +36,22 @@ class RTCamera
 		bUpdate = true;
 		position = vec4( 0 );
 		position.w = 1.0f;
+
 		updateRotationMatrix();
 		Update();
+
+		// depth field
+		float factor = 0.1;
+		aperture = 0;
+		d = factor*SCRWIDTH / 2;
+		viewplane_size = factor*SCRWIDTH;
+
+		viewplane_center = eye + (float)d * ahead;
+		pixel_size = (float)( viewplane_size / (float)SCRWIDTH );
+		strata_size = pixel_size / (float)SAMPLE_NUM;
+		left_up_corner = vec3( (float)SCRWIDTH * this->pixel_size * -0.5f,
+							   (float)SCRHEIGHT * this->pixel_size * 0.5f,
+							   (float)this->viewplane_center.z );
 	}
 
 	vec3 rayDirFromNdc( const vec2 ndc )
@@ -120,7 +134,7 @@ class RTCamera
 		return bUpdate;
 	}
 
-  private:
+  public:
 	vec3 eye;
 	vec3 ahead;
 	vec3 right;
@@ -134,5 +148,14 @@ class RTCamera
 	float pitch;
 	mat4 mRotation;
 	vec4 position;
+
+	// Depth Field
+	float d;
+	float aperture;
+	float viewplane_size;
+	vec3 viewplane_center;
+	vec3 left_up_corner;
+	float pixel_size;
+	float strata_size;
 
 };

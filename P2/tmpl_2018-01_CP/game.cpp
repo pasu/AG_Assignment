@@ -45,7 +45,8 @@ void Game::Init()
 	//scene_bvh();
 //#undef PHOTON_MAPPING
 	//scene_outdoor();
-	scene_indoor();
+	//scene_indoor();
+	scene_depth();
 	
 #ifdef PHOTON_MAPPING
 	pTracer->emit_photons();
@@ -138,6 +139,18 @@ void Tmpl8::Game::KeyDown( int key )
 	if ( key == 31 )
 	{
 		pTracer->SetFilterMethod( 2 );
+	}
+
+	if ( key == 32 )
+	{
+		scene.getCamera()->aperture += 0.001f;
+		pTracer->Reset();
+	}
+
+	if ( key == 33 )
+	{
+		scene.getCamera()->aperture > 0.001f ? scene.getCamera()->aperture -= 0.001f : 0.0f;
+		pTracer->Reset();
 	}
 
 	//scene.getCamera()->setEye( vec3( 0 ) );
@@ -279,6 +292,77 @@ void Tmpl8::Game::scene_indoor()
 	scene.updateLightsWeight();
 	///////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////
+}
+
+
+void Tmpl8::Game::scene_depth()
+{
+	{
+		//////////////////////////////////////////////////////////////////////////
+		vec3 lightBlue( 190. / 255., 237. / 255., 0.9 );
+		vec3 lightRed( 248. / 255., 192. / 255., 196. / 255 );
+		RTTexture *pFloor = gTexManager.CreateTexture( "./assets/floor_diffuse.PNG", true, 8, 20.0f );
+		RTTexture *pSkydome = gTexManager.CreateTexture( "./assets/skydome.jpg", true, 8, 20.0f );
+
+		scene.AttachSkyDome( pSkydome );
+
+		RTMaterial &floorMaterial = gMaterialManager.CreateMaterial( vec3( 0.9 ), pFloor, vec2( 0.2f ), REFLECTIVE, 0.8f, 2.5f );
+		floorMaterial.pow_ = 0.05;
+
+		vector<RTPrimitive *> arrObjs;
+		arrObjs.push_back( new RTPlane( vec3( 0.0f, -10.0f, 0.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), floorMaterial ) );
+
+		RTMaterial &blueGlassMaterial = gMaterialManager.CreateMaterial( vec3( 0.9 ), 0, vec2( 1.0f ), REFLECTIVE, 0.95f, 2.24f );
+		blueGlassMaterial.pow_ = 10000;
+
+		RTTexture *tower = gTexManager.CreateTexture( "./assets/Wood_Tower_Col.jpg", true, 8, 20.0f );
+		RTMaterial &towerMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), tower, vec2( 1 ), DIFFUSE_AND_REFLECTIVE, 0.0f, 2.5f );
+
+		RTObjMesh *mesh = new RTObjMesh( "assets/wooden.dae", towerMaterial );
+
+		RTGeometry *robotGeometry = new RTGeometry();
+		for (int i=0;i<1;i++)
+		{
+			
+			mesh->setPosition( -1 + i*5, -9, -15 + i*5 );
+			mesh->setRotation( -20.0f, 0.0f, 0.0f );
+			mesh->setScale( 1, 1, 1 );
+			mesh->applyTransforms();
+			//	scene.addObject( mesh );
+			vector<RTTriangle *> tarray;
+			mesh->getTriangles( tarray );
+
+			for ( size_t i = 0; i < tarray.size(); i++ )
+			{
+				robotGeometry->addObject( tarray[i] );
+			}
+		}			
+
+		vec3 posL = vec3( 0, 5, -25 );
+		RTMaterial &lightM = gMaterialManager.CreateMaterial( vec3( 1 ), vec3( 1000 ), DIFFUSE );
+		RTPlane *plane = new RTPlane( posL, vec3( 0.0f, -1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), lightM, vec2( 2 ) );
+		arrObjs.push_back( plane );
+
+		for ( size_t i = 0; i < arrObjs.size(); i++ )
+		{
+			robotGeometry->addObject( arrObjs[i] );
+		}
+
+		robotGeometry->BuildBVHTree();
+
+		RTObject *pRobot = new RTObject( robotGeometry );
+		scene.addObject( pRobot );
+		scene.BuildBVHTree();
+		/////////////////////////////////////////////////////////////////////////
+		scene.ambientLight = 0.3f;
+
+		RTLight *pLight = RTLight::createAreaLight( vec3( 1.0f, 1.0f, 1.0f ), 0.0f, posL, plane );
+		scene.addLight( pLight );
+
+		scene.updateLightsWeight();
+
+		scene.getCamera()->aperture = 0.2;
+	}
 }
 
 static void animateFunc( RTObject *object )

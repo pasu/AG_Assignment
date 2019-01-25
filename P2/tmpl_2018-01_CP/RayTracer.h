@@ -14,6 +14,7 @@ class RayTracer
 	
 
 	const RTRay &generatePrimaryRay( const int x, const int y, const int& sampleIds = 0 ) const;
+	const RTRay &generatePrimaryRayD( const int x, const int y, const int &sampleIds) const;
 
 	const vec3 castRay( const RTRay &ray, const int depth, RTIntersection& intersection ) const;
 

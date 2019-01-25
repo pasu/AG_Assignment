@@ -19,6 +19,7 @@ public:
 
 	void scene_outdoor();
 	void scene_indoor();
+	void scene_depth();
 	void scene_bvh();
 	void scene_toplevel();
 	void scene_sbvh();
