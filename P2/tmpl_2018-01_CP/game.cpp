@@ -44,12 +44,11 @@ void Game::Init()
 
 	//scene_bvh();
 //#undef PHOTON_MAPPING
-	//scene_outdoor();
+	scene_outdoor();
 	//scene_indoor();
-	scene_depth();
+	//scene_depth();
 	
 #ifdef PHOTON_MAPPING
-	pTracer->emit_photons();
 #endif
 }
 
@@ -115,20 +114,22 @@ void Tmpl8::Game::KeyDown( int key )
 		gMaterialManager.ClearAll();
 		scene.ClearAllLight();
 		scene.ClearAllObj();
+		scene.AttachSkyDome(NULL);
 
 		index++;
 		switch ( index % scenecount )
 		{
 		case 0:
-			scene_bvh();
+			scene_outdoor();
 			break;
 		case 1:
-			scene_toplevel();
+			scene_indoor();
 			break;
 		case 2:
-			scene_sbvh();
+			scene_depth();
 			break;
 		}
+		pTracer->Reset();
 	}
 
 	if (key == 30)
@@ -163,6 +164,7 @@ void Tmpl8::Game::MouseWheel( int y )
 
 void Tmpl8::Game::scene_outdoor()
 {
+	scene.getCamera()->aperture = 0.0;
 	//////////////////////////////////////////////////////////////////////////
 	vec3 lightBlue( 190. / 255., 237. / 255., 0.9 );
 	vec3 lightRed( 248. / 255., 192. / 255., 196. / 255 );
@@ -229,6 +231,7 @@ void Tmpl8::Game::scene_outdoor()
 
 void Tmpl8::Game::scene_indoor()
 {
+	scene.getCamera()->aperture = 0.0;
 	//////////////////////////////////////////////////////////////////////////
 	RTChessBoardTexture *chessboardTexture = gTexManager.CreateChessBoardTexture( vec3( 0.9 ), vec3( 0 ) );
 	RTTexture *sphereT = gTexManager.CreateTexture( "./assets/box.PNG", true, 1, 100 );
@@ -290,6 +293,8 @@ void Tmpl8::Game::scene_indoor()
 	RTLight *pLight2 = RTLight::createAreaLight( vec3( 1.0f, 1.0f, 1.0f ), 0.0f, posL2, plane2 );
 	//scene.addLight( pLight2 );
 	scene.updateLightsWeight();
+
+	pTracer->emit_photons();
 	///////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////
 }
