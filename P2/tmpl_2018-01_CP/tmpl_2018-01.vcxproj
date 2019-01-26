@@ -137,12 +137,15 @@
   </ItemDefinitionGroup>
   <!-- END Custom section -->
   <ItemGroup>
+    <ClCompile Include="GPURT_AABB.cpp" />
     <ClCompile Include="AABB.cpp" />
     <ClCompile Include="BVH.cpp" />
     <ClCompile Include="FXAA.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="glad.cpp" />
     <ClCompile Include="GPURayTracer.cpp" />
+    <ClCompile Include="GPURT_BVH.cpp" />
+    <ClCompile Include="GPURT_Geometry.cpp" />
     <ClCompile Include="GPURT_GeometryGroup.cpp" />
     <ClCompile Include="GPURT_Scene.cpp" />
     <ClCompile Include="quarticsolver.cpp" />
@@ -184,6 +187,8 @@
     <ClInclude Include="FXAA.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GPURayTracer.h" />
+    <ClInclude Include="GPURT_AABB.h" />
+    <ClInclude Include="GPURT_BVH.h" />
     <ClInclude Include="GPURT_Geometry.h" />
     <ClInclude Include="GPURT_GeometryGroup.h" />
     <ClInclude Include="GPURT_Scene.h" />

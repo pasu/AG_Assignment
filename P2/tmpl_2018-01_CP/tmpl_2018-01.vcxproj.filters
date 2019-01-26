@@ -110,6 +110,15 @@
     <ClCompile Include="GPURT_Scene.cpp">
       <Filter>GPURayTracer\scene</Filter>
     </ClCompile>
+    <ClCompile Include="GPURT_AABB.cpp">
+      <Filter>GPURayTracer\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="GPURT_BVH.cpp">
+      <Filter>GPURayTracer\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="GPURT_Geometry.cpp">
+      <Filter>GPURayTracer\scene</Filter>
+    </ClCompile>
     <ClCompile Include="GPURT_GeometryGroup.cpp">
       <Filter>GPURayTracer\scene</Filter>
     </ClCompile>
@@ -228,13 +237,19 @@
     <ClInclude Include="GPURT_Scene.h">
       <Filter>GPURayTracer\scene</Filter>
     </ClInclude>
-    <ClInclude Include="GPURT_GeometryGroup.h">
+    <ClInclude Include="GPURT_Triangle.h">
+      <Filter>GPURayTracer\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="GPURT_AABB.h">
+      <Filter>GPURayTracer\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="GPURT_BVH.h">
       <Filter>GPURayTracer\scene</Filter>
     </ClInclude>
     <ClInclude Include="GPURT_Geometry.h">
       <Filter>GPURayTracer\scene</Filter>
     </ClInclude>
-    <ClInclude Include="GPURT_Triangle.h">
+    <ClInclude Include="GPURT_GeometryGroup.h">
       <Filter>GPURayTracer\scene</Filter>
     </ClInclude>
   </ItemGroup>

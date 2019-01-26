@@ -3,24 +3,24 @@
 
 using namespace gpurt;
 
-void gpurt::loadGeometryGroup() {
+gpurt::GeometryGroup::GeometryGroup(const char* file_name) {
     Assimp::Importer* importer = new Assimp::Importer();
 
-    importer->ReadFile("assets\\GPURT\\house_interior\\untitled.obj", aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate |
+    importer->ReadFile(file_name, aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate |
         aiProcess_JoinIdenticalVertices| aiProcess_FlipUVs);
     if (!importer->GetScene())
     {
-        cout << "Error loading mesh: " << "assets\\GPURT\\house_interior\\untitled.obj" << ". " << importer->GetErrorString();
+        cout << "Error loading mesh: " << file_name << ". " << importer->GetErrorString();
         return;
     }
     const aiScene &scene = *(importer->GetScene());
 
-    cout << scene.mFlags << std::endl;
-    AI_SCENE_FLAGS_INCOMPLETE;
-    cout << scene.mNumMaterials << endl;
+    if (scene.mFlags == AI_SCENE_FLAGS_INCOMPLETE) {
+        cout << "Scene incomplete : " << file_name <<endl;
+    }
 
-    cout << scene.mNumMeshes << endl;
-
+    // GetTexture and material
+    /*
     cout << scene.mNumTextures << endl;
     cout << scene.mMaterials[0]->GetTextureCount(aiTextureType_DIFFUSE)<< endl;
     cout << scene.mMaterials[1]->GetTextureCount(aiTextureType_DIFFUSE) << endl;
@@ -44,5 +44,21 @@ void gpurt::loadGeometryGroup() {
     mat->Get(AI_MATKEY_COLOR_AMBIENT, sha);
 
     cout << sha.r << " " << sha.g << " " << sha.b << endl;
+    */
 
+    for (unsigned int meshI = 0; meshI < scene.mNumMeshes; ++meshI)
+    {
+        aiMesh &mesh = *(scene.mMeshes[meshI]);
+        
+        _geometries_.push_back(new Geometry(mesh));
+    }
+
+}
+
+int gpurt::GeometryGroup::triangleCount(){
+    int number = 0;
+    for (Geometry* g : _geometries_) {
+        number += g->triangleCount();
+    }
+    return number;
 }
