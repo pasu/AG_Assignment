@@ -116,7 +116,9 @@
     <ClCompile Include="LocalSpace.cpp">
       <Filter>Toolkit</Filter>
     </ClCompile>
-    <ClCompile Include="ImgToolkit.cpp" />
+    <ClCompile Include="ImgToolkit.cpp">
+      <Filter>Toolkit</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -241,7 +243,9 @@
     <ClInclude Include="LocalSpace.h">
       <Filter>Toolkit</Filter>
     </ClInclude>
-    <ClInclude Include="ImgToolkit.h" />
+    <ClInclude Include="ImgToolkit.h">
+      <Filter>Toolkit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">

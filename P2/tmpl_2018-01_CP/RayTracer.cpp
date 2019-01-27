@@ -142,6 +142,9 @@ void RayTracer::render( Surface *screen )
 			case 2:
 				ImgToolkit::median_filter( renderOptions.width, renderOptions.height, hdrPixels, pImgPixels );
 				break;
+			case 3:
+				ImgToolkit::barrel_distortion( renderOptions.width, renderOptions.height, hdrPixels, pImgPixels );
+				break;
 			default:
 				break;
 			}

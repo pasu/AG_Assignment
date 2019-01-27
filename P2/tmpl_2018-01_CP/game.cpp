@@ -141,14 +141,18 @@ void Tmpl8::Game::KeyDown( int key )
 	{
 		pTracer->SetFilterMethod( 2 );
 	}
-
 	if ( key == 32 )
+	{
+		pTracer->SetFilterMethod( 3 );
+	}
+
+	if ( key == 33 )
 	{
 		scene.getCamera()->aperture += 0.001f;
 		pTracer->Reset();
 	}
 
-	if ( key == 33 )
+	if ( key == 34 )
 	{
 		scene.getCamera()->aperture > 0.001f ? scene.getCamera()->aperture -= 0.001f : 0.0f;
 		pTracer->Reset();

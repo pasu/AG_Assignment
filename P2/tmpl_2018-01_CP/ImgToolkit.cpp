@@ -40,6 +40,32 @@ void ImgToolkit::median_filter( int width, int height, vec3 *buffer, vec3 *rbuff
 	}
 }
 
+
+void ImgToolkit::barrel_distortion( int width, int height, vec3 *buffer, vec3 *result )
+{
+	float alpha = 1.5;
+	for ( int y = 0; y < height; ++y )
+	{
+		for ( int x = 0; x < width; ++x )
+		{
+			float yy = (float)y / height;
+			float xx = (float)x / width;
+			vec2 r = vec2( xx - 0.5, yy - 0.5 );
+			float r_judge = r.dot( r );
+			vec2 nr = r * ( 1 + alpha * r_judge );
+			if ( nr.x <= 0.5 && nr.y <= 0.5 )
+			{
+				int x2 = (int)( ( nr.x + 0.5 ) * width );
+				int y2 = (int)( ( nr.y + 0.5 ) * height );
+				if ( x2 >= 0 && x2 <= width && y2 >= 0 && y2 <= height )
+				{
+					result[y*width+x] += buffer[y2*width+x2];
+				}
+			}
+		}
+	}
+}
+
 #define QX_DEF_CHAR_MAX 255
 
 inline void _recursive_bf(
