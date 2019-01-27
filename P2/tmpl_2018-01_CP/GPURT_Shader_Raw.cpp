@@ -66,7 +66,7 @@ vec4 randomDirection() {
 
 void primaryRay(in uint x, in uint y, out Ray ray) {
     ray.dir = normalize(vec3(float(x) + xorshift32(), float(640 - y) + xorshift32(), -320.0) - vec3(320.0, 320.0, 0));
-    ray.pos = vec3(0, 3, 7);
+    ray.pos = vec3(0, 1.5, 5);
 }
 
 bool intersectAABB(vec3 aabb_min,vec3 aabb_max,Ray ray) {
@@ -176,14 +176,14 @@ void main(void) {
     Ray ray;
     primaryRay(gl_GlobalInvocationID.x, gl_GlobalInvocationID.y, ray);
     vec3 color = vec3(1);
-
-    for (int j = 0; j < 10; j++)
+    vec3 ill = vec3(0);
+    for (int j = 0; j < 5; j++)
     {
         IntersectScene ict = intersectScene(ray);
         if (ict.distance< very_large_float) {
-            color = color * vec3(0.5);
+            color = color * vec3(0.8);
             if (triangles[ict.triangle_id].v1._r == 1) {
-                color = color * vec3(30);
+                ill = vec3(30);
                 break;
             }
         }
@@ -191,6 +191,11 @@ void main(void) {
             color = vec3(0);
             break;
         }
+
+        if (xorshift32() > dot(color, color)) {
+            break;
+        }
+        color = color / dot(color, color);
 
         ray.pos = ray.pos + ict.distance*ray.dir;
 
@@ -207,7 +212,7 @@ void main(void) {
         ray.pos = ray.pos + 0.001*ray.dir;
     }
 
-    pixel_color[gl_GlobalInvocationID.y][gl_GlobalInvocationID.x] = vec4(color, 1) + pixel_color[gl_GlobalInvocationID.y][gl_GlobalInvocationID.x];
+    pixel_color[gl_GlobalInvocationID.y][gl_GlobalInvocationID.x] = vec4(color*ill, 1) + pixel_color[gl_GlobalInvocationID.y][gl_GlobalInvocationID.x];
 }\n
 
 );

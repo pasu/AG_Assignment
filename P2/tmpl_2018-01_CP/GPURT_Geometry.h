@@ -50,7 +50,7 @@ namespace gpurt {
 
         int bvhSize()const;
 
-        void setMaterialGroup(int materialgroup);
+        void setObjectID(int materialgroup);
 
     };
 

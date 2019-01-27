@@ -56,7 +56,7 @@ gpurt::GeometryGroup::GeometryGroup(const char* file_name) {
         
     }
     for (int i = 0; i < geometryCount();i++) {
-        _geometries_[i]->setMaterialGroup(i);
+        _geometries_[i]->setObjectID(i);
     }
     constructBVH();
 }
