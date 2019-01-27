@@ -19,11 +19,28 @@ namespace gpurt {
 
     class GeometryGroup {
     private:
-        int _triangle_offset_;
-    public:
+
+        gpurt::BVH _bvh_;// mid-level merged bvh tree, size = geometryCount()*2-1
+
+        vector<const gpurt::BVH*> _sub_bvh_list_;
+
         std::vector<Geometry*> _geometries_;
+
+        void constructBVH();
+
+    public:
         GeometryGroup(const char* file_name);
         int triangleCount();
+        const int geometryCount()const { return _geometries_.size(); }
+
+        const std::vector<Geometry*>& geometries() { return _geometries_; }
+
+        void copyBVH(BVHNode* dst, int& bvh_offset);
+
+        void setTriangleOffset(int& offset);
+
+        int bvhSize();
+
     };
 
     // Object is a geometry group + a rigid motion

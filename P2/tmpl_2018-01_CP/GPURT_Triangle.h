@@ -11,11 +11,10 @@ Triangles in local memorys
 #include"assimp/mesh.h"
 
 #include<glad/glad.h>
-#include"GPURT_BVH.h"
 
 namespace gpurt {
     typedef  struct Vertex {
-        aiVector3D pos;
+        aiVector3D pos;// use aiVector3D because it has no padding, sizeof(aiVector3D) = 12, thus the padding bytes can be used explicitly
         uint _padding1;
         aiVector3D normal;
         uint __padding2;
@@ -23,5 +22,8 @@ namespace gpurt {
 
     typedef struct Triangle {
         Vertex v1, v2, v3;
+
+        const vec3 centroid()const;
+
     }Triangle;
 }

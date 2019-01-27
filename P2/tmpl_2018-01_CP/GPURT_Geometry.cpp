@@ -2,11 +2,11 @@
 #include "GPURT_Geometry.h"
 #include<assimp\mesh.h>
 
+using namespace gpurt;
+
 gpurt::Geometry::Geometry(const aiMesh & mesh) {
 
-    triangles.reserve(mesh.mNumFaces);
-
-    _bvh_.reserve(mesh.mNumFaces);
+    _triangles_.reserve(mesh.mNumFaces);
 
     for (unsigned int faceI = 0; faceI < mesh.mNumFaces; ++faceI) {
         const aiFace & face = mesh.mFaces[faceI];
@@ -29,10 +29,29 @@ gpurt::Geometry::Geometry(const aiMesh & mesh) {
                 mesh.mNormals[i3]
             }
         };
-        triangles.push_back(t);
+        _triangles_.push_back(t);
     }
+    constructBVH();
 }
 
 void gpurt::Geometry::constructBVH() {
-
+    _bvh_.construct(_triangles_);
 }
+
+const void gpurt::Geometry::copyBVH(BVHNode * dst, int & bvh_offset) const {
+    _bvh_.copy(dst, bvh_offset);
+}
+
+void gpurt::Geometry::setTriangleOffset(int & offset) {
+    for (int i = 0; i < bvhSize(); i++) {
+        if (_bvh_[i].isLeaf()) {
+            _bvh_[i].left_first += offset;
+        }
+    }
+    offset += triangleCount();
+}
+
+int gpurt::Geometry::bvhSize()const {
+    return _bvh_.size();
+}
+

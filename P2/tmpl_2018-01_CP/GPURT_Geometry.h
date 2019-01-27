@@ -18,28 +18,35 @@ namespace gpurt {
 
     class Geometry {
     private:
-        vector<Triangle> triangles;
-        vector<gpurt::BVHNode> _bvh_;
+        vector<Triangle> _triangles_;
+        gpurt::BVH _bvh_;
+
+        void constructBVH();
 
     public:
 
         Geometry(const aiMesh& mesh);
 
-        void constructBVH();
-
-        const int triangleCount() {
-            return triangles.size();
+        const int triangleCount() const{
+            return _triangles_.size();
         }
 
+
         const void const* c_pointer() const {
-            return &triangles[0];
+            return &_triangles_[0];
         }
 
         const int c_size()const {
-            return triangles.size() * sizeof(Triangle);
+            return _triangles_.size() * sizeof(Triangle);
         }
 
+        const gpurt::BVH& getBVH()const { return _bvh_; }
 
+        const void copyBVH(BVHNode* dst, int& bvh_offset)const;
+
+        void setTriangleOffset(int& offset);
+
+        int bvhSize()const;
 
     };
 

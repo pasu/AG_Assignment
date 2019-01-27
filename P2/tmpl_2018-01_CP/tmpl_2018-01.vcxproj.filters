@@ -110,17 +110,23 @@
     <ClCompile Include="GPURT_Scene.cpp">
       <Filter>GPURayTracer\scene</Filter>
     </ClCompile>
-    <ClCompile Include="GPURT_AABB.cpp">
-      <Filter>GPURayTracer\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="GPURT_BVH.cpp">
-      <Filter>GPURayTracer\scene</Filter>
-    </ClCompile>
     <ClCompile Include="GPURT_Geometry.cpp">
       <Filter>GPURayTracer\scene</Filter>
     </ClCompile>
     <ClCompile Include="GPURT_GeometryGroup.cpp">
       <Filter>GPURayTracer\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="GPURT_Triangle.cpp">
+      <Filter>GPURayTracer\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="GPURT_AABB.cpp">
+      <Filter>GPURayTracer\BVH</Filter>
+    </ClCompile>
+    <ClCompile Include="GPURT_BVH.cpp">
+      <Filter>GPURayTracer\BVH</Filter>
+    </ClCompile>
+    <ClCompile Include="GPURT_Shader_Raw.cpp">
+      <Filter>GPURayTracer\shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -240,17 +246,20 @@
     <ClInclude Include="GPURT_Triangle.h">
       <Filter>GPURayTracer\scene</Filter>
     </ClInclude>
-    <ClInclude Include="GPURT_AABB.h">
-      <Filter>GPURayTracer\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="GPURT_BVH.h">
-      <Filter>GPURayTracer\scene</Filter>
-    </ClInclude>
     <ClInclude Include="GPURT_Geometry.h">
       <Filter>GPURayTracer\scene</Filter>
     </ClInclude>
     <ClInclude Include="GPURT_GeometryGroup.h">
       <Filter>GPURayTracer\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="GPURT_BVH.h">
+      <Filter>GPURayTracer\BVH</Filter>
+    </ClInclude>
+    <ClInclude Include="GPURT_AABB.h">
+      <Filter>GPURayTracer\BVH</Filter>
+    </ClInclude>
+    <ClInclude Include="GPURT_Shader.h">
+      <Filter>GPURayTracer\shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -292,6 +301,12 @@
     </Filter>
     <Filter Include="GPURayTracer\scene">
       <UniqueIdentifier>{c31b921f-b5e7-4bc4-8150-e5ff4ae3a03a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GPURayTracer\BVH">
+      <UniqueIdentifier>{6e5428f6-c04a-443c-b136-91f5441285fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GPURayTracer\shader">
+      <UniqueIdentifier>{8042ee51-700e-47aa-b193-cb583530c31b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

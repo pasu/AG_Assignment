@@ -148,6 +148,8 @@
     <ClCompile Include="GPURT_Geometry.cpp" />
     <ClCompile Include="GPURT_GeometryGroup.cpp" />
     <ClCompile Include="GPURT_Scene.cpp" />
+    <ClCompile Include="GPURT_Shader_Raw.cpp" />
+    <ClCompile Include="GPURT_Triangle.cpp" />
     <ClCompile Include="quarticsolver.cpp" />
     <ClCompile Include="RayPacket.cpp" />
     <ClCompile Include="RayTracer.cpp" />
@@ -192,6 +194,7 @@
     <ClInclude Include="GPURT_Geometry.h" />
     <ClInclude Include="GPURT_GeometryGroup.h" />
     <ClInclude Include="GPURT_Scene.h" />
+    <ClInclude Include="GPURT_Shader.h" />
     <ClInclude Include="GPURT_Triangle.h" />
     <ClInclude Include="precomp.h" />
     <ClInclude Include="quarticsolver.h" />
