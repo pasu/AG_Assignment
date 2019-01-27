@@ -21,6 +21,8 @@ namespace gpurt {
         vector<Triangle> _triangles_;
         gpurt::BVH _bvh_;
 
+        int _material_group_;
+
         void constructBVH();
 
     public:
@@ -47,6 +49,8 @@ namespace gpurt {
         void setTriangleOffset(int& offset);
 
         int bvhSize()const;
+
+        void setMaterialGroup(int materialgroup);
 
     };
 

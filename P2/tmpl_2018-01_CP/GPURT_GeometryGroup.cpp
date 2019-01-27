@@ -53,6 +53,10 @@ gpurt::GeometryGroup::GeometryGroup(const char* file_name) {
         aiMesh &mesh = *(scene.mMeshes[meshI]);
 
         _geometries_.push_back(new Geometry(mesh));
+        
+    }
+    for (int i = 0; i < geometryCount();i++) {
+        _geometries_[i]->setMaterialGroup(i);
     }
     constructBVH();
 }
