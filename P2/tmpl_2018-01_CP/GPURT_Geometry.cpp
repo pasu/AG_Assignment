@@ -55,9 +55,9 @@ int gpurt::Geometry::bvhSize()const {
     return _bvh_.size();
 }
 
-void gpurt::Geometry::setObjectID(int materialgroup) {
-    _material_group_ = materialgroup;
+void gpurt::Geometry::setID(int objectID) {
+    _id_ = objectID;
     for (Triangle& t : _triangles_) {
-        t.v1._padding1 = materialgroup;
+        t.object_id = objectID;
     }
 }

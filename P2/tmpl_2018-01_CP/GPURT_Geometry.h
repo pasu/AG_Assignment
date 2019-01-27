@@ -21,7 +21,7 @@ namespace gpurt {
         vector<Triangle> _triangles_;
         gpurt::BVH _bvh_;
 
-        int _material_group_;
+        int _id_;
 
         void constructBVH();
 
@@ -50,7 +50,7 @@ namespace gpurt {
 
         int bvhSize()const;
 
-        void setObjectID(int materialgroup);
+        void setID(int materialgroup);
 
     };
 

@@ -15,14 +15,15 @@ Triangles in local memorys
 namespace gpurt {
     typedef  struct Vertex {
         aiVector3D pos;// use aiVector3D because it has no padding, sizeof(aiVector3D) = 12, thus the padding bytes can be used explicitly
-        uint _padding1;
+        float texture_s;
         aiVector3D normal;
-        uint __padding2;
+        float texture_t;
     }Vertex;
 
     typedef struct Triangle {
         Vertex v1, v2, v3;
-
+        int object_id;
+        int _padding[3];
         const vec3 centroid()const;
 
     }Triangle;

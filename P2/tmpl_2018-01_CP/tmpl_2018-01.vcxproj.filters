@@ -261,6 +261,9 @@
     <ClInclude Include="GPURT_Shader.h">
       <Filter>GPURayTracer\shader</Filter>
     </ClInclude>
+    <ClInclude Include="GPURT_Material.h">
+      <Filter>GPURayTracer\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">
@@ -307,6 +310,9 @@
     </Filter>
     <Filter Include="GPURayTracer\shader">
       <UniqueIdentifier>{8042ee51-700e-47aa-b193-cb583530c31b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GPURayTracer\Material">
+      <UniqueIdentifier>{8753f70a-ae33-478e-b71d-f4cbd4e83b4e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

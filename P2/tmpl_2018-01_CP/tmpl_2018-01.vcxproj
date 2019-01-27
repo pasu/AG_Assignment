@@ -193,6 +193,7 @@
     <ClInclude Include="GPURT_BVH.h" />
     <ClInclude Include="GPURT_Geometry.h" />
     <ClInclude Include="GPURT_GeometryGroup.h" />
+    <ClInclude Include="GPURT_Material.h" />
     <ClInclude Include="GPURT_Scene.h" />
     <ClInclude Include="GPURT_Shader.h" />
     <ClInclude Include="GPURT_Triangle.h" />

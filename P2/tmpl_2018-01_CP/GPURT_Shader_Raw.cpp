@@ -9,15 +9,16 @@ layout(std430, binding = 0) buffer PIXEL_COLOR_BUFFER {
 };
 struct Vertex {
     vec3 pos;
-    int _r;
+    float texture_s;
     vec3 normal;
-    int _s;
+    float texture_t;
 };
 
 struct Triangle {
     Vertex v1;
     Vertex v2;
     Vertex v3;
+    int object_id;
 };
 layout(std430, binding = 1) buffer TRIANGLE_BUFFER {
     Triangle triangles[];
@@ -39,6 +40,8 @@ layout(std430, binding = 2) buffer BVH_BUFFER {
 };
 
 const float very_large_float = 1e9f;
+const float very_small_float = 1e-9f;
+
 
 uniform uint frame_id;
 uniform uint triangle_number;
@@ -46,6 +49,7 @@ uniform uint triangle_number;
 struct Ray {
     vec3 pos;
     vec3 dir;
+    int prev_tri;
 };
 
 uint random_seed;
@@ -66,7 +70,8 @@ vec4 randomDirection() {
 
 void primaryRay(in uint x, in uint y, out Ray ray) {
     ray.dir = normalize(vec3(float(x) + xorshift32(), float(640 - y) + xorshift32(), -320.0) - vec3(320.0, 320.0, 0));
-    ray.pos = vec3(0, 1.5, 5);
+    ray.pos = vec3(0.6, 1.5, 8);
+    ray.prev_tri = -1;
 }
 
 bool intersectAABB(vec3 aabb_min,vec3 aabb_max,Ray ray) {
@@ -93,16 +98,22 @@ bool intersectAABB(vec3 aabb_min,vec3 aabb_max,Ray ray) {
 }
 
 // .xy: uv, .z: distance
-vec3 intersectTriangle(Ray r, Triangle t) {
+vec3 intersectTriangle(Ray r, int tid) {
+
+    if (r.prev_tri == tid) {
+       return  vec3(0,0,very_large_float);
+    }
+
+    Triangle t = triangles[tid];
 
     mat3 A = mat3(t.v1.pos.xyz - t.v2.pos.xyz, t.v1.pos.xyz - t.v3.pos.xyz, r.dir);
 
-    int d = int(abs(determinant(A))<0.0001);
+    int d = int(abs(determinant(A))<very_small_float);
 
     vec3 l = inverse(A) * (t.v1.pos.xyz - r.pos);
 
 
-    l.z = (int(l.x < 0 || l.y < 0 || ((l.x + l.y) > 1))+ d)*very_large_float + l.z*(1-d);
+    l.z = (int(l.x < 0 || l.y < 0 || ((l.x + l.y) > 1) || l.z< 0)+ d)*very_large_float + l.z*(1-d);
 
     return l;
 }
@@ -148,7 +159,7 @@ IntersectScene intersectScene(Ray ray) {
                 //result = 3.0 / (bvh[i].count);
                 for (int j = 0; j < bvh[i].count; j++) {
                     int tid = j + bvh[i].left_first;
-                    vec3 c = intersectTriangle(ray, triangles[tid]);
+                    vec3 c = intersectTriangle(ray, tid);
                     if (c.z < result.distance) {
                         result.distance = c.z;
                         result.triangle_id = tid;
@@ -159,7 +170,8 @@ IntersectScene intersectScene(Ray ray) {
         }
     }
     result.normal = triangleNormal(triangles[result.triangle_id],uv);
-    result.normal = result.normal*(2 * (int(dot(result.normal, ray.dir) < 0) - 0.5));
+    result.normal = result.normal*(2*(0.5-int(dot(result.normal,ray.dir)>0)));
+    ray.prev_tri = result.triangle_id;
     return result;
 }
 
@@ -180,22 +192,26 @@ void main(void) {
     for (int j = 0; j < 5; j++)
     {
         IntersectScene ict = intersectScene(ray);
+
         if (ict.distance< very_large_float) {
-            color = color * vec3(0.8);
-            if (triangles[ict.triangle_id].v1._r == 1) {
+            color = vec3(0.8);
+
+            if (triangles[ict.triangle_id].object_id==0) {
                 ill = vec3(30);
                 break;
             }
+
         }
         else {
             color = vec3(0);
             break;
         }
 
-        if (xorshift32() > dot(color, color)) {
+        float rr = xorshift32();
+        if (rr > color.x) {
             break;
         }
-        color = color / dot(color, color);
+        color = vec3(1);
 
         ray.pos = ray.pos + ict.distance*ray.dir;
 
@@ -209,9 +225,12 @@ void main(void) {
         local_y = normalize(local_y);
 
         ray.dir = local_x * randomDir.x + local_y * randomDir.y + local_z * randomDir.z;
-        ray.pos = ray.pos + 0.001*ray.dir;
-    }
 
+        ray.pos = ray.pos + ray.dir*very_small_float*10000;
+
+        color = color * dot(ict.normal,ray.dir);
+        
+    }
     pixel_color[gl_GlobalInvocationID.y][gl_GlobalInvocationID.x] = vec4(color*ill, 1) + pixel_color[gl_GlobalInvocationID.y][gl_GlobalInvocationID.x];
 }\n
 
