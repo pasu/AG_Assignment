@@ -43,14 +43,13 @@ void Game::Init()
 	renderOptions.maxRecursionDepth = 5;
 	renderOptions.shadowBias = 0.01f;
 
-    gpu_scene1 = gpurt::Scene::initScene("assets/GPURT/untitled.obj");
-    gpu_scene2 = gpurt::Scene::initScene("assets/GPURT/room.obj");
-    gpu_scene1->bind();
-    gpurt::init();
+	gpu_scene1 = gpurt::Scene::initScene( "assets/GPURT/untitled.obj" );
+	gpu_scene2 = gpurt::Scene::initScene( "assets/GPURT/room.obj" );
+	gpu_scene1->bind();
+	gpurt::init();
 
-    pTracer = new RayTracer( scene, renderOptions );
-    scene_outdoor();
-
+	pTracer = new RayTracer( scene, renderOptions );
+	scene_outdoor();
 }
 
 // -----------------------------------------------------------
@@ -64,73 +63,78 @@ static Sprite rotatingGun( new Surface( "assets/aagun.tga" ), 36 );
 static int frame = 0;
 static DWORD tt = 0;
 
-
-
-
 // -----------------------------------------------------------
 // Main application tick function
 // -----------------------------------------------------------
 void Game::Tick( float deltaTime )
 {
-    if (RENDER_MODE == 0) {//CPU
-        setCameraSpeed(1);
-        bool bUpdate = updateCamera(*(scene.getCamera()));
-        if (bUpdate)
-        {
-            pTracer->Reset();
-        }
-        scene.animate();
-        scene.rebuildTopLevelBVH();
-        pTracer->render(screen);
-        sprintf( buffer, "CPU SPP: %d", pTracer->getSCount() );
+	if ( RENDER_MODE == 0 )
+	{ //CPU
+		setCameraSpeed( 1 );
+		bool bUpdate = updateCamera( *( scene.getCamera() ) );
+		if ( bUpdate )
+		{
+			pTracer->Reset();
+		}
+		scene.animate();
+		scene.rebuildTopLevelBVH();
+		pTracer->render( screen );
+		sprintf( buffer, "CPU SPP: %d", pTracer->getSCount() );
 
-        screen->Print(buffer, 2, 2, 0xffffff);
-    }
-    else {//GPU
+		screen->Print( buffer, 2, 2, 0xffffff );
+	}
+	else
+	{ //GPU
 #ifdef ADVANCEDGL
-        setCameraSpeed(0.1);
-        gpurt::render(screen);
+		setCameraSpeed( 0.1 );
+		gpurt::render( screen );
 
-        if (++frame == 30) {
-            DWORD nt = GetTickCount();
-            // 
-            sprintf(buffer, "GPU FPS: %.2f", 30000.0f / (nt - tt));
-            tt = nt;
-            frame = 0;
-        }
+		if ( ++frame == 30 )
+		{
+			DWORD nt = GetTickCount();
+			//
+			sprintf( buffer, "GPU FPS: %.2f", 30000.0f / ( nt - tt ) );
+			tt = nt;
+			frame = 0;
+		}
 
-        screen->Print(buffer, 2, 2, 0xffffff);
+		screen->Print( buffer, 2, 2, 0xffffff );
 
 #endif
-    }
+	}
 }
 
 void Tmpl8::Game::KeyDown( int key )
 {
-    if (key == 10) {//"g" to toggle render mode
-        toggleRenderMode();
-    }
-    if (RENDER_MODE == 1) {// GPU
-        if (key == 79) {
-            if (gpurt::Scene::current == gpu_scene1) {
-                gpu_scene2->bind();
-            }
-            else {
-                gpu_scene1->bind();
-            }
-        }
-    }
+	if ( key == 10 )
+	{ //"g" to toggle render mode
+		toggleRenderMode();
+	}
+	if ( RENDER_MODE == 1 )
+	{ // GPU
+		if ( key == 79 )
+		{
+			if ( gpurt::Scene::current == gpu_scene1 )
+			{
+				gpu_scene2->bind();
+			}
+			else
+			{
+				gpu_scene1->bind();
+			}
+		}
+	}
 
 	static int index = 0;
-	static int scenecount = 3;
-	if (key == 79)
+	static int scenecount = 4;
+	if ( key == 79 )
 	{
 		gTexManager.ClearAll();
 		gMaterialManager.ClearAll();
 		scene.ClearAllLight();
 		scene.ClearAllObj();
-		scene.AttachSkyDome(NULL);
-
+		scene.AttachSkyDome( NULL );
+		pTracer->SetMotion( false );
 		index++;
 		switch ( index % scenecount )
 		{
@@ -143,11 +147,15 @@ void Tmpl8::Game::KeyDown( int key )
 		case 2:
 			scene_depth();
 			break;
+		case 3:
+			pTracer->SetMotion( true );
+			scene_toplevel();
+			break;
 		}
 		pTracer->Reset();
 	}
 
-	if (key == 30)
+	if ( key == 30 )
 	{
 		pTracer->SetFilterMethod( 1 );
 	}
@@ -180,7 +188,6 @@ void Tmpl8::Game::MouseWheel( int y )
 {
 }
 
-
 void Tmpl8::Game::scene_outdoor()
 {
 	scene.getCamera()->aperture = 0.0;
@@ -199,7 +206,7 @@ void Tmpl8::Game::scene_outdoor()
 	arrObjs.push_back( new RTPlane( vec3( 0.0f, -10.0f, 0.0f ), vec3( 0.0f, 1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), floorMaterial ) );
 
 	RTMaterial &whiteMaterial = gMaterialManager.CreateMaterial( vec3( 0.9 ), 0, vec2( 0.1f ), DIFFUSE, 0.8f, 2.5f );
-	
+
 	RTTexture *tower = gTexManager.CreateTexture( "./assets/Wood_Tower_Col.jpg", true, 8, 20.0f );
 	RTMaterial &towerMaterial = gMaterialManager.CreateMaterial( vec3( 1, 1, 1 ), tower, vec2( 1 ), DIFFUSE_AND_REFLECTIVE, 0.0f, 2.5f );
 
@@ -222,7 +229,7 @@ void Tmpl8::Game::scene_outdoor()
 	RTMaterial &lightM = gMaterialManager.CreateMaterial( vec3( 1 ), vec3( 1000 ), DIFFUSE );
 	RTPlane *plane = new RTPlane( posL, vec3( 0.0f, -1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), lightM, vec2( 2 ) );
 	arrObjs.push_back( plane );
-	
+
 	for ( size_t i = 0; i < arrObjs.size(); i++ )
 	{
 		robotGeometry->addObject( arrObjs[i] );
@@ -247,7 +254,6 @@ void Tmpl8::Game::scene_outdoor()
 	scene.updateLightsWeight();
 }
 
-
 void Tmpl8::Game::scene_indoor()
 {
 	scene.getCamera()->aperture = 0.0;
@@ -261,7 +267,7 @@ void Tmpl8::Game::scene_indoor()
 	RTMaterial &mirror = gMaterialManager.CreateMaterial( vec3( 0.7 ), 0, vec2( 0.1f ), REFLECTIVE, 0.8f, 2.5f );
 	RTMaterial &redMaterial = gMaterialManager.CreateMaterial( vec3( 0.7, 0, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
 	RTMaterial &greenMaterial = gMaterialManager.CreateMaterial( vec3( 0, 0.7, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
-	
+
 	RTMaterial &leftGlassMaterial = gMaterialManager.CreateMaterial( vec3( 0.9 ), sphereT, vec2( 1.0f ), Phong, 0.55f, 2.24f );
 	leftGlassMaterial.pow_ = 400;
 
@@ -318,7 +324,6 @@ void Tmpl8::Game::scene_indoor()
 	///////////////////////////////////////////////////////////////////////////////
 }
 
-
 void Tmpl8::Game::scene_depth()
 {
 	{
@@ -345,10 +350,10 @@ void Tmpl8::Game::scene_depth()
 		RTObjMesh *mesh = new RTObjMesh( "assets/wooden.dae", towerMaterial );
 
 		RTGeometry *robotGeometry = new RTGeometry();
-		for (int i=0;i<1;i++)
+		for ( int i = 0; i < 1; i++ )
 		{
-			
-			mesh->setPosition( -1 + i*5, -9, -15 + i*5 );
+
+			mesh->setPosition( -1 + i * 5, -9, -15 + i * 5 );
 			mesh->setRotation( -20.0f, 0.0f, 0.0f );
 			mesh->setScale( 1, 1, 1 );
 			mesh->applyTransforms();
@@ -360,7 +365,7 @@ void Tmpl8::Game::scene_depth()
 			{
 				robotGeometry->addObject( tarray[i] );
 			}
-		}			
+		}
 
 		vec3 posL = vec3( 0, 5, -25 );
 		RTMaterial &lightM = gMaterialManager.CreateMaterial( vec3( 1 ), vec3( 1000 ), DIFFUSE );
@@ -392,14 +397,16 @@ void Tmpl8::Game::scene_depth()
 static void animateFunc( RTObject *object )
 {
 
-    object->translateGlobal( object->speed );
+	object->translateGlobal( object->speed );
 
-    if (object->pos.x > 300) {
+	if ( object->pos.x > 300 )
+	{
 		object->pos.x = -300;
-    }
-    if (object->pos.x < -300) {
+	}
+	if ( object->pos.x < -300 )
+	{
 		object->pos.x = 300;
-    }
+	}
 	if ( object->pos.y > 300 )
 	{
 		object->pos.y = -300;
@@ -432,8 +439,8 @@ void Tmpl8::Game::scene_light()
 	brownCheckerBoardMaterial.pow_ = 0.3;
 	RTMaterial &whiteMaterial = gMaterialManager.CreateMaterial( vec3( 0.7 ), 0, vec2( 0.1f ), REFLECTIVE, 0.8f, 2.5f );
 	RTMaterial &whiteMaterial2 = gMaterialManager.CreateMaterial( vec3( 0.9 ), 0, vec2( 0.1f ), TRANSMISSIVE_AND_REFLECTIVE, 0.8f, 2.5f );
-	RTMaterial &redMaterial = gMaterialManager.CreateMaterial( vec3( 0.7,0,0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
-	RTMaterial &greenMaterial = gMaterialManager.CreateMaterial( vec3( 0,0.7,0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
+	RTMaterial &redMaterial = gMaterialManager.CreateMaterial( vec3( 0.7, 0, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
+	RTMaterial &greenMaterial = gMaterialManager.CreateMaterial( vec3( 0, 0.7, 0 ), 0, vec2( 0.05f ), DIFFUSE, 0.8f, 2.5f );
 	RTMaterial &blueGlassMaterial = gMaterialManager.CreateMaterial( vec3( 0.9 ), sphereT, vec2( 1.0f ), Phong, 0.55f, 2.24f );
 	blueGlassMaterial.pow_ = 400;
 	RTMaterial &mirrorMaterial = gMaterialManager.CreateMaterial( vec3( 0.9 ), 0, vec2( 1.0f ), DIFFUSE, 0.8f, 2.1f );
@@ -450,7 +457,7 @@ void Tmpl8::Game::scene_light()
 	RTObjMesh *mesh = new RTObjMesh( "assets/bunny.obj", whiteMaterial2 );
 	mesh->setPosition( 0, -5, -12 );
 	mesh->setRotation( 0.0f, 0.0f, 0.0f );
-	mesh->setScale( 1,1,1 );
+	mesh->setScale( 1, 1, 1 );
 	mesh->applyTransforms();
 	//scene.addObject( mesh );
 
@@ -462,9 +469,9 @@ void Tmpl8::Game::scene_light()
 	//arrObjs.push_back( new RTSphere( vec3( 5.0f, -1.0f, -15.0f ), 3.0f, blueGlassMaterial ) );
 
 	//arrObjs.push_back( new RTBox( vec3( -0.0f, 0.0f, -7.0f ), vec3( 1.0f, 1.0f, 1.0f ), blueGlassMaterial ) );
-	vec3 posL = vec3( 0, 5, -12 ); 
-	vec3 posL2 = vec3( -4.0f, 5.0f, -15.0f ); 
-	RTMaterial &lightM = gMaterialManager.CreateMaterial( vec3( 1 ), vec3( 100 ), DIFFUSE);
+	vec3 posL = vec3( 0, 5, -12 );
+	vec3 posL2 = vec3( -4.0f, 5.0f, -15.0f );
+	RTMaterial &lightM = gMaterialManager.CreateMaterial( vec3( 1 ), vec3( 100 ), DIFFUSE );
 	RTPlane *plane = new RTPlane( posL, vec3( 0.0f, -1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), lightM, vec2( 2 ) );
 	RTPlane *plane2 = new RTPlane( posL2, vec3( 0.0f, -1.0f, 0.0f ), vec3( 1.0f, 0.0f, 0.0f ), lightM, vec2( 2 ) );
 	arrObjs.push_back( plane );
@@ -507,7 +514,7 @@ void Tmpl8::Game::scene_bvh()
 	//////////////////////////////////////////////////////////////////////////
 	vec3 lightBlue( 190. / 255., 237. / 255., 1. );
 	vec3 lightRed( 248. / 255., 192. / 255., 196. / 255 );
-	
+
 	RTTexture *manTexture = gTexManager.CreateTexture( "./assets/Cesium_Man.jpg", true, 8, 40.0f );
 	RTTexture *milkTexture = gTexManager.CreateTexture( "./assets/Wood_Tower_Col.jpg", true, 8, 20.0f );
 	RTTexture *carTexture = gTexManager.CreateTexture( "./assets/ambulance_red_d.tga", true, 8, 20.0f );
@@ -521,11 +528,11 @@ void Tmpl8::Game::scene_bvh()
 	mesh->setRotation( 0, -30.0f, 0.0f );
 	mesh->setScale( 0.1f, 0.1f, 0.1f );
 	mesh->applyTransforms();
-//	scene.addObject( mesh );
+	//	scene.addObject( mesh );
 	vector<RTTriangle *> tarray;
 	mesh->getTriangles( tarray );
 
-    RTGeometry* robotGeometry = new RTGeometry();
+	RTGeometry *robotGeometry = new RTGeometry();
 
 	for ( size_t i = 0; i < tarray.size(); i++ )
 	{
@@ -570,25 +577,24 @@ void Tmpl8::Game::scene_bvh()
 
 	robotGeometry3->BuildBVHTree();
 
-    //for (int i = 0; i < 100; i++) 
+	//for (int i = 0; i < 100; i++)
 	{
 		RTObject *pRobot = new RTObject( robotGeometry );
-        scene.addObject(pRobot);
+		scene.addObject( pRobot );
 
 		RTObject *pRobot2 = new RTObject( robotGeometry2 );
 		scene.addObject( pRobot2 );
 
 		RTObject *pRobot3 = new RTObject( robotGeometry3 );
 		scene.addObject( pRobot3 );
-    }
+	}
 
 	scene.ambientLight = 0.3f;
 
 	RTLight *pLight = RTLight::createPointLight( vec3( 1.0f, 1.0f, 1.0f ), 40.0f, vec3( -2.0f, 2.0f, -35.0f ) );
 	scene.addLight( pLight );
 
-    scene.BuildBVHTree();
-
+	scene.BuildBVHTree();
 }
 
 void Tmpl8::Game::scene_toplevel()

@@ -17,6 +17,11 @@ RayTracer::RayTracer( const Scene &scene, const RenderOptions &renderOptions ) :
 	bFilter = false;
 	nFilterType = 0;
 	bProcessed = false;
+
+	mMotion = false;
+	frame_num = 4;
+
+	pixels = new vec3[frame_num * size];
 }
 
 RayTracer::~RayTracer()
@@ -78,7 +83,16 @@ void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 				color.x = sqrtf( color.x );
 				color.y = sqrtf( color.y );
 				color.z = sqrtf( color.z );
-				hdrPixels[y * renderOptions.width + x] += color;
+
+				if ( mMotion )
+				{
+					int nframeId = sample_count % frame_num;
+					pixels[nframeId * size + y * renderOptions.width + x] = color;
+				}
+				else
+				{
+					hdrPixels[y * renderOptions.width + x] += color;
+				}
 			}
 		}
 	}
@@ -119,7 +133,21 @@ void RayTracer::render( Surface *screen )
 	waitRenderThreads();
 #endif
 	//runFXAA( hdrPixels, renderOptions.width, renderOptions.height );
-
+	int nS = sample_count;
+	if ( mMotion )
+	{
+		nS = sample_count > 3 ? 3 : sample_count;
+		for ( int y = 0; y < renderOptions.height; ++y )
+		{
+			for ( int x = 0; x < renderOptions.width; ++x )
+			{
+				hdrPixels[y * renderOptions.width + x] =
+					( pixels[y * renderOptions.width + x] +
+					  pixels[renderOptions.width * renderOptions.height + y * renderOptions.width + x] +
+					  pixels[renderOptions.width * renderOptions.height * 2 + y * renderOptions.width + x] );
+			}
+		}
+	}
 	if ( bFilter )
 	{
 		if ( !bProcessed )
@@ -129,7 +157,7 @@ void RayTracer::render( Surface *screen )
 				for ( int x = 0; x < renderOptions.width; ++x )
 				{
 #ifdef PATH_TRACER
-					hdrPixels[y * renderOptions.width + x] = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f / (float)( sample_count > SAMPLE_NUM2 ? SAMPLE_NUM2 : sample_count ) );
+					hdrPixels[y * renderOptions.width + x] = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f / (float)( nS > SAMPLE_NUM2 ? SAMPLE_NUM2 : nS ) );
 #endif // PATH_TRACER
 				}
 			}
@@ -137,7 +165,7 @@ void RayTracer::render( Surface *screen )
 			switch ( nFilterType )
 			{
 			case 1:
-				ImgToolkit::recursive_bilateral_filter(0.03f,0.1f, renderOptions.width, renderOptions.height, hdrPixels, pImgPixels );
+				ImgToolkit::recursive_bilateral_filter( 0.03f, 0.1f, renderOptions.width, renderOptions.height, hdrPixels, pImgPixels );
 				break;
 			case 2:
 				ImgToolkit::median_filter( renderOptions.width, renderOptions.height, hdrPixels, pImgPixels );
@@ -148,7 +176,6 @@ void RayTracer::render( Surface *screen )
 			default:
 				break;
 			}
-			
 
 			for ( int y = 0; y < renderOptions.height; ++y )
 			{
@@ -163,7 +190,7 @@ void RayTracer::render( Surface *screen )
 			}
 
 			bProcessed = true;
-		}		
+		}
 
 		memcpy( screen->GetBuffer(), pPixels, size * 4 );
 	}
@@ -174,7 +201,7 @@ void RayTracer::render( Surface *screen )
 			for ( int x = 0; x < renderOptions.width; ++x )
 			{
 #ifdef PATH_TRACER
-				auto color = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f / (float)( sample_count > SAMPLE_NUM2 ? SAMPLE_NUM2 : sample_count ) );
+				auto color = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f / (float)( nS > SAMPLE_NUM2 ? SAMPLE_NUM2 : nS ) );
 #else
 				auto color = hdrPixels[y * renderOptions.width + x];
 #endif // PATH_TRACER
@@ -186,7 +213,7 @@ void RayTracer::render( Surface *screen )
 		}
 
 		memcpy( screen->GetBuffer(), pPixels, size * 4 );
-	}	
+	}
 }
 
 const RTRay &RayTracer::generatePrimaryRay( const int x, const int y, const int &sampleIds ) const
@@ -224,7 +251,6 @@ const RTRay &RayTracer::generatePrimaryRayD( const int x, const int y, const int
 	vec3 lensPoint = camera->getEye() + lensSample.x * camera->right + lensSample.y * camera->up;
 	vec3 dir = ( pixelPoint - lensPoint ).normalized();
 
-	
 	return RTRay( lensPoint, dir );
 }
 
@@ -474,6 +500,11 @@ bool RayTracer::isOcclusion( const RTRay &ray, const float &distance ) const
 float RayTracer::BalanceHeuristicWeight( float &pdf1, float &pdf2 ) const
 {
 	return ( pdf1 ) / ( pdf1 + pdf2 );
+}
+
+void RayTracer::SetMotion( bool bMotion )
+{
+	mMotion = bMotion;
 }
 
 void RayTracer::Reset()
