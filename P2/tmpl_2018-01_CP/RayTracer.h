@@ -41,6 +41,8 @@ class RayTracer
 	vec3 global_illumination( Neighbor *neighbors, vec3 p, vec3 norm );
 	vec3 caustic( Neighbor *neighbors, vec3 p, vec3 norm );
 	void SetFilterMethod(int nType);
+
+	void SetMotion( bool bMotion );
   private:
 	const vec3 shade_diffuse( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const;
 	const vec3 shade_reflective( const RTRay &castedRay, const RTIntersection &intersection, const int depth ) const;
@@ -81,7 +83,7 @@ class RayTracer
 	bool bFilter;
 	int nFilterType;
 	bool bProcessed;
-	bool bMotion;
+	bool mMotion;
 	int frame_num;
 	vec3 *pixels;
 };

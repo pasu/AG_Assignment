@@ -44,8 +44,8 @@ void Game::Init()
 
 	//scene_bvh();
 //#undef PHOTON_MAPPING
-	//scene_outdoor();
-	scene_toplevel();
+	scene_outdoor();
+	//scene_toplevel();
 	//scene_indoor();
 	//scene_depth();
 	
@@ -108,7 +108,7 @@ void Game::Tick( float deltaTime )
 void Tmpl8::Game::KeyDown( int key )
 {
 	static int index = 0;
-	static int scenecount = 3;
+	static int scenecount = 4;
 	if (key == 79)
 	{
 		gTexManager.ClearAll();
@@ -128,6 +128,9 @@ void Tmpl8::Game::KeyDown( int key )
 			break;
 		case 2:
 			scene_depth();
+			break;
+		case 3:
+			scene_toplevel();
 			break;
 		}
 		pTracer->Reset();
@@ -170,6 +173,7 @@ void Tmpl8::Game::MouseWheel( int y )
 void Tmpl8::Game::scene_outdoor()
 {
 	scene.getCamera()->aperture = 0.0;
+	pTracer->SetMotion( false );
 	//////////////////////////////////////////////////////////////////////////
 	vec3 lightBlue( 190. / 255., 237. / 255., 0.9 );
 	vec3 lightRed( 248. / 255., 192. / 255., 196. / 255 );
@@ -237,6 +241,7 @@ void Tmpl8::Game::scene_outdoor()
 void Tmpl8::Game::scene_indoor()
 {
 	scene.getCamera()->aperture = 0.0;
+	pTracer->SetMotion( false );
 	//////////////////////////////////////////////////////////////////////////
 	RTChessBoardTexture *chessboardTexture = gTexManager.CreateChessBoardTexture( vec3( 0.9 ), vec3( 0 ) );
 	RTTexture *sphereT = gTexManager.CreateTexture( "./assets/box.PNG", true, 1, 100 );
@@ -308,6 +313,7 @@ void Tmpl8::Game::scene_indoor()
 void Tmpl8::Game::scene_depth()
 {
 	{
+		pTracer->SetMotion( false );
 		//////////////////////////////////////////////////////////////////////////
 		vec3 lightBlue( 190. / 255., 237. / 255., 0.9 );
 		vec3 lightRed( 248. / 255., 192. / 255., 196. / 255 );
@@ -579,6 +585,7 @@ void Tmpl8::Game::scene_bvh()
 
 void Tmpl8::Game::scene_toplevel()
 {
+	pTracer->SetMotion( true );
 	//////////////////////////////////////////////////////////////////////////
 	vec3 lightBlue( 190. / 255., 237. / 255., 1. );
 	vec3 lightRed( 248. / 255., 192. / 255., 196. / 255 );

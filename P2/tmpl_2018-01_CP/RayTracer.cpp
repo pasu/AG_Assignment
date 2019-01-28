@@ -18,7 +18,7 @@ RayTracer::RayTracer( const Scene &scene, const RenderOptions &renderOptions ) :
 	nFilterType = 0;
 	bProcessed = false;
 
-	bMotion = true;
+	mMotion = false;
 	frame_num = 4;
 
 	pixels = new vec3[frame_num * size];
@@ -84,7 +84,7 @@ void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 				color.x = sqrtf( color.x );
 				color.y = sqrtf( color.y );
 				color.z = sqrtf( color.z );
-				if ( bMotion )
+				if ( mMotion )
 				{
 					int nframeId = sample_count % frame_num;
 					pixels[nframeId * size + y * renderOptions.width + x] = color;
@@ -135,7 +135,7 @@ void RayTracer::render( Surface *screen )
 #endif
 	//runFXAA( hdrPixels, renderOptions.width, renderOptions.height );
 	int nS = sample_count;
-	if ( bMotion )
+	if ( mMotion )
 	{
 		nS = sample_count > 3 ? 3 : sample_count;
 		for ( int y = 0; y < renderOptions.height; ++y )
@@ -941,6 +941,11 @@ void RayTracer::SetFilterMethod( int nType )
 		nFilterType = nType;
 		bFilter = true;
 	}
+}
+
+void RayTracer::SetMotion( bool bMotion )
+{
+	mMotion = bMotion;
 }
 
 inline bool refract2( vec3 d, vec3 norm, float n, float nt, vec3 *t )
