@@ -8,9 +8,6 @@ gpurt::Mtl::Mtl(aiMaterial & mat) {
     static int count = 0;
     
     mat.Get(AI_MATKEY_COLOR_DIFFUSE, color_diffuse);// Kd
-    if (count == 4) {
-        printf("Kd %d: %.2f,%.2f,%.2f\n", count, color_diffuse.r, color_diffuse.g, color_diffuse.b);
-    }
     count++;
     mat.Get(AI_MATKEY_COLOR_EMISSIVE, color_diffuse);// Ke
 
