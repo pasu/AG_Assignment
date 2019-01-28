@@ -44,7 +44,8 @@ void Game::Init()
 
 	//scene_bvh();
 //#undef PHOTON_MAPPING
-	scene_outdoor();
+	//scene_outdoor();
+	scene_toplevel();
 	//scene_indoor();
 	//scene_depth();
 	

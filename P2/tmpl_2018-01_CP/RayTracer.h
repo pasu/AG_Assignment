@@ -81,4 +81,7 @@ class RayTracer
 	bool bFilter;
 	int nFilterType;
 	bool bProcessed;
+	bool bMotion;
+	int frame_num;
+	vec3 *pixels;
 };

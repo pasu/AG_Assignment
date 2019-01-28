@@ -17,6 +17,11 @@ RayTracer::RayTracer( const Scene &scene, const RenderOptions &renderOptions ) :
 	bFilter = false;
 	nFilterType = 0;
 	bProcessed = false;
+
+	bMotion = true;
+	frame_num = 4;
+
+	pixels = new vec3[frame_num * size];
 }
 
 RayTracer::~RayTracer()
@@ -63,6 +68,7 @@ void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 	}
 #else
 #ifdef PATH_TRACER
+	int size = renderOptions.width * renderOptions.height;
 	// path tracer
 #pragma omp parallel for
 	for ( int y = y_min; y <= y_max; ++y )
@@ -78,7 +84,16 @@ void RayTracer::traceChunk( int x_min, int x_max, int y_min, int y_max )
 				color.x = sqrtf( color.x );
 				color.y = sqrtf( color.y );
 				color.z = sqrtf( color.z );
-				hdrPixels[y * renderOptions.width + x] += color;
+				if ( bMotion )
+				{
+					int nframeId = sample_count % frame_num;
+					pixels[nframeId * size + y * renderOptions.width + x] = color;
+				}
+				else
+				{
+					hdrPixels[y * renderOptions.width + x] += color;
+				}
+				
 			}
 		}
 	}
@@ -119,6 +134,21 @@ void RayTracer::render( Surface *screen )
 	waitRenderThreads();
 #endif
 	//runFXAA( hdrPixels, renderOptions.width, renderOptions.height );
+	int nS = sample_count;
+	if ( bMotion )
+	{
+		nS = sample_count > 3 ? 3 : sample_count;
+		for ( int y = 0; y < renderOptions.height; ++y )
+		{
+			for ( int x = 0; x < renderOptions.width; ++x )
+			{
+				hdrPixels[y * renderOptions.width + x] =
+					(pixels[y * renderOptions.width + x] +
+					pixels[renderOptions.width*renderOptions.height + y * renderOptions.width + x] +
+					pixels[renderOptions.width * renderOptions.height * 2 + y * renderOptions.width + x]);
+			}
+		}
+	}
 
 	if ( bFilter )
 	{
@@ -129,7 +159,7 @@ void RayTracer::render( Surface *screen )
 				for ( int x = 0; x < renderOptions.width; ++x )
 				{
 #ifdef PATH_TRACER
-					hdrPixels[y * renderOptions.width + x] = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f / (float)( sample_count > SAMPLE_NUM2 ? SAMPLE_NUM2 : sample_count ) );
+					hdrPixels[y * renderOptions.width + x] = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f / (float)( nS > SAMPLE_NUM2 ? SAMPLE_NUM2 : nS ) );
 #endif // PATH_TRACER
 				}
 			}
@@ -174,7 +204,7 @@ void RayTracer::render( Surface *screen )
 			for ( int x = 0; x < renderOptions.width; ++x )
 			{
 #ifdef PATH_TRACER
-				auto color = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f / (float)( sample_count > SAMPLE_NUM2 ? SAMPLE_NUM2 : sample_count ) );
+				auto color = hdrPixels[y * renderOptions.width + x] * vec3( 1.0f / (float)( nS > SAMPLE_NUM2 ? SAMPLE_NUM2 : nS ) );
 #else
 				auto color = hdrPixels[y * renderOptions.width + x];
 #endif // PATH_TRACER
