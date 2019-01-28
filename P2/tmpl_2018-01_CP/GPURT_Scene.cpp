@@ -56,7 +56,13 @@ void gpurt::Scene::upload() {
         glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, size, g->mtlPointer());
         offset += size;
     }
-    
+
+
+    _vplg_.init(*_groups_[0]);
+
+    glGenBuffers(1, &_ssbo_nee_triangle_id_);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, _ssbo_nee_triangle_id_);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(_vplg_.light_triangle_id),& _vplg_.light_triangle_id[0], GL_STREAM_DRAW);
 }
 
 void gpurt::Scene::bind() {
@@ -70,6 +76,7 @@ void gpurt::Scene::bind() {
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, _ssbo_triangles_);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, _ssbo_bvh_);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, _ssbo_material_);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, _ssbo_nee_triangle_id_);
 
 }
 
@@ -80,6 +87,13 @@ void gpurt::Scene::unload() {
 }
 
 void gpurt::Scene::frame() {
+
+    _vplg_.shuffel();
+
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, _ssbo_nee_triangle_id_);
+    glBufferSubData(GL_SHADER_STORAGE_BUFFER,0, sizeof(_vplg_.light_triangle_id), &_vplg_.light_triangle_id[0]);
+
     updateCamera(camera);
     camera.copyMCamera(_m_camera_);
     _camera_moved_ = camera.moved();
@@ -124,8 +138,9 @@ gpurt::Scene* gpurt::Scene::initScene(const char* filename) {
 
 
     std::cout << filename << endl;
+    auto group = new gpurt::GeometryGroup(filename);
+    scene->_groups_.push_back(group);
 
-    scene->_groups_.push_back(new gpurt::GeometryGroup(filename));
     
     std::cout << "Object Count: " << scene->_groups_[0]->geometryCount() << std::endl;
 

@@ -41,7 +41,7 @@ namespace gpurt {
         
         const int geometryCount()const { return _geometries_.size(); }
 
-        const std::vector<Geometry*>& geometries() { return _geometries_; }
+        const std::vector<Geometry*>& geometries() const { return _geometries_; }
 
         const int mtlCount()const { return _mtls_.size(); }
 
@@ -53,6 +53,8 @@ namespace gpurt {
         void setOffset(int& triangle_id_offset, int& geometry_id_offset, int & material_id_offset);
 
         int bvhSize();
+
+        const Mtl& getMaterial(int i)const { return _mtls_[i]; }
 
     };
 

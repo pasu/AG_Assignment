@@ -56,6 +56,9 @@ namespace gpurt {
 
         int bvhSize()const;
 
+        const int getMtlID()const { return _material_id_; }
+
+        int getTriangleOffset()const { return _triangle_id_offset_; }
 
     };
 

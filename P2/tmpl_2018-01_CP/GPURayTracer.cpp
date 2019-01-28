@@ -79,6 +79,7 @@ void gpurt::render(Surface *screen) {
 
     glUniformMatrix4fv(glGetUniformLocation(program, "m_camera"), 1, GL_FALSE, scene->mCamera());
 
+
     glDispatchCompute(40, 40, 1);
 
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, screen_pixel_buffer);

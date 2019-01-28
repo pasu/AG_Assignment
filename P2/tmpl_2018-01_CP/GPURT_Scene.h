@@ -6,7 +6,7 @@
 
 #pragma once
 #include"GPURT_GeometryGroup.h"
-
+#include"GPURT_VirtualPointLight.h"
 #include"RTCamera.h"
 
 namespace gpurt {
@@ -25,9 +25,11 @@ namespace gpurt {
         GLuint _ssbo_triangles_;
         GLuint _ssbo_bvh_;
         GLuint _ssbo_material_;
+        GLuint _ssbo_nee_triangle_id_;
 
         int _bvh_size_;
 
+        VirtualPointLightinitGemnerator _vplg_;
 
         void mergeBVH();
         void setOffset();

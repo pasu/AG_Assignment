@@ -43,6 +43,7 @@ layout(std430, binding = 2) buffer BVH_BUFFER {
     BVHNode bvh[];
 };
 
+
 struct Material {
     vec3 color_diffuse;// Kd or Ke
     float _ns;// glossy factor
@@ -58,6 +59,11 @@ struct Material {
 };
 layout(std430, binding = 3)buffer MATERIAL_BUFFER {
     Material materials[];
+};
+
+
+layout(std430, binding = 4) buffer VPL_TRIANGLE_ID {
+    int vpl_triangles[1024];
 };
 
 const float very_large_float = 1e9f;
@@ -201,6 +207,34 @@ IntersectScene intersectScene(Ray ray) {
     return result;
 }
 
+vec2 randomTriangleUV() {
+    float u = xorshift32();
+    float v = xorshift32();
+    if (u + v > 1) {
+        u = 1 - u;
+        v = 1 - v;
+    }
+    return vec2(u, v);
+}
+
+vec4 pointOnTriangle(int tid, vec2 uv) {
+
+    vec3 p1 = triangles[tid].v1.pos;
+    vec3 e1 = triangles[tid].v2.pos - p1;
+    vec3 e2 = triangles[tid].v3.pos - p1;
+
+    return vec4(p1 + e1 * uv.x + e2 * uv.y, cross(e1,e2)/2);// w = area
+}
+
+vec4 randomPointOnLight(out vec3 tnormal) {
+    int n = int(xorshift32() * 1024);
+    n = vpl_triangles[n];
+    
+    vec2 uv = randomTriangleUV();
+    tnormal = triangles[n].v1.normal;
+    return pointOnTriangle(n, uv);
+}
+
 
 void main(void) {
 
@@ -239,18 +273,35 @@ void main(void) {
 
             ray.pos = ray.pos + ict.distance*ray.dir;
 
-            vec4 randomDir = randomDirection();
-            vec3 local_z = ict.normal *-sign(dot(ict.normal,ray.dir));
-            vec3 local_x = vec3(local_z.y, local_z.z, local_z.x);
-            vec3 local_y = cross(local_z, local_x);
-            local_x = cross(local_y, local_z);
-            local_x = normalize(local_x);
-            local_y = normalize(local_y);
+            if (xorshift32() > 100) {
 
-            ray.dir = local_x * randomDir.x + local_y * randomDir.y + local_z * randomDir.z;
+                vec3 lnormal;
+                vec4 dst = randomPointOnLight(lnormal);
+                ray.dir = dst.xyz - ray.pos;
+                if (dot(ray.dir, ray.dir) < small_float) {
+                    break;
+                }
+                ray.dir = normalize(ray.dir);
+                ray.pos = ray.pos + ray.dir*small_float;
 
-            ray.pos = ray.pos + ray.dir*small_float;
+                float distance2 = max(1, dot(dst.xyz - ray.pos, dst.xyz - ray.pos));
+                float sa = dst.w*abs(dot(ray.dir, lnormal)) / distance2;
 
+                color = color *sa*0.3183;
+            }
+            else {
+                vec4 randomDir = randomDirection();
+                vec3 local_z = ict.normal *-sign(dot(ict.normal, ray.dir));
+                vec3 local_x = vec3(local_z.y, local_z.z, local_z.x);
+                vec3 local_y = cross(local_z, local_x);
+                local_x = cross(local_y, local_z);
+                local_x = normalize(local_x);
+                local_y = normalize(local_y);
+
+                ray.dir = local_x * randomDir.x + local_y * randomDir.y + local_z * randomDir.z;
+
+                ray.pos = ray.pos + ray.dir*small_float;
+            }
 
         }
         else if (shade_type == 3) {// specular

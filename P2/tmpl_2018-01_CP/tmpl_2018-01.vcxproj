@@ -145,6 +145,7 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="glad.cpp" />
     <ClCompile Include="GPURayTracer.cpp" />
+    <ClCompile Include="GPURT_VirtualPointLight.cpp" />
     <ClCompile Include="ImgToolkit.cpp" />
     <ClCompile Include="LocalSpace.cpp" />
     <ClCompile Include="GPURT_BVH.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="FXAA.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GPURayTracer.h" />
+    <ClInclude Include="GPURT_VirtualPointLight.h" />
     <ClInclude Include="ImgToolkit.h" />
     <ClInclude Include="LocalSpace.h" />
     <ClInclude Include="GPURT_AABB.h" />

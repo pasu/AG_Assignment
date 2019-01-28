@@ -20,7 +20,10 @@ namespace gpurt {
         static constexpr int REFRACT = 5;
 
         Mtl(aiMaterial& aimtl);
-
+        bool isLightSource()const { return _shading_types_[0] == EMMISION; };
+        float getIll()const {
+            return color_diffuse.r + color_diffuse.g + color_diffuse.b;
+        }
     private:
 
         aiColor3D color_diffuse;// Kd or Ke

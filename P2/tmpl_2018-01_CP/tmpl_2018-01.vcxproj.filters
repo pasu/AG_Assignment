@@ -144,6 +144,9 @@
       <Filter>GPURayTracer\Material</Filter>
     </ClCompile>
     <ClCompile Include="RTCamera.cpp" />
+    <ClCompile Include="GPURT_VirtualPointLight.cpp">
+      <Filter>GPURayTracer\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -294,6 +297,9 @@
     </ClInclude>
     <ClInclude Include="GPURT_Material.h">
       <Filter>GPURayTracer\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="GPURT_VirtualPointLight.h">
+      <Filter>GPURayTracer\scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
