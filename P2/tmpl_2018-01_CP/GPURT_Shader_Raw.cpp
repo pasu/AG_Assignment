@@ -240,7 +240,6 @@ void main(void) {
             ray.pos = ray.pos + ict.distance*ray.dir;
 
             vec4 randomDir = randomDirection();
-
             vec3 local_z = ict.normal *-sign(dot(ict.normal,ray.dir));
             vec3 local_x = vec3(local_z.y, local_z.z, local_z.x);
             vec3 local_y = cross(local_z, local_x);
