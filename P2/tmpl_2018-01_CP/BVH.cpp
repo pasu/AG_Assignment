@@ -33,7 +33,7 @@ struct BVHTraversal
 //! - In the case where we want to find out of there is _ANY_ intersection at all,
 //!   set occlusion == true, in which case we exit on the first hit, rather
 //!   than find the closest.
-bool BVH::getIntersection( const RTRay &ray, RTIntersection *intersection, bool occlusion ) const
+bool BVH::getIntersection( const RTRay &ray, RTIntersection *intersection, bool occlusion, const float &distance ) const
 {
 	//intersection->rayT = 999999999.f;
 	intersection->object = NULL;
@@ -74,8 +74,9 @@ bool BVH::getIntersection( const RTRay &ray, RTIntersection *intersection, bool 
 				if ( current.isIntersecting() )
 				{
 					// If we're only looking for occlusion, then any hit is good enough
-					if ( occlusion )
+					if ( occlusion && current.rayT<distance )
 					{
+						*intersection = current;
 						return true;
 					}
 

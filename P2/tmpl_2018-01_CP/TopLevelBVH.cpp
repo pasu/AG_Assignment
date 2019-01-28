@@ -102,7 +102,7 @@ void TopLevelBVH::rebuild()
 	}
 }
 
-bool TopLevelBVH::getIntersection( const RTRay &ray, RTIntersection *intersection ) const
+bool TopLevelBVH::getIntersection( const RTRay &ray, RTIntersection *intersection, bool occlusion, const float &distance ) const
 {
 	assert( intersection->object == nullptr );
 	assert( !intersection->isIntersecting() );
@@ -147,8 +147,14 @@ bool TopLevelBVH::getIntersection( const RTRay &ray, RTIntersection *intersectio
 		if ( current.object ) // current is leaf node
 		{
 			RTIntersection currentIntersection; // find the intersection with subBVH
-			if ( current.object->getIntersection( ray, currentIntersection ) )
+			if ( current.object->getIntersection( ray, currentIntersection, occlusion,distance ) )
 			{
+				if ( occlusion  == true && currentIntersection.rayT<distance)
+				{
+					return true;
+				}
+
+				// why?
 				if ( !( intersection->isIntersecting() ) || ( intersection->isIntersecting() && ( currentIntersection.rayT < intersection->rayT ) ) )
 					*intersection = currentIntersection;
 			}

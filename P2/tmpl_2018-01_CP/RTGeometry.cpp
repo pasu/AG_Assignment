@@ -11,7 +11,7 @@ void RTGeometry::BuildSBVHTree()
 	sbvhTree = new SBVH( &primitivecollection );
 }
 
-bool RTGeometry::getIntersection( const RTRay &ray, RTIntersection &nearestIntersection ) const
+bool RTGeometry::getIntersection( const RTRay &ray, RTIntersection &nearestIntersection, bool occlusion, const float &distance ) const
 {
 	if (sbvhTree)
 	{
@@ -19,7 +19,7 @@ bool RTGeometry::getIntersection( const RTRay &ray, RTIntersection &nearestInter
 		return nearestIntersection.isIntersecting();
 	}
 
-	return bvhTree->getIntersection( ray, &nearestIntersection, false );
+	return bvhTree->getIntersection( ray, &nearestIntersection, occlusion, distance );
 }
 
 

@@ -33,7 +33,7 @@ class BVH
 	// Fast Traversal System
 	BVHNode_32 *bvhTree;
 
-	bool getIntersection( const RTRay &ray, RTIntersection *intersection, bool occlusion ) const;
+	bool getIntersection( const RTRay &ray, RTIntersection *intersection, bool occlusion, const float &distance = FLT_MAX ) const;
 
 	int getFirstHit( const RayPacket &raypacket, const AABB &box, int ia )const;
 

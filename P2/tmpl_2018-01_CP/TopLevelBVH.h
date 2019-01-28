@@ -25,7 +25,7 @@ class TopLevelBVH
 	~TopLevelBVH();
 
 	void rebuild();
-	bool getIntersection( const RTRay &ray, RTIntersection *intersection) const;
+	bool getIntersection( const RTRay &ray, RTIntersection *intersection, bool occlusion = false, const float &distance= FLT_MAX ) const;
 
 	int getFirstHit( const RayPacket &raypacket, const AABB &box, int ia ) const
 	{

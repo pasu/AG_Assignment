@@ -23,7 +23,7 @@
     <ProjectGuid>{D8FE2186-4BF0-4B89-913F-6C26818E5AC5}</ProjectGuid>
     <RootNamespace>Tmpl8</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
@@ -133,6 +133,7 @@
     <ClCompile>
       <PreprocessorDefinitions>WIN64;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp14</LanguageStandard>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
   </ItemDefinitionGroup>
   <!-- END Custom section -->
@@ -144,6 +145,8 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="glad.cpp" />
     <ClCompile Include="GPURayTracer.cpp" />
+    <ClCompile Include="ImgToolkit.cpp" />
+    <ClCompile Include="LocalSpace.cpp" />
     <ClCompile Include="GPURT_BVH.cpp" />
     <ClCompile Include="GPURT_Geometry.cpp" />
     <ClCompile Include="GPURT_GeometryGroup.cpp" />
@@ -176,6 +179,7 @@
     <ClCompile Include="RTTextureManager.cpp" />
     <ClCompile Include="RTTorus.cpp" />
     <ClCompile Include="RTTriangle.cpp" />
+    <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="SBVH.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="surface.cpp" />
@@ -183,6 +187,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TopLevelBVH.cpp" />
+    <ClCompile Include="uniform.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -191,6 +196,8 @@
     <ClInclude Include="FXAA.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GPURayTracer.h" />
+    <ClInclude Include="ImgToolkit.h" />
+    <ClInclude Include="LocalSpace.h" />
     <ClInclude Include="GPURT_AABB.h" />
     <ClInclude Include="GPURT_BVH.h" />
     <ClInclude Include="GPURT_Geometry.h" />
@@ -201,6 +208,7 @@
     <ClInclude Include="GPURT_Triangle.h" />
     <ClInclude Include="precomp.h" />
     <ClInclude Include="quarticsolver.h" />
+    <ClInclude Include="random.h" />
     <ClInclude Include="RayPacket.h" />
     <ClInclude Include="RayTracer.h" />
     <ClInclude Include="RenderOptions.h" />
@@ -226,11 +234,13 @@
     <ClInclude Include="RTTextureManager.h" />
     <ClInclude Include="RTTorus.h" />
     <ClInclude Include="RTTriangle.h" />
+    <ClInclude Include="Sampler.h" />
     <ClInclude Include="SBVH.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="template.h" />
     <ClInclude Include="TopLevelBVH.h" />
+    <ClInclude Include="uniform.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>

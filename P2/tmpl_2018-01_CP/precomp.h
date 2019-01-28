@@ -5,14 +5,14 @@
 // do not include headers in header files (ever).
 
 // Prevent expansion clashes (when using std::min and std::max):
-#pragma comment(lib,"OpenGL32.lib")
+#pragma comment( lib, "OpenGL32.lib" )
 #define NOMINMAX
 
-#define NUMBER_THREAD 16
+#define NUMBER_THREAD 1
 
 #define BVH_ON
 #define SAH_ON
-#define  BIN_NUM 100
+#define BIN_NUM 100
 
 //#define BVH_RANGED_TRAVERSAL
 #define BVH_PARTITION_TRAVERSAL
@@ -24,12 +24,27 @@
 #define SCRWIDTH 640
 #define SCRHEIGHT 640
 // #define FULLSCREEN
-//#define VSYNC
-#define ADVANCEDGL	// faster if your system supports it
+#define VSYNC
+#define ADVANCEDGL // faster if your system supports it
+
+#define SAMPLE_NUM 16
+#define SAMPLE_NUM2 SAMPLE_NUM *SAMPLE_NUM
+
+#define PATH_TRACER
+#define NEE
+
+#define PHOTON_MAPPING
+#define NUM_PHOTON 10000
+
+#define X_AXIS 0
+#define Y_AXIS 1
+#define Z_AXIS 2
+#define LEAF 3
+#define NUM_PHOTON_RADIANCE 10
 
 // Glew should be included first
 //#include <GL/glew.h>
-#include"glad/glad.h"
+#include "glad/glad.h"
 
 // Comment for autoformatters: prevent reordering these two.
 #include <GL/gl.h>

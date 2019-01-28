@@ -23,7 +23,7 @@ void RTObject::updateAABBbounds()
     }
 }
 
-bool RTObject::getIntersection( const RTRay &ray, RTIntersection &nearestIntersection ) const
+bool RTObject::getIntersection( const RTRay &ray, RTIntersection &nearestIntersection, bool occlusion, const float &distance ) const
 {
 	RTRay localRay;// translate the ray into local coordinate
     
@@ -33,7 +33,7 @@ bool RTObject::getIntersection( const RTRay &ray, RTIntersection &nearestInterse
 	localRay.distance_traveled = ray.distance_traveled; // for looking up in mip map table
 
     // invoking BVH traversal
-	bool intersect =  pGeometry->getIntersection( localRay, nearestIntersection );
+	bool intersect = pGeometry->getIntersection( localRay, nearestIntersection, occlusion, distance );
 
     
 

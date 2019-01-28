@@ -107,6 +107,18 @@
     <ClCompile Include="GPURayTracer.cpp">
       <Filter>GPURayTracer</Filter>
     </ClCompile>
+    <ClCompile Include="Sampler.cpp">
+      <Filter>Sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="uniform.cpp">
+      <Filter>Sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="LocalSpace.cpp">
+      <Filter>Toolkit</Filter>
+    </ClCompile>
+    <ClCompile Include="ImgToolkit.cpp">
+      <Filter>Toolkit</Filter>
+    </ClCompile>
     <ClCompile Include="GPURT_Scene.cpp">
       <Filter>GPURayTracer\scene</Filter>
     </ClCompile>
@@ -244,6 +256,21 @@
     <ClInclude Include="GPURayTracer.h">
       <Filter>GPURayTracer</Filter>
     </ClInclude>
+    <ClInclude Include="random.h">
+      <Filter>Toolkit</Filter>
+    </ClInclude>
+    <ClInclude Include="Sampler.h">
+      <Filter>Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="uniform.h">
+      <Filter>Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="LocalSpace.h">
+      <Filter>Toolkit</Filter>
+    </ClInclude>
+    <ClInclude Include="ImgToolkit.h">
+      <Filter>Toolkit</Filter>
+    </ClInclude>
     <ClInclude Include="GPURT_Scene.h">
       <Filter>GPURayTracer\scene</Filter>
     </ClInclude>
@@ -305,6 +332,9 @@
     </Filter>
     <Filter Include="GLAD">
       <UniqueIdentifier>{ed7874d1-c2c1-4284-867c-88d49a956737}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sampler">
+      <UniqueIdentifier>{524b8874-1fb6-4176-af86-e1def978793e}</UniqueIdentifier>
     </Filter>
     <Filter Include="GPURayTracer\scene">
       <UniqueIdentifier>{c31b921f-b5e7-4bc4-8150-e5ff4ae3a03a}</UniqueIdentifier>

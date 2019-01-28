@@ -3,8 +3,8 @@
 #include "RTPlane.h"
 #include "Utils.h"
 
-RTPlane::RTPlane( const vec3 &position, const vec3 &normal, const vec3 &tangent, const RTMaterial &material )
-	: RTPrimitive( position, material ), normal( normalize( normal ) ), tangent( normalize( tangent ) ), binormal( normalize( cross( normal, tangent ) ) ), boundaryxy( vec2( Utils::MAX_FLOAT ) ), bCircle(false)
+RTPlane::RTPlane( const vec3 &position, const vec3 &normal, const vec3 &tangent, const RTMaterial &material, vec2 boundary )
+	: RTPrimitive( position, material ), normal( normalize( normal ) ), tangent( normalize( tangent ) ), binormal( normalize( cross( normal, tangent ) ) ), boundaryxy( boundary ), bCircle( false )
 {
 	computeAABBbounds();
 }
@@ -80,4 +80,17 @@ void RTPlane::computeAABBbounds()
 			   bottomcorner[0], bottomcorner[1], bottomcorner[2], bottomcorner[3],
 			   bottomcorner[4], bottomcorner[5], bottomcorner[6], bottomcorner[7] );
 	box = AABB( min, max );
+}
+
+Tmpl8::vec3 RTPlane::getRandomPnt()
+{
+	vec2 uv( (float)rand() / RAND_MAX, (float)rand() / RAND_MAX );
+
+	vec3 x_dir = tangent * boundaryxy.x;
+	vec3 y_dir = binormal * boundaryxy.y;
+
+	vec3 bottomLeft = pos - x_dir - y_dir;
+
+	vec3 pnt = bottomLeft + tangent *boundaryxy.x *uv.x + binormal *boundaryxy.y *uv.y;
+	return pnt;
 }

@@ -65,9 +65,16 @@ void updateTranslation(RTCamera& camera)
 	}
 }
 
-void updateCamera(RTCamera& camera)
+bool updateCamera(RTCamera& camera)
 {
 	updateRotation(camera);
 	updateTranslation(camera);
+	bool bUpdate = false;
+	if (camera.bNeedUpdate())
+	{
+		bUpdate = true;
+	}
 	camera.Update();
+
+	return bUpdate;
 }
