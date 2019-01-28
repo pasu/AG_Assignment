@@ -24,6 +24,9 @@ static gpurt::Scene* scene1;
 
 
 void gpurt::init() {
+
+    std::cout << "OpenGL " << glGetString(GL_VERSION) << endl;
+
     for (int i = 0; i < 640; i++) {
         for (int j = 0; j < 640; j++) {
             b[i][j][2] = 255;
