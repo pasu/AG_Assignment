@@ -147,6 +147,7 @@
     <ClCompile Include="GPURT_BVH.cpp" />
     <ClCompile Include="GPURT_Geometry.cpp" />
     <ClCompile Include="GPURT_GeometryGroup.cpp" />
+    <ClCompile Include="GPURT_Material.cpp" />
     <ClCompile Include="GPURT_Scene.cpp" />
     <ClCompile Include="GPURT_Shader_Raw.cpp" />
     <ClCompile Include="GPURT_Triangle.cpp" />

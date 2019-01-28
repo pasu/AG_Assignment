@@ -19,6 +19,8 @@ struct Triangle {
     Vertex v2;
     Vertex v3;
     int object_id;
+    int material_id;
+    vec2 _padding;
 };
 layout(std430, binding = 1) buffer TRIANGLE_BUFFER {
     Triangle triangles[];
@@ -39,7 +41,25 @@ layout(std430, binding = 2) buffer BVH_BUFFER {
     }bvh[];
 };
 
+layout(std430, binding = 3)buffer MATERIAL_BUFFER {
+    struct {
+        vec3 color_diffuse;// Kd or Ke
+        float _ns;// glossy factor
+        vec3 color_specular;// Ks
+        float ni;// index of refraction
+
+        float alpha;
+
+        float prefract;
+        float pdiffuse;// possibility of diffuse
+        float pspecular;// possibility of reflaction
+
+        int shading_types[256];// will be filled according to possibilities
+    }materials[];
+};
+
 const float very_large_float = 1e9f;
+const float large_float = 5e8f;
 const float very_small_float = 1e-9f;
 
 
@@ -69,8 +89,8 @@ vec4 randomDirection() {
 }
 
 void primaryRay(in uint x, in uint y, out Ray ray) {
-    ray.dir = normalize(vec3(float(x) + xorshift32(), float(640 - y) + xorshift32(), -320.0) - vec3(320.0, 320.0, 0));
-    ray.pos = vec3(0.6, 1.5, 8);
+    ray.dir = normalize(vec3(float(x) + xorshift32(), float(640 - y) + xorshift32(), -200.0) - vec3(320.0, 320.0, 0));
+    ray.pos = vec3(0.6, 1.5, 5);
     ray.prev_tri = -1;
 }
 
@@ -146,7 +166,7 @@ IntersectScene intersectScene(Ray ray) {
 
     IntersectScene result;
     result.distance = very_large_float;
-
+    
     vec2 uv;
     while (stack_top > 0) {
         int i = stack_pop();
@@ -193,25 +213,20 @@ void main(void) {
     {
         IntersectScene ict = intersectScene(ray);
 
-        if (ict.distance< very_large_float) {
-            color = vec3(0.8);
+        if (ict.distance< large_float) {
 
-            if (triangles[ict.triangle_id].object_id==0) {
-                ill = vec3(30);
+            if (materials[triangles[ict.triangle_id].material_id].shading_types[0]==1) {
+                ill = materials[triangles[ict.triangle_id].material_id].color_diffuse;
                 break;
             }
+
+            color = color * materials[triangles[ict.triangle_id].material_id].color_diffuse;
 
         }
         else {
             color = vec3(0);
             break;
         }
-
-        float rr = xorshift32();
-        if (rr > color.x) {
-            break;
-        }
-        color = vec3(1);
 
         ray.pos = ray.pos + ict.distance*ray.dir;
 

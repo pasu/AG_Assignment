@@ -22,12 +22,18 @@ namespace gpurt {
         gpurt::BVH _bvh_;
 
         int _id_;
+        int _id_offset_;// object id offset
+
+        int _material_id_;
+        int _material_id_offset_;
+
+        int _triangle_id_offset_;
 
         void constructBVH();
 
     public:
 
-        Geometry(const aiMesh& mesh);
+        Geometry(const aiMesh& mesh, int geometry_id);
 
         const int triangleCount() const{
             return _triangles_.size();
@@ -46,11 +52,10 @@ namespace gpurt {
 
         const void copyBVH(BVHNode* dst, int& bvh_offset)const;
 
-        void setTriangleOffset(int& offset);
+        void setOffset(int& triangle_id_offset, const int geometry_id_offset,const int material_id_offset );
 
         int bvhSize()const;
 
-        void setID(int materialgroup);
 
     };
 

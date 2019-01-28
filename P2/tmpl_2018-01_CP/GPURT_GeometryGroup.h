@@ -15,6 +15,8 @@
 #include"GPURT_Geometry.h"
 #include<vector>
 
+#include"GPURT_Material.h"
+
 namespace gpurt {
 
     class GeometryGroup {
@@ -22,22 +24,33 @@ namespace gpurt {
 
         gpurt::BVH _bvh_;// mid-level merged bvh tree, size = geometryCount()*2-1
 
-        vector<const gpurt::BVH*> _sub_bvh_list_;
+        vector<const gpurt::BVH*> _sub_bvh_list_;// a collection of the subbvhs 
 
         std::vector<Geometry*> _geometries_;
 
+        vector<Mtl> _mtls_;
+
         void constructBVH();
+
+        
 
     public:
         GeometryGroup(const char* file_name);
-        int triangleCount();
+        
+        const int triangleCount()const;
+        
         const int geometryCount()const { return _geometries_.size(); }
 
         const std::vector<Geometry*>& geometries() { return _geometries_; }
 
+        const int mtlCount()const { return _mtls_.size(); }
+
+        const Mtl* mtlPointer()const { return &_mtls_[0]; }
+
+
         void copyBVH(BVHNode* dst, int& bvh_offset);
 
-        void setTriangleOffset(int& offset);
+        void setOffset(int& triangle_id_offset, int& geometry_id_offset, int & material_id_offset);
 
         int bvhSize();
 

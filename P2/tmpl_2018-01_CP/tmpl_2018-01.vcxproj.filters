@@ -128,6 +128,9 @@
     <ClCompile Include="GPURT_Shader_Raw.cpp">
       <Filter>GPURayTracer\shader</Filter>
     </ClCompile>
+    <ClCompile Include="GPURT_Material.cpp">
+      <Filter>GPURayTracer\Material</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />

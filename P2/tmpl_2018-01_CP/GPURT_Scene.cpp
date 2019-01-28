@@ -25,7 +25,7 @@ void gpurt::Scene::upload() {
     // upload triangle vertices
     glGenBuffers(1, &_ssbo_triangles_);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _ssbo_triangles_);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, triangleCount() * sizeof(Triangle), NULL, GL_STREAM_DRAW);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, triangleCount() * sizeof(Triangle), NULL, GL_STATIC_DRAW);
 
     int offset = 0;
     for (GeometryGroup* group : _groups_) {
@@ -39,6 +39,21 @@ void gpurt::Scene::upload() {
     glGenBuffers(1, &_ssbo_bvh_);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _ssbo_bvh_);
     glBufferData(GL_SHADER_STORAGE_BUFFER, _merged_.c_size(), &_merged_[0], GL_STATIC_DRAW);
+
+    // upload material
+    glGenBuffers(1, &_ssbo_material_);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, _ssbo_material_);
+    int material_count = 0;
+    for (const auto& g : _groups_) {
+        material_count += g->mtlCount();
+    }
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Mtl)*material_count, NULL, GL_STATIC_DRAW);
+    offset = 0;
+    for (auto& g : _groups_) {
+        int size = g->mtlCount() * sizeof(Mtl);
+        glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, size, g->mtlPointer());
+        offset += size;
+    }
     
 }
 
@@ -48,8 +63,10 @@ void gpurt::Scene::bind() {
     // SSBO 0: screen pixels
     // SSBO 1: triangle vertices
     // SSBO 2: bvh
+    // SSBO 3: material
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, _ssbo_triangles_);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, _ssbo_bvh_);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, _ssbo_material_);
 
 }
 
@@ -59,7 +76,7 @@ void gpurt::Scene::unload() {
     }
 }
 
-void gpurt::Scene::constructBVH() {
+void gpurt::Scene::mergeBVH() {
 
     _bvh_size_ = 0;
 
@@ -78,10 +95,13 @@ void gpurt::Scene::constructBVH() {
 
 }
 
-void gpurt::Scene::setTriangleOffset() {
-    int offset = 0;
+void gpurt::Scene::setOffset() {
+    int triangle_offset = 0;
+    int geometry_offset = 0;
+    int material_offset = 0;
+
     for (GeometryGroup* g : _groups_) {
-        g->setTriangleOffset(offset);
+        g->setOffset(triangle_offset,geometry_offset, material_offset);
     }
 }
 
@@ -93,7 +113,7 @@ gpurt::Scene* gpurt::Scene::initScene1() {
 
     gpurt::Scene * scene = new gpurt::Scene();
 
-    scene->_groups_.push_back(new gpurt::GeometryGroup("assets/GPURT/house_interior/room.obj"));
+    scene->_groups_.push_back(new gpurt::GeometryGroup("assets/GPURT/room.obj"));
     
     std::cout << "Object Count: " << scene->_groups_[0]->geometryCount() << std::endl;
 
@@ -103,7 +123,6 @@ gpurt::Scene* gpurt::Scene::initScene1() {
 }
 
 void gpurt::Scene::init() {
-    setTriangleOffset();
-    constructBVH();
+    setOffset();
+    mergeBVH();
 }
-

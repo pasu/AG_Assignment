@@ -17,12 +17,13 @@ namespace gpurt {
 
         GLuint _ssbo_triangles_;
         GLuint _ssbo_bvh_;
+        GLuint _ssbo_material_;
 
         int _bvh_size_;
 
 
-        void constructBVH();
-        void setTriangleOffset();
+        void mergeBVH();
+        void setOffset();
 
     public:
         Scene();

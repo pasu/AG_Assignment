@@ -4,7 +4,10 @@
 
 using namespace gpurt;
 
-gpurt::Geometry::Geometry(const aiMesh & mesh) {
+gpurt::Geometry::Geometry(const aiMesh & mesh, int geometry_id) {
+
+    _material_id_ = mesh.mMaterialIndex;
+    _id_ = geometry_id;
 
     _triangles_.reserve(mesh.mNumFaces);
 
@@ -31,6 +34,7 @@ gpurt::Geometry::Geometry(const aiMesh & mesh) {
         };
         _triangles_.push_back(t);
     }
+
     constructBVH();
 }
 
@@ -42,22 +46,25 @@ const void gpurt::Geometry::copyBVH(BVHNode * dst, int & bvh_offset) const {
     _bvh_.copy(dst, bvh_offset);
 }
 
-void gpurt::Geometry::setTriangleOffset(int & offset) {
+void gpurt::Geometry::setOffset(int & triangle_id_offset, const int geometry_id_offset, const int material_id_offset) {
+    _triangle_id_offset_ = triangle_id_offset;
+
     for (int i = 0; i < bvhSize(); i++) {
         if (_bvh_[i].isLeaf()) {
-            _bvh_[i].left_first += offset;
+            _bvh_[i].left_first += triangle_id_offset;
         }
     }
-    offset += triangleCount();
+    triangle_id_offset += triangleCount();
+
+    _id_offset_ = geometry_id_offset;
+    _material_id_offset_ = material_id_offset;
+    for (Triangle& t : _triangles_) {
+        t.object_id = _id_ + geometry_id_offset;
+        t.material_id = _material_id_ + _material_id_offset_;
+    }
+
 }
 
 int gpurt::Geometry::bvhSize()const {
     return _bvh_.size();
-}
-
-void gpurt::Geometry::setID(int objectID) {
-    _id_ = objectID;
-    for (Triangle& t : _triangles_) {
-        t.object_id = objectID;
-    }
 }

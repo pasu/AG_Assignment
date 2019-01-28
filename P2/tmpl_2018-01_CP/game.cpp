@@ -75,7 +75,6 @@ void Game::Tick( float deltaTime )
 		DWORD nt = GetTickCount();
 
 		sprintf( buffer, "FPS: %.2f", 30000.0f / ( nt - tt ) );
-        printf( "FPS: %.2f\n", 30000.0f / (nt - tt));
 		tt = nt;
 		frame = 0;
 	}

@@ -23,7 +23,8 @@ namespace gpurt {
     typedef struct Triangle {
         Vertex v1, v2, v3;
         int object_id;
-        int _padding[3];
+        int material_id;
+        int _padding[2];
         const vec3 centroid()const;
 
     }Triangle;

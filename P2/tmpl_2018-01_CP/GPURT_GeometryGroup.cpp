@@ -21,7 +21,15 @@ gpurt::GeometryGroup::GeometryGroup(const char* file_name) {
         cout << "Scene incomplete : " << file_name <<endl;
     }
 
-    // GetTexture and material
+    // load material
+
+    _mtls_.clear();
+    _mtls_.reserve(scene.mNumMaterials);
+    for (int i = 0; i < scene.mNumMaterials; i++) {
+        aiMaterial*  mat = scene.mMaterials[i];
+        _mtls_.push_back(Mtl(*mat));
+    }
+    // texture
     /*
     cout << scene.mNumTextures << endl;
     cout << scene.mMaterials[0]->GetTextureCount(aiTextureType_DIFFUSE)<< endl;
@@ -30,38 +38,21 @@ gpurt::GeometryGroup::GeometryGroup(const char* file_name) {
     aiString texPath;
 
     aiReturn tex = scene.mMaterials[1]->GetTexture(aiTextureType_DIFFUSE, 0, &texPath);
-
-    aiMaterial*  mat = scene.mMaterials[1];
-
-    aiColor3D sha;
-
-
-    mat->Get(AI_MATKEY_COLOR_DIFFUSE,sha);
-
-    cout << sha.r<<" "<<sha.g<<" "<<sha.b << endl;
-    mat->Get(AI_MATKEY_COLOR_SPECULAR, sha);
-
-    cout << sha.r << " " << sha.g << " " << sha.b << endl;
-
-    mat->Get(AI_MATKEY_COLOR_AMBIENT, sha);
-
-    cout << sha.r << " " << sha.g << " " << sha.b << endl;
     */
     
     for (unsigned int meshI = 0; meshI < scene.mNumMeshes; ++meshI)
     {
+        
         aiMesh &mesh = *(scene.mMeshes[meshI]);
-
-        _geometries_.push_back(new Geometry(mesh));
+        
+        _geometries_.push_back(new Geometry(mesh, meshI));
         
     }
-    for (int i = 0; i < geometryCount();i++) {
-        _geometries_[i]->setID(i);
-    }
+
     constructBVH();
 }
 
-int gpurt::GeometryGroup::triangleCount(){
+const int gpurt::GeometryGroup::triangleCount()const{
     int number = 0;
     for (Geometry* g : _geometries_) {
         number += g->triangleCount();
@@ -79,7 +70,7 @@ void gpurt::GeometryGroup::constructBVH() {
     }
 
     _bvh_.fastClaster(_sub_bvh_list_);
-    std::cout << "Depth:" << _bvh_.getDepth() << endl;
+    std::cout << "BVH Depth:" << _bvh_.getDepth() << endl;
 }
 
 void gpurt::GeometryGroup::copyBVH(BVHNode * dst, int & offset) {
@@ -109,10 +100,12 @@ void gpurt::GeometryGroup::copyBVH(BVHNode * dst, int & offset) {
     }
 }
 
-void gpurt::GeometryGroup::setTriangleOffset(int & offset) {
+void gpurt::GeometryGroup::setOffset(int & offset, int& geometry_id_offset, int& material_id_offset) {
     for (Geometry* g : _geometries_) {
-        g->setTriangleOffset(offset);
+        g->setOffset(offset, geometry_id_offset, material_id_offset);
     }
+    material_id_offset += mtlCount();
+    geometry_id_offset += geometryCount();
 }
 
 int gpurt::GeometryGroup::bvhSize() {
