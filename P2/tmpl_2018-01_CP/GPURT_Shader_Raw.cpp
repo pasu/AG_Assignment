@@ -32,30 +32,32 @@ struct BVHNode {
     vec3 aabb_max;
     int count;
 };
+
+struct BVHNode {
+    vec3 aabb_min;
+    int left_first;
+    vec3 aabb_max;
+    int count;
+};
 layout(std430, binding = 2) buffer BVH_BUFFER {
-    struct {
-        vec3 aabb_min;
-        int left_first;
-        vec3 aabb_max;
-        int count;
-    }bvh[];
+    BVHNode bvh[];
 };
 
+struct Material {
+    vec3 color_diffuse;// Kd or Ke
+    float _ns;// glossy factor
+    vec3 color_specular;// Ks
+    float ni;// index of refraction
+
+    float alpha;
+
+    float prefract;
+    float pdiffuse;// possibility of diffuse
+    float pspecular;// possibility of reflaction
+    int shading_types[256];// will be filled according to possibilities
+};
 layout(std430, binding = 3)buffer MATERIAL_BUFFER {
-    struct {
-        vec3 color_diffuse;// Kd or Ke
-        float _ns;// glossy factor
-        vec3 color_specular;// Ks
-        float ni;// index of refraction
-
-        float alpha;
-
-        float prefract;
-        float pdiffuse;// possibility of diffuse
-        float pspecular;// possibility of reflaction
-
-        int shading_types[256];// will be filled according to possibilities
-    }materials[];
+    Material materials[];
 };
 
 const float very_large_float = 1e9f;
