@@ -32,7 +32,7 @@ void updateRotation( RTCamera &camera )
 	}
 }
 
-static const float moving_speed=0.1;
+static float moving_speed=0.1;
 
 void updateTranslation(RTCamera& camera)
 {
@@ -77,4 +77,8 @@ bool updateCamera(RTCamera& camera)
 	camera.Update();
 
 	return bUpdate;
+}
+
+void setCameraSpeed(float speed) {
+    moving_speed = speed;
 }

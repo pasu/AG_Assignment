@@ -30,14 +30,6 @@ void gpurt::init() {
         }
     }
 
-    scene1 = gpurt::Scene::initScene1();
-
-    scene1->init();
-
-    scene1->upload();
-
-    scene1->bind();
-
     glGenBuffers(1, &screen_pixel_buffer);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, screen_pixel_buffer);
     glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(screen_pixels), NULL, GL_STATIC_READ);
@@ -61,12 +53,13 @@ unsigned int colorf(vec4 color) {
 
 void gpurt::render(Surface *screen) {
 
-    scene1->frame();
+    Scene* scene = Scene::current; 
+    scene->frame();
 
     static unsigned int frame_id = 0;
     frame_id++;
     static unsigned int count = 0;
-    if (scene1->cameraMoved()) {
+    if (scene->cameraMoved()) {
         count = 1;
     }
 
@@ -77,11 +70,11 @@ void gpurt::render(Surface *screen) {
     glUseProgram(program);
 
     glUniform1ui(glGetUniformLocation(program, "frame_id"), frame_id);
-    glUniform1ui(glGetUniformLocation(program, "triangle_number"), scene1->triangleCount());
+    glUniform1ui(glGetUniformLocation(program, "triangle_number"), scene->triangleCount());
 
-    glUniform1i(glGetUniformLocation(program, "pixel_keep"), !(scene1->cameraMoved()));
+    glUniform1i(glGetUniformLocation(program, "pixel_keep"), !(scene->cameraMoved()));
 
-    glUniformMatrix4fv(glGetUniformLocation(program, "m_camera"), 1, GL_FALSE, scene1->mCamera());
+    glUniformMatrix4fv(glGetUniformLocation(program, "m_camera"), 1, GL_FALSE, scene->mCamera());
 
     glDispatchCompute(40, 40, 1);
 

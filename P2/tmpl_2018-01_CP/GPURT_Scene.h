@@ -33,7 +33,7 @@ namespace gpurt {
         void setOffset();
     public:
         Scene();
-        static Scene* initScene1();
+        static Scene* initScene(const char* filename);
 
         void init();
 
@@ -54,5 +54,7 @@ namespace gpurt {
         void frame();
         int cameraMoved()const { return _camera_moved_; }
         const float* mCamera()const { return &_m_camera_.cell[0]; }
+
+        static Scene* current;
     };
 }

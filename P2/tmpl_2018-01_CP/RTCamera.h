@@ -4,6 +4,9 @@
 class RTCamera
 {
   public:
+
+      float speed;
+
 	vec3 getEye()
 	{
 		return eye;
@@ -155,7 +158,6 @@ class RTCamera
 
     bool moved() { bool temp = _moved_; _moved_ = false; return temp; }
 
-  private:
 	vec3 eye;
 	vec3 ahead;
 	vec3 right;

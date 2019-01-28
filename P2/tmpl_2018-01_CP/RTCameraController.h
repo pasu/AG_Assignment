@@ -3,5 +3,6 @@
 #define __RTCAMERACONTROLLER__
 
 bool updateCamera(RTCamera& camera);
+void setCameraSpeed(float speed);
 
 #endif

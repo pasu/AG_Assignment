@@ -28,6 +28,13 @@ RenderOptions renderOptions;
 RTCamera *pCamera = scene.getCamera();
 
 
+static gpurt::Scene* gpu_scene1,* gpu_scene2;
+
+
+static int RENDER_MODE = 0;// 0:cpu, 1: gpu
+void toggleRenderMode() {
+    RENDER_MODE = 1 - RENDER_MODE;
+}
 
 void Game::Init()
 {
@@ -36,20 +43,14 @@ void Game::Init()
 	renderOptions.maxRecursionDepth = 5;
 	renderOptions.shadowBias = 0.01f;
 
-	pTracer = new RayTracer( scene, renderOptions );
-
-#ifdef ADVANCEDGL
+    gpu_scene1 = gpurt::Scene::initScene("assets/GPURT/untitled.obj");
+    gpu_scene2 = gpurt::Scene::initScene("assets/GPURT/room.obj");
+    gpu_scene1->bind();
     gpurt::init();
-#endif
 
-	//scene_bvh();
-//#undef PHOTON_MAPPING
-	scene_outdoor();
-	//scene_indoor();
-	//scene_depth();
-	
-#ifdef PHOTON_MAPPING
-#endif
+    pTracer = new RayTracer( scene, renderOptions );
+    scene_outdoor();
+
 }
 
 // -----------------------------------------------------------
@@ -64,48 +65,62 @@ static int frame = 0;
 static DWORD tt = 0;
 
 
+
+
 // -----------------------------------------------------------
 // Main application tick function
 // -----------------------------------------------------------
 void Game::Tick( float deltaTime )
 {
-	bool bUpdate = updateCamera( *( scene.getCamera() ) );
-	
-	if ( bUpdate )
-	{
-		pTracer->Reset();
-	}	
-	
-	scene.animate();
-	scene.rebuildTopLevelBVH();
-	pTracer->render( screen );
+    if (RENDER_MODE == 0) {//CPU
+        setCameraSpeed(1);
+        bool bUpdate = updateCamera(*(scene.getCamera()));
+        if (bUpdate)
+        {
+            pTracer->Reset();
+        }
+        scene.animate();
+        scene.rebuildTopLevelBVH();
+        pTracer->render(screen);
+        sprintf( buffer, "CPU SPP: %d", pTracer->getSCount() );
 
+        screen->Print(buffer, 2, 2, 0xffffff);
+    }
+    else {//GPU
 #ifdef ADVANCEDGL
-    //gpurt::render(screen);
+        setCameraSpeed(0.1);
+        gpurt::render(screen);
+
+        if (++frame == 30) {
+            DWORD nt = GetTickCount();
+            // 
+            sprintf(buffer, "GPU FPS: %.2f", 30000.0f / (nt - tt));
+            tt = nt;
+            frame = 0;
+        }
+
+        screen->Print(buffer, 2, 2, 0xffffff);
+
 #endif
-
-	// print something to the text window
-// 	printf( "this goes to the console window.\n" );
-// 	// draw a sprite
-// 	rotatingGun.SetFrame( frame );
-// 	rotatingGun.Draw( screen, 100, 100 );
-	
-	if (++frame == 30) {
-// 		DWORD nt = GetTickCount();
-// 
-// 		sprintf( buffer, "FPS: %.2f", 30000.0f / ( nt - tt ) );
-//         printf( "FPS: %.2f\n", 30000.0f / (nt - tt));
-// 		tt = nt;
-// 		frame = 0;
-	}
-
-	sprintf( buffer, "SPP: %d", pTracer->getSCount() );
-
-	screen->Print( buffer, 2, 2, 0xffffff );
+    }
 }
 
 void Tmpl8::Game::KeyDown( int key )
 {
+    if (key == 10) {//"g" to toggle render mode
+        toggleRenderMode();
+    }
+    if (RENDER_MODE == 1) {// GPU
+        if (key == 79) {
+            if (gpurt::Scene::current == gpu_scene1) {
+                gpu_scene2->bind();
+            }
+            else {
+                gpu_scene1->bind();
+            }
+        }
+    }
+
 	static int index = 0;
 	static int scenecount = 3;
 	if (key == 79)

@@ -60,7 +60,7 @@ void gpurt::Scene::upload() {
 }
 
 void gpurt::Scene::bind() {
-
+    current = this;
     // hard code
     // SSBO 0: screen pixels
     // SSBO 1: triangle vertices
@@ -117,17 +117,21 @@ void gpurt::Scene::updateTopLevelBVH() {
     
 }
 
-gpurt::Scene* gpurt::Scene::initScene1() {
+gpurt::Scene* gpurt::Scene::initScene(const char* filename) {
 
     gpurt::Scene * scene = new gpurt::Scene();
 
-    scene->_groups_.push_back(new gpurt::GeometryGroup("assets/GPURT/room.obj"));
+
+    std::cout << filename << endl;
+
+    scene->_groups_.push_back(new gpurt::GeometryGroup(filename));
     
     std::cout << "Object Count: " << scene->_groups_[0]->geometryCount() << std::endl;
 
     std::cout << "Triangle Count: "<< scene->triangleCount() << endl;
     scene->camera.moveUp(1.5);
-
+    scene->init();
+    scene->upload();
     return scene;
 }
 
@@ -135,3 +139,5 @@ void gpurt::Scene::init() {
     setOffset();
     mergeBVH();
 }
+
+gpurt::Scene* gpurt::Scene::current = nullptr;
