@@ -91,7 +91,7 @@ vec4 randomDirection() {
 
 void primaryRay(in uint x, in uint y, out Ray ray) {
     ray.dir = normalize(vec3(float(x) + xorshift32(), float(640 - y) + xorshift32(), -200.0) - vec3(320.0, 320.0, 0));
-    ray.pos = vec3(0.6, 1.5, 7);
+    ray.pos = vec3(0.6, 1.5, 5);
     ray.prev_tri = -1;
 }
 
@@ -191,10 +191,10 @@ IntersectScene intersectScene(Ray ray) {
         }
     }
     result.normal = triangleNormal(triangles[result.triangle_id],uv);
-    result.normal = result.normal*(2*(0.5-int(dot(result.normal,ray.dir)>0)));
     ray.prev_tri = result.triangle_id;
     return result;
 }
+
 
 void main(void) {
 
@@ -210,7 +210,7 @@ void main(void) {
     primaryRay(gl_GlobalInvocationID.x, gl_GlobalInvocationID.y, ray);
     vec3 color = vec3(1);
     vec3 ill = vec3(0);
-    for (int j = 0; j < 5; j++)
+    for (int j = 0; j < 8; j++)
     {
         IntersectScene ict = intersectScene(ray);
 
@@ -235,7 +235,7 @@ void main(void) {
 
             vec4 randomDir = randomDirection();
 
-            vec3 local_z = ict.normal;
+            vec3 local_z = ict.normal *-sign(dot(ict.normal,ray.dir));
             vec3 local_x = vec3(local_z.y, local_z.z, local_z.x);
             vec3 local_y = cross(local_z, local_x);
             local_x = cross(local_y, local_z);
@@ -251,22 +251,42 @@ void main(void) {
             color = color * materials[triangles[ict.triangle_id].material_id].color_specular;
 
             ray.pos = ray.pos + ict.distance*ray.dir;
+
+            vec3 temp = ict.normal*dot(ray.dir, ict.normal);
             
-            vec3 temp = -ict.normal*dot(ray.dir, ict.normal);
-            ray.dir = 2 * temp + ray.dir;
+            ray.dir = -2 * temp + ray.dir;
 
             ray.pos = ray.pos + ray.dir*small_float;
         }
         
         else if (shade_type == 5) {// refract
-            color = color * materials[triangles[ict.triangle_id].material_id].color_specular;
+            color = color * materials[triangles[ict.triangle_id].material_id].color_diffuse;
 
             ray.pos = ray.pos + ict.distance*ray.dir;
+
+            float cosi = dot(ray.dir, ict.normal);
+            float etai = 1;
+            float etat = materials[triangles[ict.triangle_id].material_id].ni;
+
+            vec3 n = ict.normal;
+            if (cosi < 0.0f)
+                cosi = -cosi;
+            else{
+                float temp = etai;
+                etai = etat;
+                etat = temp;
+                n = -n;
+            }
+            float eta = etai / etat;
+            float k = 1.0f - eta * eta * (1 - cosi * cosi);
+
+            ray.dir = k < very_small_float ? vec3(0.0f) : ((eta * ray.dir) + (eta * cosi - sqrt(k)) * n);
 
             ray.pos = ray.pos + ray.dir*small_float;
         }
 
         else {
+
             break;
         }
         
