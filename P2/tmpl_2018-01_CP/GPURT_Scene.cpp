@@ -61,6 +61,7 @@ void gpurt::Scene::upload() {
 
 void gpurt::Scene::bind() {
     current = this;
+    camera._moved_ = true;
     // hard code
     // SSBO 0: screen pixels
     // SSBO 1: triangle vertices

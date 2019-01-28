@@ -149,6 +149,8 @@ int main( int argc, char **argv )
 #ifdef ADVANCEDGL
     auto OpenGLwindow = SDL_CreateWindow("OpenGLWindow", 100, 100, SCRWIDTH, SCRHEIGHT, SDL_WINDOW_OPENGL);
     SDL_GLContext glContext = SDL_GL_CreateContext(OpenGLwindow);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     gladLoadGLLoader(SDL_GL_GetProcAddress);
     SDL_HideWindow(OpenGLwindow);
 #endif
