@@ -94,7 +94,7 @@ vec4 randomDirection() {
 
 void primaryRay(in uint x, in uint y, out Ray ray) {
     ray.pos =vec4( m_camera * vec4(0,0,0,1)).xyz;
-    ray.dir = normalize(vec4(m_camera*vec4(vec3(float(x) + xorshift32(), float(640 - y) + xorshift32(), -200.0) - vec3(320.0, 320.0, 0),1)).xyz-ray.pos);
+    ray.dir = normalize(vec4(m_camera*vec4(vec3(float(x) + xorshift32(), float(640 - y) + xorshift32(), 0) - vec3(320.0),1)).xyz-ray.pos);
     
     ray.prev_tri = -1;
 }
@@ -249,6 +249,7 @@ void main(void) {
             ray.dir = local_x * randomDir.x + local_y * randomDir.y + local_z * randomDir.z;
 
             ray.pos = ray.pos + ray.dir*small_float;
+
 
         }
         else if (shade_type == 3) {// specular

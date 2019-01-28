@@ -51,7 +51,7 @@ class RTCamera
 		mat4 mHeading, mPitch;
 		mHeading=mat4::rotatey( heading );
 		mPitch=mat4::rotatex( pitch );
-		mRotation = mPitch*mHeading;
+		mRotation = mHeading* mPitch;
 		bUpdate = true;
 	}
 

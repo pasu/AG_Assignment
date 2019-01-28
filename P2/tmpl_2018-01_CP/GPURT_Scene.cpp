@@ -121,11 +121,12 @@ gpurt::Scene* gpurt::Scene::initScene1() {
 
     gpurt::Scene * scene = new gpurt::Scene();
 
-    scene->_groups_.push_back(new gpurt::GeometryGroup("assets/GPURT/untitled.obj"));
+    scene->_groups_.push_back(new gpurt::GeometryGroup("assets/GPURT/room.obj"));
     
     std::cout << "Object Count: " << scene->_groups_[0]->geometryCount() << std::endl;
 
     std::cout << "Triangle Count: "<< scene->triangleCount() << endl;
+    scene->camera.moveUp(1.5);
 
     return scene;
 }
