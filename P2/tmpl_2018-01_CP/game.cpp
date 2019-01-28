@@ -134,6 +134,7 @@ void Tmpl8::Game::KeyDown( int key )
 		scene.ClearAllLight();
 		scene.ClearAllObj();
 		scene.AttachSkyDome( NULL );
+		pCamera->setEye( vec3( 0 ) );
 		pTracer->SetMotion( false );
 		index++;
 		switch ( index % scenecount )
