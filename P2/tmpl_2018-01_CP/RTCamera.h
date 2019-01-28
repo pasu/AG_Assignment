@@ -34,6 +34,7 @@ class RTCamera
 		heading = .0f;
 		pitch = .0f;
 		bUpdate = true;
+        _moved_ = true;
 		position = vec4( 0 );
 		position.w = 1.0f;
 		updateRotationMatrix();
@@ -56,11 +57,17 @@ class RTCamera
 
 	void turnLeft(float rad) 
 	{
+        if (abs(rad) > 0.000001) {
+            _moved_ = true;
+        }
 		heading += rad;
 		updateRotationMatrix();
 	}
 	void turnUp( float rad )
 	{
+        if (abs(rad) > 0.000001) {
+            _moved_ = true;
+        }
 		pitch += rad;
 		pitch = std::max( pitch, -1.57f );
 		pitch = std::min( pitch, 1.57f );
@@ -68,6 +75,9 @@ class RTCamera
 	}
 	void moveForward(float d)
 	{
+        if (abs(d) > 0.000001) {
+            _moved_ = true;
+        }
 		vec4 localD( 0.0f, 0.0f, d, 1.0f );
 		vec4 globalD = mat4::rotatey(heading)*localD;
 		position.x += globalD.x;
@@ -76,6 +86,9 @@ class RTCamera
 	}
 	void moveLeft( float d )
 	{
+        if (abs(d) > 0.000001) {
+            _moved_ = true;
+        }
 		vec4 localD( -d, 0.0f, 0.0f, 1.0f );
 		vec4 globalD = mat4::rotatey( heading ) * localD;
 		position.x += globalD.x;
@@ -84,6 +97,9 @@ class RTCamera
 	}
 	void moveUp( float d )
 	{
+        if (abs(d) > 0.000001) {
+            _moved_ = true;
+        }
 		position.y += d;
 		bUpdate = true;
 	}
@@ -115,6 +131,10 @@ class RTCamera
 		}
 	}
 
+    void copyMCamera(mat4& m);
+
+    bool moved() { bool temp = _moved_; _moved_ = false; return temp; }
+
   private:
 	vec3 eye;
 	vec3 ahead;
@@ -129,4 +149,7 @@ class RTCamera
 	float pitch;
 	mat4 mRotation;
 	vec4 position;
+
+    void setMoved() { _moved_ = true; }
+    bool _moved_;
 };

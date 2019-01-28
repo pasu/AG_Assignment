@@ -15,12 +15,10 @@ void updateRotation( RTCamera &camera )
 		left_pressed = true;
 		lastX = x;
 		lastY = y;
-		printf( "left button pressed\n" );
 	}
 	if ( !( SDL_BUTTON( 1 ) & buttons ) && left_pressed )
 	{
 		left_pressed = false;
-		printf( "left button released\n" );
 	}
 
 	if (left_pressed)
@@ -34,7 +32,7 @@ void updateRotation( RTCamera &camera )
 	}
 }
 
-static constexpr float moving_speed = 1.0;
+static const float moving_speed=0.1;
 
 void updateTranslation(RTCamera& camera)
 {

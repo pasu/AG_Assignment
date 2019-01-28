@@ -67,6 +67,9 @@ const float small_float = 0.0001;
 uniform uint frame_id;
 uniform uint triangle_number;
 
+uniform mat4 m_camera;
+uniform int pixel_keep;
+
 struct Ray {
     vec3 pos;
     vec3 dir;
@@ -90,8 +93,9 @@ vec4 randomDirection() {
 }
 
 void primaryRay(in uint x, in uint y, out Ray ray) {
-    ray.dir = normalize(vec3(float(x) + xorshift32(), float(640 - y) + xorshift32(), -200.0) - vec3(320.0, 320.0, 0));
-    ray.pos = vec3(0.6, 1.5, 5);
+    ray.pos =vec4( m_camera * vec4(0,0,0,1)).xyz;
+    ray.dir = normalize(vec4(m_camera*vec4(vec3(float(x) + xorshift32(), float(640 - y) + xorshift32(), -200.0) - vec3(320.0, 320.0, 0),1)).xyz-ray.pos);
+    
     ray.prev_tri = -1;
 }
 
@@ -285,13 +289,10 @@ void main(void) {
             ray.pos = ray.pos + ray.dir*small_float;
         }
 
-        else {
 
-            break;
-        }
         
     }
-    pixel_color[gl_GlobalInvocationID.y][gl_GlobalInvocationID.x] = vec4(color*ill, 1) + pixel_color[gl_GlobalInvocationID.y][gl_GlobalInvocationID.x];
+    pixel_color[gl_GlobalInvocationID.y][gl_GlobalInvocationID.x] = vec4(color*ill, 1) + pixel_color[gl_GlobalInvocationID.y][gl_GlobalInvocationID.x]*int(pixel_keep);
 }\n
 
 );

@@ -155,6 +155,7 @@
     <ClCompile Include="RayPacket.cpp" />
     <ClCompile Include="RayTracer.cpp" />
     <ClCompile Include="RayTracerThread.cpp" />
+    <ClCompile Include="RTCamera.cpp" />
     <ClCompile Include="RTObject.cpp" />
     <ClCompile Include="RTBox.cpp" />
     <ClCompile Include="RTCameraController.cpp" />

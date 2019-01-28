@@ -61,13 +61,27 @@ unsigned int colorf(vec4 color) {
 
 void gpurt::render(Surface *screen) {
 
+    scene1->frame();
+
+    static unsigned int frame_id = 0;
+    frame_id++;
     static unsigned int count = 0;
+    if (scene1->cameraMoved()) {
+        count = 1;
+    }
+
     count++;
+    
+
     float fac = 1.0 / count;
     glUseProgram(program);
 
-    glUniform1ui(glGetUniformLocation(program, "frame_id"), count);
+    glUniform1ui(glGetUniformLocation(program, "frame_id"), frame_id);
     glUniform1ui(glGetUniformLocation(program, "triangle_number"), scene1->triangleCount());
+
+    glUniform1i(glGetUniformLocation(program, "pixel_keep"), !(scene1->cameraMoved()));
+
+    glUniformMatrix4fv(glGetUniformLocation(program, "m_camera"), 1, GL_FALSE, scene1->mCamera());
 
     glDispatchCompute(40, 40, 1);
 

@@ -1,9 +1,11 @@
 #include"precomp.h"
 #include "GPURT_Scene.h"
+#include"RTCameraController.h"
 
 using namespace gpurt;
 
 gpurt::Scene::Scene() {
+    
     _ssbo_triangles_ = 0;
     _ssbo_bvh_ = 0;
 }
@@ -74,6 +76,12 @@ void gpurt::Scene::unload() {
     if (glIsBuffer(_ssbo_triangles_)) {
         glDeleteBuffers(1, &_ssbo_triangles_);
     }
+}
+
+void gpurt::Scene::frame() {
+    updateCamera(camera);
+    camera.copyMCamera(_m_camera_);
+    _camera_moved_ = camera.moved();
 }
 
 void gpurt::Scene::mergeBVH() {

@@ -131,6 +131,7 @@
     <ClCompile Include="GPURT_Material.cpp">
       <Filter>GPURayTracer\Material</Filter>
     </ClCompile>
+    <ClCompile Include="RTCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
