@@ -7,6 +7,8 @@ using namespace gpurt;
 gpurt::Geometry::Geometry(const aiMesh & mesh, int geometry_id) {
 
     _material_id_ = mesh.mMaterialIndex;
+
+    cout << "MatID:"<<_material_id_<<", numytriangles"<<mesh.mNumFaces << endl;
     _id_ = geometry_id;
 
     _triangles_.reserve(mesh.mNumFaces);

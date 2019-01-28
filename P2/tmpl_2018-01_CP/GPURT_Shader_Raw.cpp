@@ -61,6 +61,7 @@ layout(std430, binding = 3)buffer MATERIAL_BUFFER {
 const float very_large_float = 1e9f;
 const float large_float = 5e8f;
 const float very_small_float = 1e-9f;
+const float small_float = 0.0001;
 
 
 uniform uint frame_id;
@@ -90,7 +91,7 @@ vec4 randomDirection() {
 
 void primaryRay(in uint x, in uint y, out Ray ray) {
     ray.dir = normalize(vec3(float(x) + xorshift32(), float(640 - y) + xorshift32(), -200.0) - vec3(320.0, 320.0, 0));
-    ray.pos = vec3(0.6, 1.5, 5);
+    ray.pos = vec3(0.6, 1.5, 7);
     ray.prev_tri = -1;
 }
 
@@ -213,37 +214,61 @@ void main(void) {
     {
         IntersectScene ict = intersectScene(ray);
 
-        if (ict.distance< large_float) {
-
-            if (materials[triangles[ict.triangle_id].material_id].shading_types[0]==1) {
-                ill = materials[triangles[ict.triangle_id].material_id].color_diffuse;
-                break;
-            }
-
-            color = color * materials[triangles[ict.triangle_id].material_id].color_diffuse;
-
-        }
-        else {
+        if (ict.distance > large_float) {
             color = vec3(0);
             break;
         }
 
-        ray.pos = ray.pos + ict.distance*ray.dir;
+        int shade_type_index = int(xorshift32() * 1024) % 256;
+        int shade_type = materials[triangles[ict.triangle_id].material_id].shading_types[shade_type_index];
 
-        vec4 randomDir = randomDirection();
 
-        vec3 local_z = ict.normal;
-        vec3 local_x = vec3(local_z.y, local_z.z, local_z.x);
-        vec3 local_y = cross(local_z, local_x);
-        local_x = cross(local_y, local_z);
-        local_x = normalize(local_x);
-        local_y = normalize(local_y);
+        if (shade_type == 1) {
+            ill =  materials[triangles[ict.triangle_id].material_id].color_diffuse;
+            break;
+        }
 
-        ray.dir = local_x * randomDir.x + local_y * randomDir.y + local_z * randomDir.z;
+        if (shade_type == 2) {// diffuse
+            color = color * materials[triangles[ict.triangle_id].material_id].color_diffuse;
 
-        ray.pos = ray.pos + ray.dir*very_small_float*10000;
+            ray.pos = ray.pos + ict.distance*ray.dir;
 
-        color = color * dot(ict.normal,ray.dir);
+            vec4 randomDir = randomDirection();
+
+            vec3 local_z = ict.normal;
+            vec3 local_x = vec3(local_z.y, local_z.z, local_z.x);
+            vec3 local_y = cross(local_z, local_x);
+            local_x = cross(local_y, local_z);
+            local_x = normalize(local_x);
+            local_y = normalize(local_y);
+
+            ray.dir = local_x * randomDir.x + local_y * randomDir.y + local_z * randomDir.z;
+
+            ray.pos = ray.pos + ray.dir*small_float;
+
+        }
+        else if (shade_type == 3) {// specular
+            color = color * materials[triangles[ict.triangle_id].material_id].color_specular;
+
+            ray.pos = ray.pos + ict.distance*ray.dir;
+            
+            vec3 temp = -ict.normal*dot(ray.dir, ict.normal);
+            ray.dir = 2 * temp + ray.dir;
+
+            ray.pos = ray.pos + ray.dir*small_float;
+        }
+        
+        else if (shade_type == 5) {// refract
+            color = color * materials[triangles[ict.triangle_id].material_id].color_specular;
+
+            ray.pos = ray.pos + ict.distance*ray.dir;
+
+            ray.pos = ray.pos + ray.dir*small_float;
+        }
+
+        else {
+            break;
+        }
         
     }
     pixel_color[gl_GlobalInvocationID.y][gl_GlobalInvocationID.x] = vec4(color*ill, 1) + pixel_color[gl_GlobalInvocationID.y][gl_GlobalInvocationID.x];

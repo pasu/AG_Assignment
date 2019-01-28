@@ -25,7 +25,7 @@ namespace gpurt {
 
         aiColor3D color_diffuse;// Kd or Ke
         float _ns;// glossy factor
-        aiColor3D color_specular;// Ks
+        aiColor3D color_specular;// Ks or refract
         float _ni;// index of refraction
 
         float _alpha;// "d" in mtl file, ratio of refraction, alpha = 0: full transparent, alpha=1: not transparent
