@@ -255,7 +255,7 @@ const vec3 RayTracer::sample( const RTRay &ray, const int depth, RTIntersection 
 	}
 
 	const RTMaterial &material = intersection.object->getMaterial();
-	// MIS
+	// apply MIS, need to consider this direct illumination
 	if ( material.isLight() )
 	{
 		return material.getEmission();

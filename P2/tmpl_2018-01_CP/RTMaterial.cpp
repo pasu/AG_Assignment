@@ -266,7 +266,7 @@ bool RTMaterial::evaluate( const RTRay &ray, const SurfacePointData &hitPnt, vec
 		float cosine = sampleDir.dot( reflectDir );
 		cosine = cosine < Utils::EPSILON_FLOAT ? Utils::EPSILON_FLOAT : cosine;
 		random_dir = sampleDir;
-		pdf = ( pow_ + 1.0f ) * 0.5f * Utils::INV_PI * pow( cosine, pow_ );
+		pdf = ( pow_ + 2.0f ) * 0.5f * Utils::INV_PI * pow( cosine, pow_ );
 		pdf = pdf < Utils::EPSILON_FLOAT ? Utils::EPSILON_FLOAT : pdf;
 
 		return true;
